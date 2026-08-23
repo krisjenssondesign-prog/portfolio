@@ -7343,7 +7343,14 @@
      comes up, is square as it passes the middle, and leans the other way as
      it goes. SKEW_MAX is the whole range in degrees. */
   (function(){
-    const MOB=matchMedia('(max-width:640px)'), SKEW_MAX=6, SPAN=.75;
+    /* 6deg at 1400 of perspective was invisible: the taper you actually see
+       is H * w * sin(theta) / P, and at 169 wide on a 355-tall device that
+       came to TWO pixels a side. The angle alone cannot fix it — the
+       perspective distance is what the taper divides by. 500 and 12deg put
+       about 12px between the two edges, which is the first value that reads
+       as a turn at all and is still well short of a flip. */
+    const MOB=matchMedia('(max-width:640px)'),
+          SKEW_MAX=12, PERSP=500, SPAN=.75;
     const els=[...document.querySelectorAll('.phoneskew')];
     if(!els.length) return;
     let sraf=0;
@@ -7355,7 +7362,8 @@
         const b=e.getBoundingClientRect();
         if(b.bottom < -H || b.top > 2*H) continue;
         const t=Math.max(-1, Math.min(1, ((b.top+b.height/2) - H/2) / (H*SPAN)));
-        e.style.transform='perspective(1400px) rotateY('+(-t*SKEW_MAX).toFixed(2)+'deg)';
+        e.style.transform='perspective('+PERSP+'px) rotateY('
+                          +(-t*SKEW_MAX).toFixed(2)+'deg)';
       }
     }
     const tick=()=>{ if(!sraf) sraf=requestAnimationFrame(paint); };
