@@ -462,10 +462,15 @@
      the cards came out 480 instead of 578. */
   /* items align to their TOPS so every media frame sits on one line; the track
      as a whole is what's centred in the stage */
-  .rail-track{display:flex;align-items:flex-start;gap:1.6667vw;          /* 24  */
+  /* stretch, not flex-start. The three cards no longer run past the window,
+     so there is nothing to align to a top edge any more — and the copy runs
+     to a different number of lines in each one, which put the three impact
+     lines at three different heights. Equal-height cards with the text block
+     filling them means the stat is measured from the BOTTOM in all three. */
+  .rail-track{display:flex;align-items:stretch;gap:1.6667vw;             /* 24  */
               padding:0 2.7778vw;will-change:transform}                  /* 40  */
   /* 553 wide · media 311 · 32 to the text block · text 176 = 519 tall (97:3333) */
-  .rail-inner{display:flex;align-items:flex-start;gap:1.6667vw;
+  .rail-inner{display:flex;align-items:stretch;gap:1.6667vw;
               will-change:transform}
   /* Three across on the 1360 grid — (1360 - 48)/3 = 437.33 — rather than a
      row longer than the window. Nothing had to be said to stop the pin:
@@ -538,7 +543,7 @@
      whether the copy runs two lines or three. */
   .gtext{display:flex;flex-direction:column;justify-content:space-between;
          gap:2.7778vw;                                      /* 40  @1440 */
-         width:100%;
+         width:100%;flex:1 1 auto;
          padding-right:1.6667vw}                            /* 24  @1440 */
   .gcopy{display:flex;flex-direction:column;gap:.5556vw;    /* 8 @1440 */
          width:100%}
@@ -1920,7 +1925,7 @@
      16px larger, and running a third wider than the frame draws it. */
   /* 410:47427 — 48 Regular on 1.15, wrapping at 590, and "and" is the one
      word set in White 2 rather than White 1. */
-  .work h2{max-width:40.9722vw;                         /* 590 @1440 */
+  .work h2{max-width:44vw;                              /* 634 @1440 */
            font-family:var(--font-ui);
            font-size:clamp(30px,3.3333vw,60px);         /* 48  @1440 */
            font-weight:400;letter-spacing:-.01em;line-height:1.15;
@@ -3456,6 +3461,7 @@
 
     /* 40 between the copy and the button, 5 inside the title block, and 24
        from the paragraph down to the stat — 5 of gap plus the stat's 19. */
+    .work h2{max-width:none}
     .card-main{gap:clamp(28px,10.178vw,48px)}
     .tblock{gap:5px}
     .tblock .kpi{margin-top:19px}
@@ -5332,6 +5338,11 @@
     el.className = 'w' + (w.toLowerCase()==='and' ? ' w2' : '');
     el.textContent=w+(i<WORDS.length-1?' ':'');
     workHead.appendChild(el);
+    /* The break is DRAWN, not found. At 48 the line would fit "and" too, and
+       a max-width tight enough to stop it is 0.9vw off the width of the line
+       below — close enough that a rounding either way changes the shape of
+       the block. Stated once, it holds at every size. */
+    if(/^process,?$/i.test(w)) workHead.appendChild(document.createElement('br'));
   });
   const wordEls=[...workHead.querySelectorAll('.w')];
   /* the eyebrow is the first link in the same chain — it resolves just ahead
