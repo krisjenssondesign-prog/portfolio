@@ -2099,7 +2099,12 @@
   /* Mockup.svg is two rounded rects and two inner shadows, so it is CSS here
      rather than an <img>: a 417×876 shell at radius 48 holding a 393×852
      screen at 44, both scaled off the phone's own width. */
-  .card-phone{position:relative;width:100%;height:100%;background:#fff;
+    /* A neutral box that exists only to own a transform of its own. The wrap
+     is already carrying phoneRide and the phone is already carrying phoneIn,
+     and two animations on one element's transform is the last one winning —
+     so the skew gets its own element rather than fighting for one. */
+  .phoneskew{width:100%;height:100%}
+.card-phone{position:relative;width:100%;height:100%;background:#fff;
               border-radius:calc(var(--pw) * .115108);         /* 48/417  */
               box-shadow:inset 0 0 calc(var(--pw) * .047962) rgba(0,0,0,.5);
               will-change:transform,opacity}
@@ -2126,6 +2131,9 @@
             object-fit:contain;object-position:center}
 
   /* entry — phone arrives from below, block staggers in */
+  @keyframes phoneSkew{
+    from{ transform:perspective(1400px) rotateY(-6deg) }
+    to  { transform:perspective(1400px) rotateY(6deg)  } }
   @keyframes phoneIn{ from{opacity:0;transform:translateY(38%)} to{opacity:1;transform:none} }
   /* same treatment as the word reveal above — resolves out of focus as it rises.
      Blur is in em so each element defocuses in proportion to its own type size. */
@@ -3389,7 +3397,7 @@
     .card-body,
     .card[data-side="right"] .card-body,
     .card[data-side="left"]  .card-body{left:16px;width:calc(100% - 32px);
-                     --body-base:0%;top:22.42svh}            /* 191/852 */
+                     --body-base:0%;top:55.28svh}            /* 471/852 */
 
     /* 40 between the copy and the button, 5 inside the title block, and 24
        from the paragraph down to the stat — 5 of gap plus the stat's 19. */
@@ -3404,19 +3412,81 @@
     .kpi .fig b{font-size:28px}
     .kpi .cap{font-size:20px}
 
+    /* 48, not 56, and the label and lock come down a step with it —
+       170 x 48 across 21 + 14 + 4 + 79 + 16 + 15 + 21. */
+    .card-cta{height:48px;padding:0 21px;font-size:14px}
+    .ctalock{flex:0 0 14px;width:14px;height:14px}
+    .ctalock svg{width:14px;height:14px}
+
     /* vw, not %, for the height: a percentage in a height resolves against
        the stage's HEIGHT, and the phone's height is a function of its
        width. 100vw has no scrollbar to allow for at this size. */
-    /* A THIRD of the device, not seventy per cent. Full-column wide it is
-       758 tall against an 852 screen, so a 70% park buries the copy before
-       it has been read — the frame parks it at 597.6, which is 33.55% of
-       the phone showing. */
-    .card-phone-wrap{--pw:calc(100vw - 32px);
-                     --ph:calc((100vw - 32px) / .476027);
+    /* ── the bar — 417:55262 ─────────────────────────────────────────
+       At 393 the desktop bar is 440 across — it hangs off BOTH edges. The
+       stop stops being a third of a fixed track and becomes a thing that
+       hugs its own label, and the pill becomes whatever those three hug to.
+       Stacked, so hugging is affordable: side by side a stop needs ~120 and
+       three of those cannot sit next to a 64 button.
+
+       56 is the stack: 20 of icon, 6 of gap, 14 of cap, 8 of air each side. */
+    :root{--seg-h:56px;--btn-size:64px;
+          --np-pill:calc(100vw - 32px)}   /* the way-back pill, not 370 */
+    .nav{width:auto}
+    .seg{flex:0 0 auto;flex-direction:column;gap:6px;padding:0 14px;
+         transition:color .3s ease, background-color .3s ease,
+                    box-shadow .3s ease, height .46s var(--nav-ease),
+                    gap .46s var(--nav-ease), padding .46s var(--nav-ease),
+                    flex-basis .46s var(--nav-ease)}
+    .seg:last-of-type{gap:6px}
+    .segi{transition:width .46s var(--nav-ease), height .46s var(--nav-ease)}
+    .seglw{overflow:hidden;max-height:1.4em;opacity:1;
+           transition:max-height .46s var(--nav-ease), opacity .2s ease}
+    .navroll{transition:width .46s var(--nav-ease),
+                        height .46s var(--nav-ease)}
+
+    /* ── minimised, on the way down — 417:55262 ──────────────────────
+       The bar does not leave on a phone, it shrinks: 181 x 48 across three
+       57.67 stops on a 4 padding, the words folded away, a 24 icon in each,
+       and the round button 4 to its right rather than 8. */
+    html.nav-mini{--seg-h:40px;--btn-size:48px;--segi:24px}
+    html.nav-mini .navrow{gap:4px}
+    html.nav-mini .seg,
+    html.nav-mini .seg:last-of-type{flex:0 0 57.67px;padding:0;gap:0}
+    html.nav-mini .seglw{max-height:0;opacity:0;
+           transition:max-height .46s var(--nav-ease), opacity .16s ease}
+
+    /* ── the device, above the copy — 417:54927 ──────────────────────
+       It is no longer the full column under the words; it is a small
+       mockup ABOVE them, 169.17 x 355.39 on a 393 frame, and the copy
+       starts at 471. Same 0.476027 aspect, so only the width is said. */
+    .card-phone-wrap{--pw:43.045vw;                       /* 169.17/393 */
+                     --ph:calc(43.045vw / .476027);       /* 355.39     */
                      width:var(--pw);height:var(--ph);
-                     top:calc(100svh - var(--ph) * .3355)}
+                     top:9.51svh}                         /* 81/852     */
     .card[data-side="right"] .card-phone-wrap,
-    .card[data-side="left"]  .card-phone-wrap{left:16px}
+    .card[data-side="left"]  .card-phone-wrap{left:18.32vw}   /* 72/393 */
+
+    /* Side by side, the phone gains 27svh on the copy halfway through and
+       PASSES it — that beat is the whole desktop ride. Stacked above it,
+       the same gain just means the device has left the top of the screen
+       while the copy is still arriving, and the card reads as a hole with
+       a paragraph under it. On a phone the two take the same curve, so the
+       card travels as one object. */
+    .card.css-timeline .card-phone-wrap{animation-name:bodyRide;--body-base:0%}
+
+    /* ── the skew ────────────────────────────────────────────────────
+       A slow turn about the device's own vertical axis, driven by the
+       card's scroll timeline rather than by time: the far edge tapers in,
+       passes flat through the middle of the ride, and tapers the other way
+       on the exit. Linear, on transform only, so it costs a compositor
+       matrix and nothing else. 6deg is the whole range — at 1400 of
+       perspective that is about 9px of taper on a 355-tall device, which
+       reads as the thing being held rather than as a rotation. */
+    .card.css-timeline .phoneskew{
+          animation:phoneSkew linear both;
+          animation-timeline:--cardTL;
+          animation-range:contain 0% contain 100%;
+          will-change:transform}
   }
 
 </style>
@@ -3491,14 +3561,14 @@
         </div>
       </div>
     </div>
-    <div class="card-phone-wrap"><div class="card-phone art">
+    <div class="card-phone-wrap"><div class="phoneskew"><div class="card-phone art">
       <!-- VENMO.png, Kris's own device art: the shell, the bezel and the
            corners are all in the file, so the CSS phone stands down. Lossless
            WebP — the screen is flat colour and lossy leaves rings around the
            wordmark. 1179 wide, which is 2.65x the painted 445. -->
       <img class="phoneart" alt="" decoding="async"
            src="media/venmo-phone.webp">
-    </div></div>
+    </div></div></div>
   </div>
 </section>
 
@@ -3533,13 +3603,13 @@
         </div>
       </div>
     </div>
-    <div class="card-phone-wrap"><div class="card-phone"><div class="card-screen">
+    <div class="card-phone-wrap"><div class="phoneskew"><div class="card-phone"><div class="card-screen">
       <!-- Drop the prototype recording in here. Poster shows before it decodes:
       <video muted loop autoplay playsinline preload="metadata" poster="Media/venmo.jpg">
         <source src="Media/venmo.webm" type="video/webm">
         <source src="Media/venmo.mp4"  type="video/mp4">
       </video> -->
-    </div></div></div>
+    </div></div></div></div>
   </div>
 </section>
 
@@ -4659,6 +4729,14 @@
   lastSel=segs.find(x=>x.getAttribute('aria-selected')==='true')||segs[0];
   place(true);
   window.__navSel=markSel;
+  /* The minimised bar gives every stop the same 57.67, so the chip's own
+     width changes with it — and the chip is measured, not laid out. Chase
+     the transition rather than snapping at the end of it. */
+  window.__navPlace=(ms)=>{
+    const t0=performance.now();
+    (function chase(){ place(true);
+      if(performance.now()-t0 < (ms||520)) requestAnimationFrame(chase); })();
+  };
   segs.forEach(s=>s.addEventListener('click',()=>markSel(s)));
   /* ── the case-study panel — 226:7880 ─────────────────────────────────
      One class on the root drives the scrim, the panel and the CLOSE button,
@@ -4929,6 +5007,7 @@
     const hideDistance=()=>Math.ceil(row.getBoundingClientRect().height
         + parseFloat(getComputedStyle(root).getPropertyValue('--nav-bottom')) + 24);
 
+    const NAV_MINI=matchMedia('(max-width:640px)');
     let lastY=scrollY, hidden=false, ticking=false;
     function onScroll(){
       if(ticking) return; ticking=true;
@@ -4956,8 +5035,17 @@
            before you have even seen it. */
         const scrollable=document.documentElement.scrollHeight-innerHeight;
         const atBottom=scrollable>0 && (scrollable-y)<=FOOT_ZONE;
+        /* On a phone the bar does not leave on the way down — it MINIMISES.
+           Same three stops, same button, the words fold away and the row
+           shortens. It still leaves at the bottom of the page, where the
+           footer carries the links and there is nothing for it to say. */
+        const mini = NAV_MINI.matches && hidden && !atBottom;
+        if(root.classList.contains('nav-mini') !== mini){
+          root.classList.toggle('nav-mini', mini);
+          window.__navPlace && window.__navPlace();
+        }
         root.style.setProperty('--ty',
-          (hidden||atBottom) ? hideDistance()+'px' : '0px');
+          ((hidden && !mini)||atBottom) ? hideDistance()+'px' : '0px');
         /* the panel would otherwise be left open with its row off-screen */
         if(atBottom && typeof window.__navOpen==='function') window.__navOpen(false);
       });
