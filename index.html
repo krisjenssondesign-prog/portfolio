@@ -2106,7 +2106,7 @@
      is already carrying phoneRide and the phone is already carrying phoneIn,
      and two animations on one element's transform is the last one winning —
      so the skew gets its own element rather than fighting for one. */
-  .phoneskew{width:100%;height:100%}
+  .phoneskew{width:100%;height:100%;will-change:transform}
 .card-phone{position:relative;width:100%;height:100%;background:#fff;
               border-radius:calc(var(--pw) * .115108);         /* 48/417  */
               box-shadow:inset 0 0 calc(var(--pw) * .047962) rgba(0,0,0,.5);
@@ -3531,7 +3531,6 @@
        stuck. 6deg is the whole range — at 1400 of perspective that is
        about 9px of taper on a 355-tall device, which reads as the thing
        being held rather than as a rotation. */
-    .phoneskew{will-change:transform}
   }
 
 </style>
@@ -7338,38 +7337,41 @@
      Nothing else on the page moves sideways, so there is nothing for it to
      desync from, and the glide is what makes the run read as one motion
      instead of a row nailed to the wheel. */
-  /* ── the mockup's turn, on a phone ──────────────────────────────────
-     Position in the window, not a timeline: the device leans one way as it
-     comes up, is square as it passes the middle, and leans the other way as
-     it goes. SKEW_MAX is the whole range in degrees. */
+  /* ── the mockup's turn ─────────────────────────────────────────────
+     Position in the window, not a scroll timeline: the device leans one way
+     as it comes up, is square as it passes the middle, and leans the other
+     way as it goes. animation-timeline is the newest thing in this file and
+     the first thing missing on an older phone — and when it is missing a
+     keyframed ride does not degrade, it FREEZES on its first frame. Four
+     lines off getBoundingClientRect cannot do that on any engine.
+
+     THE PERSPECTIVE IS DERIVED, NOT SET. What you actually see is
+     height * halfWidth * sin(angle) / perspective, so a fixed distance makes
+     the same angle read as nothing on a 169-wide phone mockup and as a slam
+     on a 340-wide one. Tying it to the element's own width takes the width
+     out of the expression entirely: the taper becomes height * sin(angle) / k
+     — the same PROPORTION of the device at every size, which is what "the
+     same move" means when the two mockups are half a screen apart in scale. */
   (function(){
-    /* 6deg at 1400 of perspective was invisible: the taper you actually see
-       is H * w * sin(theta) / P, and at 169 wide on a 355-tall device that
-       came to TWO pixels a side. The angle alone cannot fix it — the
-       perspective distance is what the taper divides by. 500 and 12deg put
-       about 12px between the two edges, which is the first value that reads
-       as a turn at all and is still well short of a flip. */
-    const MOB=matchMedia('(max-width:640px)'),
-          SKEW_MAX=12, PERSP=500, SPAN=.75;
+    const SKEW_MAX=16, P_PER_W=3, SPAN=.75;
     const els=[...document.querySelectorAll('.phoneskew')];
     if(!els.length) return;
     let sraf=0;
     function paint(){
       sraf=0;
-      if(!MOB.matches || noMotion){ els.forEach(e=>{e.style.transform='';}); return; }
+      if(noMotion){ els.forEach(e=>{e.style.transform='';}); return; }
       const H=innerHeight;
       for(const e of els){
         const b=e.getBoundingClientRect();
-        if(b.bottom < -H || b.top > 2*H) continue;
+        if(!b.width || b.bottom < -H || b.top > 2*H) continue;
         const t=Math.max(-1, Math.min(1, ((b.top+b.height/2) - H/2) / (H*SPAN)));
-        e.style.transform='perspective('+PERSP+'px) rotateY('
+        e.style.transform='perspective('+(b.width*P_PER_W).toFixed(0)+'px) rotateY('
                           +(-t*SKEW_MAX).toFixed(2)+'deg)';
       }
     }
     const tick=()=>{ if(!sraf) sraf=requestAnimationFrame(paint); };
     addEventListener('scroll',tick,{passive:true});
     addEventListener('resize',tick);
-    MOB.addEventListener&&MOB.addEventListener('change',tick);
     tick();
   })();
 
