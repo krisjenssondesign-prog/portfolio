@@ -3541,9 +3541,12 @@
     .lines span.ln:nth-child(3) .mqtrack{animation-direction:reverse}
 
     .primary{gap:9.066vw}                         /* 35.63 @393 */
-    .hsub{font-size:6.1069vw;                     /* 24 @393 */
+    /* 20 flat across every phone — the floor is the value, so it reads the
+       same at 393 and at your 420 and there is nothing to re-check between
+       them. It only starts growing past ~504, and stops at 24. */
+    .hsub{font-size:clamp(20px,4.7619vw,24px);    /* 20 @393 and @420 */
           width:calc(100vw - 32px);               /* the drawn 361 */
-          line-height:1.5;letter-spacing:-.01em}
+          line-height:1.2;letter-spacing:-.01em}
     .byline{left:18px;bottom:17.49svh}            /* 149 of 852 */
 
     /* == the marks and the awards - 417:55288 ========================
@@ -3604,19 +3607,25 @@
        padding, a 24 icon over a 10 cap on a 6 gap, and the row sits 32 up
        from the bottom rather than 24. */
     :root{--nav-bottom:32px;--segi:clamp(20px,6.107vw,28px);
-          --hero-shift:-10.164svh}   /* 201 for the first band */
+          --hero-shift:-13.157svh}   /* 201 for the first band */
     .navrow{gap:4px}
     /* width:auto is not enough on Safari — it sized this to 113 against
        three 95 stops and then laid the round button over the second one.
        min-width:max-content is the floor a flex container cannot be shrunk
        below, and it is derived from the stops rather than stated. */
     .nav{width:auto;min-width:max-content}
-    .seg{flex:0 0 clamp(72px,24.173vw,110px);flex-direction:column;gap:6px;padding:0;
+    /* width, NOT flex-basis. A clamp() in flex-basis is the one place
+       WebKit still gets wrong — it falls back toward auto and the stop
+       collapses, which takes the pill down with it. Stated as a width on
+       flex:0 0 auto it is the same number through a path every engine
+       resolves the same way. */
+    .seg{flex:0 0 auto;width:clamp(72px,24.173vw,110px);
+         flex-direction:column;gap:6px;padding:0;
          transition:color .3s ease, background-color .3s ease,
                     box-shadow .3s ease, height .46s var(--nav-ease),
                     gap .46s var(--nav-ease), padding .46s var(--nav-ease),
                     flex-basis .46s var(--nav-ease)}
-    .seg:last-of-type{flex:0 0 clamp(72px,24.173vw,110px);gap:6px;padding:0}
+    .seg:last-of-type{flex:0 0 auto;width:clamp(72px,24.173vw,110px);gap:6px;padding:0}
     .segl{font-size:10px}
     .segi{transition:width .46s var(--nav-ease), height .46s var(--nav-ease)}
     .seglw{overflow:hidden;max-height:1.4em;opacity:1;
@@ -3632,7 +3641,8 @@
                   --segi:clamp(20px,6.107vw,28px)}
     html.nav-mini .navrow{gap:4px}
     html.nav-mini .seg,
-    html.nav-mini .seg:last-of-type{flex:0 0 clamp(46px,14.674vw,68px);padding:0;gap:0}
+    html.nav-mini .seg:last-of-type{flex:0 0 auto;
+                  width:clamp(46px,14.674vw,68px);padding:0;gap:0}
     html.nav-mini .seglw{max-height:0;opacity:0;
            transition:max-height .46s var(--nav-ease), opacity .16s ease}
 
