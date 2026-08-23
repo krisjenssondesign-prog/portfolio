@@ -2134,9 +2134,6 @@
             object-fit:contain;object-position:center}
 
   /* entry — phone arrives from below, block staggers in */
-  @keyframes phoneSkew{
-    from{ transform:perspective(1400px) rotateY(-6deg) }
-    to  { transform:perspective(1400px) rotateY(6deg)  } }
   @keyframes phoneIn{ from{opacity:0;transform:translateY(38%)} to{opacity:1;transform:none} }
   /* same treatment as the word reveal above — resolves out of focus as it rises.
      Blur is in em so each element defocuses in proportion to its own type size. */
@@ -3524,18 +3521,17 @@
     .card.css-timeline .card-phone-wrap{animation-name:bodyRide;--body-base:0%}
 
     /* ── the skew ────────────────────────────────────────────────────
-       A slow turn about the device's own vertical axis, driven by the
-       card's scroll timeline rather than by time: the far edge tapers in,
-       passes flat through the middle of the ride, and tapers the other way
-       on the exit. Linear, on transform only, so it costs a compositor
-       matrix and nothing else. 6deg is the whole range — at 1400 of
-       perspective that is about 9px of taper on a 355-tall device, which
-       reads as the thing being held rather than as a rotation. */
-    .card.css-timeline .phoneskew{
-          animation:phoneSkew linear both;
-          animation-timeline:--cardTL;
-          animation-range:contain 0% contain 100%;
-          will-change:transform}
+       Driven from JS, not from a scroll timeline. animation-timeline is
+       the newest thing in this file and it is the FIRST thing missing on
+       an older phone — and when it is missing the card does not fall back,
+       it freezes: every keyframed ride on it sits on its `from` state and
+       the whole section reads as locked. A rotation off the element's own
+       position in the window has none of that: it is four lines, it is the
+       same number on every engine, and it cannot be the reason a card is
+       stuck. 6deg is the whole range — at 1400 of perspective that is
+       about 9px of taper on a 355-tall device, which reads as the thing
+       being held rather than as a rotation. */
+    .phoneskew{will-change:transform}
   }
 
 </style>
@@ -7342,6 +7338,33 @@
      Nothing else on the page moves sideways, so there is nothing for it to
      desync from, and the glide is what makes the run read as one motion
      instead of a row nailed to the wheel. */
+  /* ── the mockup's turn, on a phone ──────────────────────────────────
+     Position in the window, not a timeline: the device leans one way as it
+     comes up, is square as it passes the middle, and leans the other way as
+     it goes. SKEW_MAX is the whole range in degrees. */
+  (function(){
+    const MOB=matchMedia('(max-width:640px)'), SKEW_MAX=6, SPAN=.75;
+    const els=[...document.querySelectorAll('.phoneskew')];
+    if(!els.length) return;
+    let sraf=0;
+    function paint(){
+      sraf=0;
+      if(!MOB.matches || noMotion){ els.forEach(e=>{e.style.transform='';}); return; }
+      const H=innerHeight;
+      for(const e of els){
+        const b=e.getBoundingClientRect();
+        if(b.bottom < -H || b.top > 2*H) continue;
+        const t=Math.max(-1, Math.min(1, ((b.top+b.height/2) - H/2) / (H*SPAN)));
+        e.style.transform='perspective(1400px) rotateY('+(-t*SKEW_MAX).toFixed(2)+'deg)';
+      }
+    }
+    const tick=()=>{ if(!sraf) sraf=requestAnimationFrame(paint); };
+    addEventListener('scroll',tick,{passive:true});
+    addEventListener('resize',tick);
+    MOB.addEventListener&&MOB.addEventListener('change',tick);
+    tick();
+  })();
+
   const rail=document.getElementById('rail'), railTrack=document.getElementById('railTrack');
   if(rail&&railTrack){
     const inner=document.createElement('div');
