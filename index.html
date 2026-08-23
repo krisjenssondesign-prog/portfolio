@@ -180,6 +180,13 @@
      card can come out enormous while everything around it is correct. 100%
      is the instruction to leave the authored size alone. */
   html,body{-webkit-text-size-adjust:none;text-size-adjust:none}
+  /* manipulation, on everything you can press. Without it Safari holds a tap
+     for ~300ms to see whether a second one is coming (double-tap to zoom),
+     and a tap that lands while the bar is mid-transition — the stops are
+     easing between two widths for 460ms — gets swallowed by that wait. It
+     switches off the zoom gesture on controls only; the page still pinches. */
+  button,a,[role="tab"],.seg,.navroll,.card-cta,.gcta,.nprow,.gmedia,.stat{
+    touch-action:manipulation}
   html{scroll-behavior:smooth}
   /* Snap has to live on the scroll container, which is the document — so
      leaving it on permanently ran snap logic over every gesture on the JBL
@@ -3691,6 +3698,26 @@
        being held rather than as a rotation. */
   }
 
+
+  /* ── touch ─────────────────────────────────────────────────────────
+     Every :hover in this file was written for a pointer. On a phone the
+     first tap resolves as a hover, the state sticks to whatever was tapped
+     last, and on the bar that reads as "it took two taps" — the first one
+     lit the stop, the second did the thing. Restating the idle values under
+     a coarse pointer means a tap is only ever a tap. */
+  @media (hover:none),(pointer:coarse){
+    .seg:hover{color:var(--link-idle)}
+    .seg[aria-selected="true"],
+    .seg[aria-selected="true"]:hover{color:var(--link-active)}
+    .navroll:hover .nrcell{color:var(--link-idle)}
+    .navroll:hover .nbr{color:var(--c-3)}
+    .card-cta:hover{background:none;box-shadow:inset 0 0 0 1px var(--c-3)}
+    .seg:hover .ic.chim .hbody,.seg:hover .ic.chim .chim,
+    .seg:hover .ic.lift .rlift,.seg:hover .ic.lift .rflame{transform:none}
+    .seg:hover .ic.lift .rig{animation:none}
+    .seg[aria-selected="false"]:hover .ic.flickcap svg{animation:none}
+  }
+
 </style>
 </head>
 <body>
@@ -3717,7 +3744,7 @@
       <span class="ln mq mq2" aria-hidden="true"><span class="mqtrack"></span></span>
       <span class="ln mq mq2" aria-hidden="true"><span class="mqtrack"></span></span>
     </h1>
-    <p class="hsub"><span class="hs-d">Digital experiences where visual craft,<br>systems thinking and impact meet.</span><span class="hs-m">Digital experiences shaped by visual craft, systems, and real-world impact.</span></p>
+    <p class="hsub"><span class="hs-d">Digital experiences shaped by visual craft,<br>systems, and real-world impact.</span><span class="hs-m">Digital experiences shaped by visual craft, systems, and real-world impact.</span></p>
   </div>
   <p class="byline">
     <span>Staff Experience Designer</span>
