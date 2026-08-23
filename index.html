@@ -63,7 +63,7 @@
        back in the column at 28, the block is exactly tall enough that plain
        vertical centring lands the cap tops on 260 / 424. Every previous value
        here was correcting for a column that had drifted from the drawing. */
-    --hero-shift:-.5svh;  /* 95:2702 — block 240→616 of 900, 22 above centre */              /* optical lift off dead centre */
+    --hero-shift:-1.372svh;  /* 95:2702 — block 240→616 of 900, 22 above centre */              /* optical lift off dead centre */
     --flip-dur:560ms;               /* one card turn */
     --flip-stagger:30ms;            /* per character, left to right */
     --flip-persp:1400px;            /* higher = flatter turn */
@@ -114,7 +114,7 @@
        alpha tracks how bright the backdrop is, so the composite only ever
        gets darker as the ground gets lighter. The bar can never wash out,
        because the thing that would wash it out is the thing that darkens it. */
-    --surf:0;
+    --surf:1;                      /* safe side: unknown reads as LIGHT backdrop, so the bar is dark */
     --glass-blur:blur(30px) saturate(190%);
     --g-white:calc(.07 - .03 * var(--surf));
     --g-dark:calc(.88 * max(0, var(--surf)));
@@ -246,7 +246,7 @@
   .primary{margin-left:var(--m);
            transform:translateY(var(--hero-shift));
            display:flex;flex-direction:column;align-items:flex-start;
-           gap:3.6111vw}                                       /* 52 @1440 */
+           gap:3.55vw}                                         /* 51 @1440 */
 
   /* --hl-fit falls back to --hl, so the headline is still viewport-scaled if
      the fit never runs. The fit exists because the line is words now, not one
@@ -279,8 +279,8 @@
      for. The break after "craft," is drawn, not found: at 950 the line would
      wrap somewhere else entirely. */
   .hsub{margin:0;font-family:var(--font-ui);
-        font-size:2.7778vw;                                    /* 40 @1440 */
-        font-weight:400;line-height:1.15;letter-spacing:-.01em;
+        font-size:2.25vw;                                      /* 32.4 @1440 */
+        font-weight:400;line-height:1.1;letter-spacing:-.02em;
         color:#000;
         text-box:trim-both cap alphabetic;
         text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -1730,6 +1730,11 @@
   .hero.landing .lines .ln.mq{
         animation:landIn var(--land-dur) var(--land-spring) both;
         animation-delay:var(--ld,0s)}
+  /* The sub-headline takes the slot the second display line used to hold —
+     same spring, same keyframe, one step behind the loop above it. */
+  .hero.landing .hsub{
+        animation:landIn var(--land-dur) var(--land-spring) both;
+        animation-delay:.15s}
   .hero.landing .lines .ln:nth-child(1){--ld:.06s}
   .hero.landing .lines .ln:nth-child(2){--ld:.15s}
   .hero.landing .byline               {animation-delay:.26s}
@@ -3386,7 +3391,7 @@
       <span class="ln mq" aria-label="Concepting, designing, building"
             ><span class="mqtrack" id="mqtrack" aria-hidden="true"></span></span>
     </h1>
-    <p class="hsub">digital experiences where visual craft,<br>systems thinking and impact meet.</p>
+    <p class="hsub">Digital experiences where visual craft,<br>systems thinking and impact meet.</p>
   </div>
   <p class="byline">
     <span>Staff Experience Designer</span>
@@ -4803,9 +4808,19 @@
           /* body is white by default and says nothing useful — where the page
              has no opinion, the veil is the backdrop */
           if(src===null || src===document.body){
-            const v=document.getElementById('veil');
+            /* The veil is a black full-screen sheet parked one viewport DOWN
+               and driven up by a scroll-driven animation. Its rect is the only
+               thing consulted here — and a browser that has not sampled that
+               animation by first paint reports the rect UNTRANSFORMED, i.e.
+               covering the whole window at scrollY 0. The bar then read black
+               behind it, took the light material, and painted a white pill
+               over the white hero with the selected label — white — gone.
+               veilRise starts at scrollY 0, so at the top of the page the
+               veil is at its start position by definition and there is
+               nothing to ask. */
+            const v=scrollY>0 ? document.getElementById('veil') : null;
             const b=v?v.getBoundingClientRect():null;
-            L=(b && b.top<=y && b.bottom>=y) ? 0 : (L===null?0:L);
+            L=(b && b.top<=y && b.bottom>=y) ? 0 : (L===null?255:L);
           }
           worst=Math.max(worst, smooth(L));
           if(worst>=1) return aim(1);
