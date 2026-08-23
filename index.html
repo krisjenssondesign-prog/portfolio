@@ -523,6 +523,9 @@
      the unit is Inter Medium two steps smaller. It used to be one Inter run
      at 24 with the sign bold and the number semibold — the inverse of what
      is drawn. */
+  /* 417:55214 — drawn on the phone frame only, so it is not in the desktop
+     card at all: full width, centred, no lock and no arrow. */
+  .gcta{display:none}
   .gstat{display:flex;gap:1.1111vw;align-items:flex-end;width:100%}
   .gstat .fig{display:flex;gap:2px;align-items:flex-end;
               color:var(--c-1);white-space:nowrap}
@@ -3421,6 +3424,52 @@
     /* vw, not %, for the height: a percentage in a height resolves against
        the stage's HEIGHT, and the phone's height is a function of its
        width. 100vw has no scrollbar to allow for at this size. */
+    /* ══ the project row — 417:55079 ═════════════════════════════════
+       No pin. On a desktop the row is longer than the window, so the page
+       holds still and the row runs sideways under it; a finger can just push
+       it, so the whole apparatus comes off and this becomes what it always
+       wanted to be — a snap scroller. `over` is forced to 0 in the engine,
+       which is the same switch a window wide enough to hold the whole row
+       already flips, so nothing new has to be turned off.
+
+       One card per screen, 353 on a 393 frame, 12 between, and the next one
+       starts 12 past the fold. Snapped to CENTRE: the track's own 20 of
+       padding puts the first card's centre exactly on the window's. */
+    .rail{margin-top:0;height:auto}
+    .rail-stage{position:static;display:block;
+                overflow-x:auto;overflow-y:visible;
+                scroll-snap-type:x mandatory;
+                overscroll-behavior-x:contain;
+                touch-action:auto;padding-block:0;
+                scrollbar-width:none}
+    .rail-stage::-webkit-scrollbar{display:none}
+    .rail-track{width:max-content;padding:0 20px;gap:12px;will-change:auto}
+    .rail-inner{gap:12px}
+    .rcard{flex:0 0 calc(100vw - 40px);                    /* 353 @393 */
+           gap:20px;scroll-snap-align:center}
+    .gmedia{aspect-ratio:353/255}
+
+    /* the block: 5 inside the title, 20 to the stat, 40 to the button */
+    .gtext{gap:20px;min-height:0;padding-right:0}
+    .gcopy{gap:5px}
+    .gtext h3{font-size:24px;line-height:1.45}
+    .gtext p{font-size:20px;line-height:1.1}
+    .gstat{gap:16px}
+    .gstat .fig i{font-size:20px;width:12px}
+    .gstat .fig i:last-child{font-size:16px}
+    .gstat .fig b{font-size:24px}
+    .gstat .cap{font-size:20px;font-weight:400}
+
+    /* 353 x 48, the word centred, nothing either side of it */
+    .gcta{display:flex;align-items:center;justify-content:center;
+          box-sizing:border-box;width:100%;height:48px;margin-top:20px;
+          border:0;box-shadow:inset 0 0 0 1px var(--c-3);border-radius:999px;
+          background:none;cursor:pointer;
+          font-family:var(--font-ui);font-size:14px;font-weight:500;
+          line-height:1;letter-spacing:-.02em;text-transform:uppercase;
+          color:#fff;
+          transition:background-color .4s ease, box-shadow .4s ease}
+
     /* ── the bar — 417:55262 ─────────────────────────────────────────
        At 393 the desktop bar is 440 across — it hangs off BOTH edges. The
        stop stops being a third of a fixed track and becomes a thing that
@@ -3637,6 +3686,7 @@
             <span class="fig"><i>+</i><b>4,700</b><i>%</i></span>
             <span class="cap">Jump-in referrals</span>
           </div>
+            <button class="gcta" type="button">Read more</button>
         </div>
       </article>
       <article class="rcard">
@@ -3650,6 +3700,7 @@
             <span class="fig"><i>+</i><b>991</b><i>%</i></span>
             <span class="cap">Jump-in referrals</span>
           </div>
+            <button class="gcta" type="button">Read more</button>
         </div>
       </article>
       <article class="rcard">
@@ -3663,6 +3714,7 @@
             <span class="fig"><i>+</i><b>991</b><i>%</i></span>
             <span class="cap">User growth with ETS Solutions</span>
           </div>
+            <button class="gcta" type="button">Read more</button>
         </div>
       </article>
     </div>
@@ -7303,8 +7355,24 @@
     /* Measured, never computed from vw: the gutters are percentages and the
        card width is a vw, so a hand-summed total is out by whatever the
        scrollbar takes. */
+    /* The one switch. `over` is what the whole engine is built on — the pin
+       only exists to pay for it — so on a phone it is zero and every part of
+       this stands down on its own: no lead, no tail, no extra height, and
+       target() returns 0 on the first line. */
+    const RAIL_SWIPE=matchMedia('(max-width:640px)');
     function measure(){
       const stage=railTrack.parentNode;
+      if(RAIL_SWIPE.matches){
+        over=tail=lead=pinTop=0;   /* NOT want/have — measure() runs
+                                       before their `let`, and touching
+                                       them here is a TDZ throw that takes
+                                       the loader down with it */
+        inner.style.transform='none';
+        ['--rail-over','--rail-tail','--rail-lead','--rail-top']
+          .forEach(v=>root.style.setProperty(v,'0px'));
+        root.style.setProperty('--rail-h','auto');
+        return;
+      }
       railH=stage.getBoundingClientRect().height;
       /* NOT scrollWidth. Chromium counts a scroll container's right padding
          in scrollWidth and Safari does not, so the row stopped 40 short there
