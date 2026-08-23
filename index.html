@@ -1601,8 +1601,15 @@
      inverts whatever is behind it, so the dot is always the opposite of its
      own background — including halfway across an edge, where a switched
      colour would have to pick one side and be wrong on the other. */
+  /* EVERY rule for the cursor lives inside the hover/fine query below — so
+     on a touch device it gets no CSS at all and stops being a cursor: it is
+     a plain div at the top of the body holding an SVG whose <text> reads
+     "Read more", at the UA's own size, above the hero. It has to be hidden
+     from OUTSIDE the query, because inside it can only ever describe the
+     case where a pointer exists. */
+  .cur{display:none}
   @media (hover:hover) and (pointer:fine){
-    .cur{position:fixed;left:0;top:0;width:0;height:0;z-index:9999;
+    .cur{display:block;position:fixed;left:0;top:0;width:0;height:0;z-index:9999;
          pointer-events:none;mix-blend-mode:difference;
          will-change:transform;opacity:0;transition:opacity .2s ease}
     .cur.live{opacity:1}
