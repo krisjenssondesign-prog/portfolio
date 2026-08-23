@@ -3467,6 +3467,44 @@
           color:#fff;
           transition:background-color .4s ease, box-shadow .4s ease}
 
+    /* == the marks and the awards - 417:55288 ========================
+       Eight across becomes FOUR, and the sequence is untouched: slot i
+       lands at column i%4, row i//4, which is the same reading order the
+       desktop row has, folded. Every mark is the desktop mark at 0.6 -
+       measured, not chosen: venmo is 94.658 wide in the bank and 56.78 in
+       the phone frame, and every other mark agrees to two decimals.
+
+       The slots carry their desktop position as an inline style, so these
+       have to out-rank it. That is the one thing !important is actually
+       for: a stylesheet answering an inline attribute it does not own. */
+    .cblock{padding:0 20px;gap:48px}
+    .cblock + .cblock{margin-top:57px}
+    .weyebrow{font-size:14px;gap:10px}
+    .logobank{aspect-ratio:353/168.18018}
+    .lb-slot[data-i="0"]{left:10.6443% !important;top:3.2098% !important;width:16.0891% !important;height:9.9893% !important}
+    .lb-slot[data-i="1"]{left:37.3444% !important;top:4.4580% !important;width:16.0891% !important;height:9.9893% !important}
+    .lb-slot[data-i="2"]{left:61.0463% !important;top:4.2797% !important;width:9.5712% !important;height:17.1245% !important}
+    .lb-slot[data-i="3"]{left:88.4296% !important;top:3.9231% !important;width:14.5156% !important;height:9.9893% !important}
+    .lb-slot[data-i="4"]{left:10.6443% !important;top:34.6410% !important;width:16.0891% !important;height:9.9893% !important}
+    .lb-slot[data-i="5"]{left:37.3444% !important;top:32.7389% !important;width:14.5156% !important;height:9.9893% !important}
+    .lb-slot[data-i="6"]{left:61.0463% !important;top:35.9488% !important;width:9.5712% !important;height:17.1245% !important}
+    .lb-slot[data-i="7"]{left:88.4296% !important;top:30.2424% !important;width:23.1485% !important;height:11.4163% !important}
+    .lb-slot[data-i="8"]{left:10.6443% !important;top:67.4988% !important;width:14.5156% !important;height:9.9893% !important}
+    .lb-slot[data-i="9"]{left:37.3444% !important;top:63.8730% !important;width:23.1485% !important;height:11.4163% !important}
+    .lb-slot[data-i="10"]{left:61.0463% !important;top:68.3309% !important;width:14.5156% !important;height:9.9893% !important}
+    .lb-slot[data-i="11"]{left:88.4296% !important;top:59.7715% !important;width:9.5712% !important;height:17.1245% !important}
+    .lb-slot[data-i="12"]{left:10.6443% !important;top:97.6818% !important;width:23.1485% !important;height:11.4163% !important}
+    .lb-slot[data-i="13"]{left:37.3444% !important;top:95.0069% !important;width:9.5712% !important;height:17.1245% !important}
+    .lb-slot[data-i="14"]{left:61.0463% !important;top:95.7204% !important;width:16.0891% !important;height:9.9893% !important}
+    .lb-slot[data-i="15"]{left:88.4296% !important;top:91.4404% !important;width:23.1485% !important;height:11.4163% !important}
+
+    /* two up, and the card is the drawn 32/24/24/16 on a 64 gap */
+    .stats{display:grid;grid-template-columns:1fr 1fr;
+           column-gap:16px;row-gap:22px}
+    .stat{gap:64px;padding:32px 24px 24px 16px}
+    .anum{font-size:40px}
+    .acap{font-size:20px}
+
     /* ── the bar — 417:55262 ─────────────────────────────────────────
        At 393 the desktop bar is 440 across — it hangs off BOTH edges. The
        stop stops being a third of a fixed track and becomes a thing that
@@ -3590,9 +3628,9 @@
         <div class="cta" data-code="VENMO">
           <div class="card-cta" role="button" tabindex="0" aria-expanded="false">
             <span class="ctagrp">
-              <span class="ctalock" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M11.3322 7.08333V5.08333C11.3322 3.24238 9.83981 1.75 7.99886 1.75C6.15791 1.75 4.66553 3.24238 4.66553 5.08333V7.08333M5.86553 13.75H10.1322C11.2523 13.75 11.8124 13.75 12.2402 13.532C12.6165 13.3403 12.9225 13.0343 13.1142 12.658C13.3322 12.2302 13.3322 11.6701 13.3322 10.55V10.2833C13.3322 9.16323 13.3322 8.60318 13.1142 8.17535C12.9225 7.79903 12.6165 7.49307 12.2402 7.30132C11.8124 7.08333 11.2523 7.08333 10.1322 7.08333H5.86553C4.74542 7.08333 4.18537 7.08333 3.75755 7.30132C3.38122 7.49307 3.07526 7.79903 2.88351 8.17535C2.66553 8.60318 2.66553 9.16323 2.66553 10.2833V10.55C2.66553 11.6701 2.66553 12.2302 2.88351 12.658C3.07526 13.0343 3.38122 13.3403 3.75755 13.532C4.18537 13.75 4.74542 13.75 5.86553 13.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="ctalock" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M8 1.75C8 5.2 10.8 8 14.25 8C10.8 8 8 10.8 8 14.25C8 10.8 5.2 8 1.75 8C5.2 8 8 5.2 8 1.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               <span class="ctaslot">
-              <span class="ctalabel">Read more</span>
+              <span class="ctalabel">Coming soon</span>
               <input class="ctainput" type="text" placeholder="Enter code"
                      aria-label="Access code" autocomplete="off"
                      spellcheck="false" tabindex="-1">
