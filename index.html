@@ -1929,7 +1929,7 @@
   /* +32: the block was starting level with — sometimes above — the phone's
      top edge, which read as the copy floating off the top of the mockup
      rather than sitting against it. */
-  .card-body{position:absolute;top:calc(50% + 32px);transform:translateY(-50%);
+  .card-body{position:absolute;top:calc(50% + 32px);transform:translateY(var(--body-base,-50%));
              width:32.0833%;                                   /* 462/1440 */
              display:flex;flex-direction:column;align-items:flex-start}
   .card[data-side="right"] .card-body{left:8.4722%}
@@ -2242,57 +2242,57 @@
     100.0% { transform:translateY(-89.6svh) }
   }
   @keyframes bodyRide{
-    0.0% { transform:translateY(-50%) translateY(48.66svh) }
-    2.0% { transform:translateY(-50%) translateY(43.516svh) }
-    4.0% { transform:translateY(-50%) translateY(38.478svh) }
-    6.0% { transform:translateY(-50%) translateY(33.526svh) }
-    8.0% { transform:translateY(-50%) translateY(28.62svh) }
-    10.0% { transform:translateY(-50%) translateY(24.0svh) }
-    12.0% { transform:translateY(-50%) translateY(19.673svh) }
-    14.0% { transform:translateY(-50%) translateY(15.547svh) }
-    16.0% { transform:translateY(-50%) translateY(11.743svh) }
-    18.0% { transform:translateY(-50%) translateY(8.368svh) }
-    20.0% { transform:translateY(-50%) translateY(5.5svh) }
-    22.0% { transform:translateY(-50%) translateY(3.148svh) }
-    24.0% { transform:translateY(-50%) translateY(1.389svh) }
-    26.0% { transform:translateY(-50%) translateY(0.416svh) }
-    28.0% { transform:translateY(-50%) translateY(0.0svh) }
-    30.0% { transform:translateY(-50%) translateY(0.0svh) }
-    32.0% { transform:translateY(-50%) translateY(0.0svh) }
-    34.0% { transform:translateY(-50%) translateY(0.0svh) }
-    36.0% { transform:translateY(-50%) translateY(0.0svh) }
-    38.0% { transform:translateY(-50%) translateY(0.0svh) }
-    40.0% { transform:translateY(-50%) translateY(0.0svh) }
-    42.0% { transform:translateY(-50%) translateY(0.0svh) }
-    44.0% { transform:translateY(-50%) translateY(0.0svh) }
-    46.0% { transform:translateY(-50%) translateY(0.0svh) }
-    48.0% { transform:translateY(-50%) translateY(0.0svh) }
-    50.0% { transform:translateY(-50%) translateY(0.0svh) }
-    52.0% { transform:translateY(-50%) translateY(-0.104svh) }
-    54.0% { transform:translateY(-50%) translateY(-0.428svh) }
-    56.0% { transform:translateY(-50%) translateY(-1.029svh) }
-    58.0% { transform:translateY(-50%) translateY(-1.9svh) }
-    60.0% { transform:translateY(-50%) translateY(-3.022svh) }
-    62.0% { transform:translateY(-50%) translateY(-4.4svh) }
-    64.0% { transform:translateY(-50%) translateY(-6.055svh) }
-    66.0% { transform:translateY(-50%) translateY(-7.978svh) }
-    68.0% { transform:translateY(-50%) translateY(-10.078svh) }
-    70.0% { transform:translateY(-50%) translateY(-12.437svh) }
-    72.0% { transform:translateY(-50%) translateY(-14.932svh) }
-    74.0% { transform:translateY(-50%) translateY(-17.4svh) }
-    76.0% { transform:translateY(-50%) translateY(-19.8svh) }
-    78.0% { transform:translateY(-50%) translateY(-22.2svh) }
-    80.0% { transform:translateY(-50%) translateY(-24.6svh) }
-    82.0% { transform:translateY(-50%) translateY(-27.0svh) }
-    84.0% { transform:translateY(-50%) translateY(-29.4svh) }
-    86.0% { transform:translateY(-50%) translateY(-31.8svh) }
-    88.0% { transform:translateY(-50%) translateY(-34.2svh) }
-    90.0% { transform:translateY(-50%) translateY(-36.6svh) }
-    92.0% { transform:translateY(-50%) translateY(-39.0svh) }
-    94.0% { transform:translateY(-50%) translateY(-41.4svh) }
-    96.0% { transform:translateY(-50%) translateY(-43.8svh) }
-    98.0% { transform:translateY(-50%) translateY(-46.2svh) }
-    100.0% { transform:translateY(-50%) translateY(-48.6svh) }
+    0.0% { transform:translateY(var(--body-base,-50%)) translateY(48.66svh) }
+    2.0% { transform:translateY(var(--body-base,-50%)) translateY(43.516svh) }
+    4.0% { transform:translateY(var(--body-base,-50%)) translateY(38.478svh) }
+    6.0% { transform:translateY(var(--body-base,-50%)) translateY(33.526svh) }
+    8.0% { transform:translateY(var(--body-base,-50%)) translateY(28.62svh) }
+    10.0% { transform:translateY(var(--body-base,-50%)) translateY(24.0svh) }
+    12.0% { transform:translateY(var(--body-base,-50%)) translateY(19.673svh) }
+    14.0% { transform:translateY(var(--body-base,-50%)) translateY(15.547svh) }
+    16.0% { transform:translateY(var(--body-base,-50%)) translateY(11.743svh) }
+    18.0% { transform:translateY(var(--body-base,-50%)) translateY(8.368svh) }
+    20.0% { transform:translateY(var(--body-base,-50%)) translateY(5.5svh) }
+    22.0% { transform:translateY(var(--body-base,-50%)) translateY(3.148svh) }
+    24.0% { transform:translateY(var(--body-base,-50%)) translateY(1.389svh) }
+    26.0% { transform:translateY(var(--body-base,-50%)) translateY(0.416svh) }
+    28.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    30.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    32.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    34.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    36.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    38.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    40.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    42.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    44.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    46.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    48.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    50.0% { transform:translateY(var(--body-base,-50%)) translateY(0.0svh) }
+    52.0% { transform:translateY(var(--body-base,-50%)) translateY(-0.104svh) }
+    54.0% { transform:translateY(var(--body-base,-50%)) translateY(-0.428svh) }
+    56.0% { transform:translateY(var(--body-base,-50%)) translateY(-1.029svh) }
+    58.0% { transform:translateY(var(--body-base,-50%)) translateY(-1.9svh) }
+    60.0% { transform:translateY(var(--body-base,-50%)) translateY(-3.022svh) }
+    62.0% { transform:translateY(var(--body-base,-50%)) translateY(-4.4svh) }
+    64.0% { transform:translateY(var(--body-base,-50%)) translateY(-6.055svh) }
+    66.0% { transform:translateY(var(--body-base,-50%)) translateY(-7.978svh) }
+    68.0% { transform:translateY(var(--body-base,-50%)) translateY(-10.078svh) }
+    70.0% { transform:translateY(var(--body-base,-50%)) translateY(-12.437svh) }
+    72.0% { transform:translateY(var(--body-base,-50%)) translateY(-14.932svh) }
+    74.0% { transform:translateY(var(--body-base,-50%)) translateY(-17.4svh) }
+    76.0% { transform:translateY(var(--body-base,-50%)) translateY(-19.8svh) }
+    78.0% { transform:translateY(var(--body-base,-50%)) translateY(-22.2svh) }
+    80.0% { transform:translateY(var(--body-base,-50%)) translateY(-24.6svh) }
+    82.0% { transform:translateY(var(--body-base,-50%)) translateY(-27.0svh) }
+    84.0% { transform:translateY(var(--body-base,-50%)) translateY(-29.4svh) }
+    86.0% { transform:translateY(var(--body-base,-50%)) translateY(-31.8svh) }
+    88.0% { transform:translateY(var(--body-base,-50%)) translateY(-34.2svh) }
+    90.0% { transform:translateY(var(--body-base,-50%)) translateY(-36.6svh) }
+    92.0% { transform:translateY(var(--body-base,-50%)) translateY(-39.0svh) }
+    94.0% { transform:translateY(var(--body-base,-50%)) translateY(-41.4svh) }
+    96.0% { transform:translateY(var(--body-base,-50%)) translateY(-43.8svh) }
+    98.0% { transform:translateY(var(--body-base,-50%)) translateY(-46.2svh) }
+    100.0% { transform:translateY(var(--body-base,-50%)) translateY(-48.6svh) }
   }
   /* The block arrives SPREAD and closes up — it does not fly in line by line.
      On the boards the inner gaps run 80/80/80 while it is still coming and
@@ -3367,6 +3367,58 @@
   @media (hover:hover) and (pointer:fine){
     html,body,*,*::before,*::after{cursor:none !important}
   }
+  /* ══ MOBILE — 393 ══════════════════════════════════════════════════
+     The first width breakpoint in the file. Everything above is one
+     viewport-scaled desktop column; this is the phone layout drawn at
+     393x852 (417:54927), and for now it covers the case-study cards only.
+
+     The column is the frame's own 16 either side, so the copy and the
+     device share one edge instead of sitting in a 32% gutter. The phone
+     keeps its exact aspect — 361/758.36 is 0.476027, the same ratio the
+     desktop shell already uses — so only its width has to be said.
+
+     Type is the drawn cut, not the clamp floor: the floors were chosen to
+     stop the desktop scale collapsing, and they land two to eight steps
+     under what the phone frame actually draws. */
+  @media (max-width:640px){
+    /* Top-anchored, not centred. On the desktop the copy is a column beside
+       the phone, so centring it is right; stacked, the block has to start at
+       a known distance DOWN from the top — the frame draws 191 of 852 — and
+       stay there whatever the copy runs to. --body-base turns the ride's
+       own -50% off rather than duplicating fifty keyframes. */
+    .card-body,
+    .card[data-side="right"] .card-body,
+    .card[data-side="left"]  .card-body{left:16px;width:calc(100% - 32px);
+                     --body-base:0%;top:22.42svh}            /* 191/852 */
+
+    /* 40 between the copy and the button, 5 inside the title block, and 24
+       from the paragraph down to the stat — 5 of gap plus the stat's 19. */
+    .card-main{gap:40px}
+    .tblock{gap:5px}
+    .tblock .kpi{margin-top:19px}
+
+    .card-main h3{font-size:32px}
+    .card-main p{font-size:20px}
+    .kpi .fig i{font-size:24px;width:16px}
+    .kpi .fig i:last-child{font-size:20px}
+    .kpi .fig b{font-size:28px}
+    .kpi .cap{font-size:20px}
+
+    /* vw, not %, for the height: a percentage in a height resolves against
+       the stage's HEIGHT, and the phone's height is a function of its
+       width. 100vw has no scrollbar to allow for at this size. */
+    /* A THIRD of the device, not seventy per cent. Full-column wide it is
+       758 tall against an 852 screen, so a 70% park buries the copy before
+       it has been read — the frame parks it at 597.6, which is 33.55% of
+       the phone showing. */
+    .card-phone-wrap{--pw:calc(100vw - 32px);
+                     --ph:calc((100vw - 32px) / .476027);
+                     width:var(--pw);height:var(--ph);
+                     top:calc(100svh - var(--ph) * .3355)}
+    .card[data-side="right"] .card-phone-wrap,
+    .card[data-side="left"]  .card-phone-wrap{left:16px}
+  }
+
 </style>
 </head>
 <body>
