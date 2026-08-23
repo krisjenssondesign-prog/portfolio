@@ -277,6 +277,11 @@
               text-box:trim-both cap alphabetic;
               text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .lines{cursor:default}
+  /* Lines two and three, and the phone's shorter sentence, exist in the
+     markup at every width and are simply not shown on the desktop — the
+     one thing CSS cannot do is change what a word says. */
+  .lines span.ln.mq2{display:none}
+  .hs-m{display:none}
 
   /* ── the sub-headline — 415:54846 ────────────────────────────────────
      Line two is no longer a second display line. It is a sentence at 56 in the
@@ -3473,6 +3478,35 @@
           color:#fff;
           transition:background-color .4s ease, box-shadow .4s ease}
 
+    /* ══ the hero — 421:55491 ═══════════════════════════════════════
+       One looping band becomes THREE, one word each and no slashes: the
+       phone frame draws CONCEPTING, DESIGNING and BUILDING on their own
+       lines at 54.454 Heavy on -0.04em, cap tops on 201 / 256.49 / 312.12.
+       That pitch is 55.5 against a 39 cap box, so the lines sit 16.5 apart
+       — .30301 of the type, stated as em so it tracks the fit.
+
+       --m is set on the HERO rather than :root: the marquee's full-bleed
+       pull, the column, the top bar and the byline all read it, and every
+       other section on the phone wants its own margin. */
+    .hero{--m:16px}
+    .topbar{top:40px}
+    .bfull{display:none}
+    .hs-d{display:none}
+    .hs-m{display:inline}
+    .lines span.ln.mq2{display:block}
+
+    .lines{font-size:13.856vw;                    /* 54.454 @393 */
+           letter-spacing:-.04em;
+           gap:.30301em}                          /* 16.5 on a 39 cap box */
+    .primary{gap:9.066vw}                         /* 35.63 @393 */
+    .hsub{font-size:6.1069vw;                     /* 24 @393 */
+          width:calc(100vw - 32px);               /* the drawn 361 */
+          line-height:1.5;letter-spacing:-.01em}
+    /* the band is edge to edge — the display line's optical nudge is for a
+       line that STARTS somewhere, and this one starts off-screen */
+    .lines span.ln.mq{margin-left:calc(-1 * var(--m))}
+    .byline{left:18px;bottom:17.49svh}            /* 149 of 852 */
+
     /* == the marks and the awards - 417:55288 ========================
        Eight across becomes FOUR, and the sequence is untouched: slot i
        lands at column i%4, row i//4, which is the same reading order the
@@ -3526,13 +3560,21 @@
        56 is the stack: 20 of icon, 6 of gap, 14 of cap, 8 of air each side. */
     :root{--seg-h:56px;--btn-size:64px;
           --np-pill:calc(100vw - 32px)}   /* the way-back pill, not 370 */
+    /* ── the bar, default state — 421:55552 ─────────────────────────
+       293 + 4 + 64 = 361, which is the column. Three stops of 95 on a 4
+       padding, a 24 icon over a 10 cap on a 6 gap, and the row sits 32 up
+       from the bottom rather than 24. */
+    :root{--nav-bottom:32px;--segi:24px;
+          --hero-shift:-10.164svh}   /* 201 for the first band */
+    .navrow{gap:4px}
     .nav{width:auto}
-    .seg{flex:0 0 auto;flex-direction:column;gap:6px;padding:0 14px;
+    .seg{flex:0 0 95px;flex-direction:column;gap:6px;padding:0;
          transition:color .3s ease, background-color .3s ease,
                     box-shadow .3s ease, height .46s var(--nav-ease),
                     gap .46s var(--nav-ease), padding .46s var(--nav-ease),
                     flex-basis .46s var(--nav-ease)}
-    .seg:last-of-type{gap:6px}
+    .seg:last-of-type{flex:0 0 95px;gap:6px;padding:0}
+    .segl{font-size:10px}
     .segi{transition:width .46s var(--nav-ease), height .46s var(--nav-ease)}
     .seglw{overflow:hidden;max-height:1.4em;opacity:1;
            transition:max-height .46s var(--nav-ease), opacity .2s ease}
@@ -3594,7 +3636,7 @@
 <main class="page on" id="pgWork" data-page="work">
 <section class="hero" id="hero">
   <div class="topbar">
-    <div class="brand u"><span class="txt">Kris Jensson</span></div>
+    <div class="brand u"><span class="txt">Kris<span class="bfull"> Jensson</span></span></div>
     <nav class="navr">
       <a class="u" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a><span class="sep">/</span>
       <a class="u" href="mailto:kris.jensson@gmail.com">Get in touch</a>
@@ -3605,8 +3647,10 @@
     <h1 class="lines" id="lines">
       <span class="ln mq" aria-label="Concepting, designing, building"
             ><span class="mqtrack" id="mqtrack" aria-hidden="true"></span></span>
+      <span class="ln mq mq2" aria-hidden="true"><span class="mqtrack"></span></span>
+      <span class="ln mq mq2" aria-hidden="true"><span class="mqtrack"></span></span>
     </h1>
-    <p class="hsub">Digital experiences where visual craft,<br>systems thinking and impact meet.</p>
+    <p class="hsub"><span class="hs-d">Digital experiences where visual craft,<br>systems thinking and impact meet.</span><span class="hs-m">Digital experiences shaped by visual craft, systems, and real-world impact.</span></p>
   </div>
   <p class="byline">
     <span>Staff Experience Designer</span>
@@ -5954,12 +5998,21 @@
     const MQ_SPEED=46;                   /* px per second — slow on purpose */
     const mqTrack=document.getElementById('mqtrack');
     const MQ_WORDS=['CONCEPTING','DESIGNING','BUILDING'];
-    function mqSeq(){
+    /* One line carrying three words and a slash after each, or THREE lines
+       carrying one word apiece and no slash at all — 421:55491. Same builder
+       either way: the cycle and the duration move off :root and onto the
+       track, because three tracks cannot share one cycle. */
+    const MQ_MOB=matchMedia('(max-width:640px)');
+    const mqLines=[...document.querySelectorAll('.ln.mq')];
+    function mqSeq(words,slash){
       const f=document.createDocumentFragment();
-      MQ_WORDS.forEach(w=>{
+      (words||MQ_WORDS).forEach(w=>{
         const a=document.createElement('span'); a.className='mw'; a.textContent=w;
-        const b=document.createElement('span'); b.className='ms'; b.textContent='/';
-        f.appendChild(a); f.appendChild(b);
+        f.appendChild(a);
+        if(slash!==false){
+          const b=document.createElement('span'); b.className='ms'; b.textContent='/';
+          f.appendChild(b);
+        }
       });
       return f;
     }
@@ -5984,19 +6037,27 @@
       root.style.setProperty('--sl-w', (sc*sl.width/size).toFixed(5));
     }
 
-    function mqBuild(){
-      if(!mqTrack) return;
-      mqTrack.replaceChildren(mqSeq());
-      mqSlash();
-      const gap=parseFloat(getComputedStyle(mqTrack).columnGap)||0;
-      const cycle=mqTrack.getBoundingClientRect().width + gap;
+    function mqLine(ln, words, slash){
+      const t=ln.querySelector('.mqtrack'); if(!t) return;
+      t.replaceChildren(mqSeq(words,slash));
+      const gap=parseFloat(getComputedStyle(t).columnGap)||0;
+      const cycle=t.getBoundingClientRect().width + gap;
       if(!cycle) return;
       for(let i=1, need=Math.ceil(innerWidth/cycle)+1; i<need; i++)
-        mqTrack.appendChild(mqSeq());
+        t.appendChild(mqSeq(words,slash));
       /* four places, not two: the translate has to equal the repeat pitch
          exactly or the join walks by a hundredth of a pixel every pass */
-      root.style.setProperty('--mq-cycle', cycle.toFixed(4)+'px');
-      root.style.setProperty('--mq-dur', (cycle/MQ_SPEED).toFixed(3)+'s');
+      t.style.setProperty('--mq-cycle', cycle.toFixed(4)+'px');
+      t.style.setProperty('--mq-dur', (cycle/MQ_SPEED).toFixed(3)+'s');
+    }
+    function mqBuild(){
+      if(!mqLines.length) return;
+      if(MQ_MOB.matches){
+        mqLines.forEach((ln,i)=> mqLine(ln,[MQ_WORDS[i%MQ_WORDS.length]],false));
+      }else{
+        mqLine(mqLines[0], MQ_WORDS, true);
+        mqSlash();
+      }
     }
 
     function fit(){
@@ -6029,7 +6090,7 @@
       fit();
       mqBuild();          /* after the fit — the gap is em of the fitted size */
     }
-    addEventListener('resize',fit);
+    addEventListener('resize',()=>{ fit(); mqBuild(); });
     (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{
       /* the split has to be re-measured once the real face is in: kerns taken
          off the fallback are the fallback's kerns */
