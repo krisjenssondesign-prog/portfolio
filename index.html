@@ -5249,23 +5249,28 @@
            before you have even seen it. */
         const scrollable=document.documentElement.scrollHeight-innerHeight;
         const atBottom=scrollable>0 && (scrollable-y)<=FOOT_ZONE;
-        /* On a phone the bar does not leave on the way down — it MINIMISES.
-           Same three stops, same button, the words fold away and the row
-           shortens. It still leaves at the bottom of the page, where the
-           footer carries the links and there is nothing for it to say. */
+        /* On a phone the bar does not leave. Not on the way down and not at
+           the foot of the page either — it MINIMISES, and that is the only
+           thing it ever does. The footer exception was written for the
+           desktop, where the last 200px of a long page really is the footer
+           and the bar has nothing left to say; on a short page — About,
+           Growth, a case study — that band is most of the screen, so the bar
+           dropped out from under you on the way down. --ty is the desktop's
+           alone now. */
         /* A tap is not a scroll up. Going to a page jumps the document to
            the top, the direction test reads that as a big upward gesture,
            and the bar unfolded — which is not what tapping a stop asks for.
            For a moment after a tap the position is accepted and the state is
            not: only a real upward gesture opens it again. */
         if(performance.now() - NAV_TAP < 900){ lastY=y; }
-        const mini = NAV_MINI.matches && hidden && !atBottom;
+        const mob  = NAV_MINI.matches;
+        const mini = mob && (hidden || atBottom);
         if(root.classList.contains('nav-mini') !== mini){
           root.classList.toggle('nav-mini', mini);
           window.__navPlace && window.__navPlace();
         }
         root.style.setProperty('--ty',
-          ((hidden && !mini)||atBottom) ? hideDistance()+'px' : '0px');
+          (!mob && (hidden||atBottom)) ? hideDistance()+'px' : '0px');
         /* the panel would otherwise be left open with its row off-screen */
         if(atBottom && typeof window.__navOpen==='function') window.__navOpen(false);
       });
