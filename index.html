@@ -3531,6 +3531,15 @@
     .lines{font-size:13.856vw;                    /* 54.454 @393 */
            letter-spacing:-.04em;
            gap:.30301em}                          /* 16.5 on a 39 cap box */
+    /* Alternating. Bands one and three run to the RIGHT, band two to the
+       left, so the eye is handed back and forth instead of being pulled the
+       same way three times. It is the same keyframe reversed rather than a
+       second set: the track is filled to cover the window plus a whole
+       cycle, so it is continuous at both ends of the travel and reversing
+       cannot open a gap at either edge. */
+    .lines span.ln:nth-child(1) .mqtrack,
+    .lines span.ln:nth-child(3) .mqtrack{animation-direction:reverse}
+
     .primary{gap:9.066vw}                         /* 35.63 @393 */
     .hsub{font-size:6.1069vw;                     /* 24 @393 */
           width:calc(100vw - 32px);               /* the drawn 361 */
