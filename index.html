@@ -179,7 +179,7 @@
      up, independently of anything in this file. It is why one number on a
      card can come out enormous while everything around it is correct. 100%
      is the instruction to leave the authored size alone. */
-  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{-webkit-text-size-adjust:none;text-size-adjust:none}
   html{scroll-behavior:smooth}
   /* Snap has to live on the scroll container, which is the document — so
      leaving it on permanently ran snap logic over every gesture on the JBL
@@ -3495,6 +3495,15 @@
     .hs-m{display:inline}
     .lines span.ln.mq2{display:block}
 
+    /* em, not --hl-fit. The fit only runs when there is a non-marquee line
+       to measure, and on the phone there is none — so --hl-fit is unset and
+       every calc built on it silently falls back to --hl's 64px floor while
+       the band itself is 54.454. The gap and the slash are em of the band,
+       which is the size they were always meant to be relative to. */
+    .mqtrack{gap:.232558em}
+    .mqtrack .ms{width:calc(1em * var(--sl-w, .4));
+                 transform:translateY(calc(1em * var(--sl-y, 0) * -1))
+                           scale(var(--sl-s, 1))}
     .lines{font-size:13.856vw;                    /* 54.454 @393 */
            letter-spacing:-.04em;
            gap:.30301em}                          /* 16.5 on a 39 cap box */
@@ -6053,7 +6062,12 @@
     function mqBuild(){
       if(!mqLines.length) return;
       if(MQ_MOB.matches){
-        mqLines.forEach((ln,i)=> mqLine(ln,[MQ_WORDS[i%MQ_WORDS.length]],false));
+        /* one word per band, but the slash stays: each band is WORD / WORD /
+           repeated, which is the desktop sequence with the other two words
+           taken out of it. The slash's fit is measured once — it is the same
+           face at the same size on all three. */
+        mqLines.forEach((ln,i)=> mqLine(ln,[MQ_WORDS[i%MQ_WORDS.length]],true));
+        mqSlash();
       }else{
         mqLine(mqLines[0], MQ_WORDS, true);
         mqSlash();
@@ -7804,6 +7818,39 @@
     });
   });
 
+})();
+</script>
+<script>
+/* ── #debug ──────────────────────────────────────────────────────────
+   Off unless the address ends in #debug. It exists because Safari on a
+   phone cannot be measured from here: this prints what the DEVICE thinks
+   the numbers are, so one screenshot replaces a round of guessing. */
+(function(){
+  if(location.hash!=='#debug') return;
+  const box=document.createElement('div');
+  box.style.cssText='position:fixed;left:0;right:0;top:0;z-index:99999;'+
+    'background:#0a0;color:#fff;font:12px/1.35 -apple-system,monospace;'+
+    'padding:8px 10px;white-space:pre-wrap;pointer-events:none';
+  document.body.appendChild(box);
+  const fs=(sel)=>{const e=document.querySelector(sel);
+    return e? Math.round(parseFloat(getComputedStyle(e).fontSize)*10)/10 : 'x';};
+  const rect=(sel)=>{const e=document.querySelector(sel); if(!e) return 'x';
+    const b=e.getBoundingClientRect();
+    return Math.round(b.left)+','+Math.round(b.top)+' '+Math.round(b.width)+'x'+Math.round(b.height);};
+  function paint(){
+    box.textContent=
+      'vw '+innerWidth+'  vh '+innerHeight+'  dpr '+devicePixelRatio+
+      '  mq640 '+matchMedia('(max-width:640px)').matches+'\n'+
+      'anum '+fs('.anum')+'  acap '+fs('.acap')+'  segl '+fs('.segl')+
+      '  hsub '+fs('.hsub')+'  lines '+fs('.lines')+'\n'+
+      'ctalabel '+fs('.ctalabel')+'  gcta '+fs('.gcta')+'  brand '+fs('.brand')+'\n'+
+      'navRow '+rect('#navRow')+'  pill '+rect('#nav')+'  roll '+rect('#navDots')+'\n'+
+      'mini '+document.documentElement.classList.contains('nav-mini')+
+      '  seg1 '+rect('.seg')+'\n'+
+      'stat '+rect('#awards .stat')+'  bank '+rect('#logobank');
+  }
+  paint(); addEventListener('scroll',paint,{passive:true}); addEventListener('resize',paint);
+  setInterval(paint,600);
 })();
 </script>
 </body>
