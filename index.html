@@ -281,6 +281,18 @@
      markup at every width and are simply not shown on the desktop — the
      one thing CSS cannot do is change what a word says. */
   .lines span.ln.mq2{display:none}
+  /* The band is a full-bleed strip: 100vw starting at the column's own
+     margin is 100vw + --m, and the page scrolled sideways by exactly that
+     margin at every width under ~1050. .ln.mq already asked for the pull —
+     it just lost to `.lines span.ln`, which is one specificity step above
+     it. Same weight, stated once, and the strip starts at the edge. */
+  .lines span.ln.mq{margin-left:calc(-1 * var(--m));
+       /* clip, not hidden: the copies that fill the loop run off both ends by
+          design, and the page was scrolling sideways to reach them. `clip`
+          cuts them without making this a scroll container — which is what
+          hidden would do, and a scroll container is what froze the view()
+          timelines on the cards once before. */
+       overflow:clip;overflow-clip-margin:2em}
   .hs-m{display:none}
 
   /* ── the sub-headline — 415:54846 ────────────────────────────────────
@@ -3265,9 +3277,14 @@
             display:flex;flex-direction:column;align-items:center;
             padding:40px 40px 0;
             opacity:0;pointer-events:none;
-            transition:opacity .30s ease}
-  html.nav-open .navpanel{opacity:1;pointer-events:auto;
-            transition:opacity .38s ease .04s}
+            /* visibility, not just opacity. A full-screen fixed sheet holding
+               96px type is one compositing bug away from painting over the
+               page, and opacity:0 alone leaves it in the paint tree. It is
+               delayed off so the fade still plays on the way out. */
+            visibility:hidden;
+            transition:opacity .30s ease, visibility 0s linear .30s}
+  html.nav-open .navpanel{opacity:1;pointer-events:auto;visibility:visible;
+            transition:opacity .38s ease .04s, visibility 0s}
 
   /* 380:46405 — bottom-aligned, so the 22 mark and the 16 link share a
      baseline rather than a centre. */
@@ -3399,7 +3416,7 @@
      Type is the drawn cut, not the clamp floor: the floors were chosen to
      stop the desktop scale collapsing, and they land two to eight steps
      under what the phone frame actually draws. */
-  @media (max-width:640px){
+  @media (max-width:1080px){
     /* Top-anchored, not centred. On the desktop the copy is a column beside
        the phone, so centring it is right; stacked, the block has to start at
        a known distance DOWN from the top — the frame draws 191 of 852 — and
@@ -3412,16 +3429,16 @@
 
     /* 40 between the copy and the button, 5 inside the title block, and 24
        from the paragraph down to the stat — 5 of gap plus the stat's 19. */
-    .card-main{gap:40px}
+    .card-main{gap:clamp(28px,10.178vw,48px)}
     .tblock{gap:5px}
     .tblock .kpi{margin-top:19px}
 
-    .card-main h3{font-size:32px}
-    .card-main p{font-size:20px}
-    .kpi .fig i{font-size:24px;width:16px}
-    .kpi .fig i:last-child{font-size:20px}
-    .kpi .fig b{font-size:28px}
-    .kpi .cap{font-size:20px}
+    .card-main h3{font-size:clamp(26px,8.142vw,38px)}
+    .card-main p{font-size:clamp(17px,5.089vw,24px)}
+    .kpi .fig i{font-size:clamp(20px,6.107vw,28px);width:clamp(13px,4.071vw,19px)}
+    .kpi .fig i:last-child{font-size:clamp(17px,5.089vw,24px)}
+    .kpi .fig b{font-size:clamp(23px,7.125vw,33px)}
+    .kpi .cap{font-size:clamp(17px,5.089vw,24px)}
 
     /* 48, not 56, and the label and lock come down a step with it —
        170 x 48 across 21 + 14 + 4 + 79 + 16 + 15 + 21. */
@@ -3460,13 +3477,13 @@
     /* the block: 5 inside the title, 20 to the stat, 40 to the button */
     .gtext{gap:20px;min-height:0;padding-right:0}
     .gcopy{gap:5px}
-    .gtext h3{font-size:24px;line-height:1.45}
-    .gtext p{font-size:20px;line-height:1.1}
+    .gtext h3{font-size:clamp(20px,6.107vw,28px);line-height:1.45}
+    .gtext p{font-size:clamp(17px,5.089vw,24px);line-height:1.1}
     .gstat{gap:16px}
-    .gstat .fig i{font-size:20px;width:12px}
-    .gstat .fig i:last-child{font-size:16px}
-    .gstat .fig b{font-size:24px}
-    .gstat .cap{font-size:20px;font-weight:400}
+    .gstat .fig i{font-size:clamp(17px,5.089vw,24px);width:clamp(10px,3.053vw,14px)}
+    .gstat .fig i:last-child{font-size:clamp(13px,4.071vw,19px)}
+    .gstat .fig b{font-size:clamp(20px,6.107vw,28px)}
+    .gstat .cap{font-size:clamp(17px,5.089vw,24px);font-weight:400}
 
     /* 353 x 48, the word centred, nothing either side of it */
     .gcta{display:flex;align-items:center;justify-content:center;
@@ -3511,9 +3528,6 @@
     .hsub{font-size:6.1069vw;                     /* 24 @393 */
           width:calc(100vw - 32px);               /* the drawn 361 */
           line-height:1.5;letter-spacing:-.01em}
-    /* the band is edge to edge — the display line's optical nudge is for a
-       line that STARTS somewhere, and this one starts off-screen */
-    .lines span.ln.mq{margin-left:calc(-1 * var(--m))}
     .byline{left:18px;bottom:17.49svh}            /* 149 of 852 */
 
     /* == the marks and the awards - 417:55288 ========================
@@ -3556,8 +3570,8 @@
        slack, so the 3 comes off there and "Webby Awards" still fits on one
        line at 131. */
     .stat{gap:64px;padding:32px 21px 24px 16px}
-    .anum{font-size:40px}
-    .acap{font-size:20px}
+    .anum{font-size:clamp(32px,10.178vw,48px)}
+    .acap{font-size:clamp(17px,5.089vw,24px)}
 
     /* ── the bar — 417:55262 ─────────────────────────────────────────
        At 393 the desktop bar is 440 across — it hangs off BOTH edges. The
@@ -3567,22 +3581,26 @@
        three of those cannot sit next to a 64 button.
 
        56 is the stack: 20 of icon, 6 of gap, 14 of cap, 8 of air each side. */
-    :root{--seg-h:56px;--btn-size:64px;
+    :root{--seg-h:clamp(46px,14.249vw,64px);--btn-size:clamp(52px,16.285vw,72px);
           --np-pill:calc(100vw - 32px)}   /* the way-back pill, not 370 */
     /* ── the bar, default state — 421:55552 ─────────────────────────
        293 + 4 + 64 = 361, which is the column. Three stops of 95 on a 4
        padding, a 24 icon over a 10 cap on a 6 gap, and the row sits 32 up
        from the bottom rather than 24. */
-    :root{--nav-bottom:32px;--segi:24px;
+    :root{--nav-bottom:32px;--segi:clamp(20px,6.107vw,28px);
           --hero-shift:-10.164svh}   /* 201 for the first band */
     .navrow{gap:4px}
-    .nav{width:auto}
-    .seg{flex:0 0 95px;flex-direction:column;gap:6px;padding:0;
+    /* width:auto is not enough on Safari — it sized this to 113 against
+       three 95 stops and then laid the round button over the second one.
+       min-width:max-content is the floor a flex container cannot be shrunk
+       below, and it is derived from the stops rather than stated. */
+    .nav{width:auto;min-width:max-content}
+    .seg{flex:0 0 clamp(72px,24.173vw,110px);flex-direction:column;gap:6px;padding:0;
          transition:color .3s ease, background-color .3s ease,
                     box-shadow .3s ease, height .46s var(--nav-ease),
                     gap .46s var(--nav-ease), padding .46s var(--nav-ease),
                     flex-basis .46s var(--nav-ease)}
-    .seg:last-of-type{flex:0 0 95px;gap:6px;padding:0}
+    .seg:last-of-type{flex:0 0 clamp(72px,24.173vw,110px);gap:6px;padding:0}
     .segl{font-size:10px}
     .segi{transition:width .46s var(--nav-ease), height .46s var(--nav-ease)}
     .seglw{overflow:hidden;max-height:1.4em;opacity:1;
@@ -3594,10 +3612,11 @@
        The bar does not leave on a phone, it shrinks: 181 x 48 across three
        57.67 stops on a 4 padding, the words folded away, a 24 icon in each,
        and the round button 4 to its right rather than 8. */
-    html.nav-mini{--seg-h:40px;--btn-size:48px;--segi:24px}
+    html.nav-mini{--seg-h:clamp(34px,10.178vw,46px);--btn-size:clamp(40px,12.214vw,54px);
+                  --segi:clamp(20px,6.107vw,28px)}
     html.nav-mini .navrow{gap:4px}
     html.nav-mini .seg,
-    html.nav-mini .seg:last-of-type{flex:0 0 57.67px;padding:0;gap:0}
+    html.nav-mini .seg:last-of-type{flex:0 0 clamp(46px,14.674vw,68px);padding:0;gap:0}
     html.nav-mini .seglw{max-height:0;opacity:0;
            transition:max-height .46s var(--nav-ease), opacity .16s ease}
 
@@ -5156,7 +5175,7 @@
     const hideDistance=()=>Math.ceil(row.getBoundingClientRect().height
         + parseFloat(getComputedStyle(root).getPropertyValue('--nav-bottom')) + 24);
 
-    const NAV_MINI=matchMedia('(max-width:640px)');
+    const NAV_MINI=matchMedia('(max-width:1080px)');
     let lastY=scrollY, hidden=false, ticking=false;
     function onScroll(){
       if(ticking) return; ticking=true;
@@ -6011,7 +6030,7 @@
        carrying one word apiece and no slash at all — 421:55491. Same builder
        either way: the cycle and the duration move off :root and onto the
        track, because three tracks cannot share one cycle. */
-    const MQ_MOB=matchMedia('(max-width:640px)');
+    const MQ_MOB=matchMedia('(max-width:1080px)');
     const mqLines=[...document.querySelectorAll('.ln.mq')];
     function mqSeq(words,slash){
       const f=document.createDocumentFragment();
@@ -7516,7 +7535,7 @@
        only exists to pay for it — so on a phone it is zero and every part of
        this stands down on its own: no lead, no tail, no extra height, and
        target() returns 0 on the first line. */
-    const RAIL_SWIPE=matchMedia('(max-width:640px)');
+    const RAIL_SWIPE=matchMedia('(max-width:1080px)');
     function measure(){
       const stage=railTrack.parentNode;
       if(RAIL_SWIPE.matches){
@@ -7840,7 +7859,7 @@
   function paint(){
     box.textContent=
       'vw '+innerWidth+'  vh '+innerHeight+'  dpr '+devicePixelRatio+
-      '  mq640 '+matchMedia('(max-width:640px)').matches+'\n'+
+      '  mq640 '+matchMedia('(max-width:1080px)').matches+'\n'+
       'anum '+fs('.anum')+'  acap '+fs('.acap')+'  segl '+fs('.segl')+
       '  hsub '+fs('.hsub')+'  lines '+fs('.lines')+'\n'+
       'ctalabel '+fs('.ctalabel')+'  gcta '+fs('.gcta')+'  brand '+fs('.brand')+'\n'+
