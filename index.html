@@ -456,8 +456,12 @@
   /* 553 wide · media 311 · 32 to the text block · text 176 = 519 tall (97:3333) */
   .rail-inner{display:flex;align-items:flex-start;gap:1.6667vw;
               will-change:transform}
-  .rcard{flex:0 0 38.4028vw;                                             /* 553 */
-         display:flex;flex-direction:column;gap:2.2222vw;                /* 32  */
+  /* Three across on the 1360 grid — (1360 - 48)/3 = 437.33 — rather than a
+     row longer than the window. Nothing had to be said to stop the pin:
+     `over` is the row's overhang, the row no longer has one, and every
+     part of that engine is already written to stand down at over = 0. */
+  .rcard{flex:1 1 0;min-width:0;                                         /* 437 */
+         display:flex;flex-direction:column;gap:1.6667vw;                /* 24  */
          perspective:1400px}
   /* The tilt lives on .gmedia, not on .rcard: the card itself carries the
      scroll-driven arrival, and an animation beats an inline transform in the
@@ -476,7 +480,7 @@
             will-change:transform}
   /* every card carries the SAME frame — the 578×334 JBL one. The taller 580×546
      variant is gone; uniform media is what lets the row read as one rail. */
-  .gmedia{aspect-ratio:553/311}
+  .gmedia{aspect-ratio:437.33/323}
 
   /* ── JBL Hero Card — 22:2815 ───────────────────────────────────────
      Kris's recording carries the whole composition — the #FF3B05 ground, the
@@ -523,20 +527,20 @@
      whether the copy runs two lines or three. */
   .gtext{display:flex;flex-direction:column;justify-content:space-between;
          gap:2.7778vw;                                      /* 40  @1440 */
-         width:100%;min-height:10.8333vw;                   /* 156 @1440 */
-         padding-right:4.4444vw}                            /* 64  @1440 */
-  .gcopy{display:flex;flex-direction:column;gap:.8333vw;    /* 12 @1440 */
+         width:100%;
+         padding-right:1.6667vw}                            /* 24  @1440 */
+  .gcopy{display:flex;flex-direction:column;gap:.5556vw;    /* 8 @1440 */
          width:100%}
   /* Saans SemiBold 28/1.45, cap-trimmed — the drawn box is 20 tall, which is
      the cap height of 28, not the 40 a full line box would be. */
   .gtext h3{font-family:var(--font-ui);
-            font-size:clamp(19px,1.9444vw,35px);            /* 28 @1440 */
+            font-size:clamp(17px,1.6667vw,30px);            /* 24 @1440 */
             font-weight:600;line-height:1.45;letter-spacing:0;
             color:var(--c-1);
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .gtext p{font-family:var(--font-ui);
-           font-size:clamp(17px,1.6667vw,30px);             /* 24 @1440 */
+           font-size:clamp(15px,1.3889vw,25px);             /* 20 @1440 */
            font-weight:400;line-height:1.35;letter-spacing:-.01em;
            color:var(--c-2)}
 
@@ -565,10 +569,10 @@
   .gstat .fig i:last-child{width:auto;
               font-size:clamp(13px,1.25vw,23px)}            /* 18 @1440 */
   .gstat .fig b{font-family:var(--font-ui);font-weight:400;
-              font-size:clamp(19px,1.9444vw,35px);          /* 28 @1440 */
+              font-size:clamp(17px,1.6667vw,30px);          /* 24 @1440 */
               line-height:1.45;letter-spacing:0}
   .gstat .cap{flex:1 0 0;min-width:0;font-family:var(--font-ui);
-              font-size:clamp(17px,1.6667vw,30px);font-weight:400;
+              font-size:clamp(15px,1.3889vw,25px);font-weight:400;
               line-height:1.35;letter-spacing:-.01em;color:var(--c-2);
               text-box:trim-both cap alphabetic;
               text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -3607,42 +3611,51 @@
        padding, a 24 icon over a 10 cap on a 6 gap, and the row sits 32 up
        from the bottom rather than 24. */
     :root{--nav-bottom:32px;--segi:clamp(20px,6.107vw,28px);
+          --seg-w:clamp(72px,24.173vw,110px);
           --hero-shift:-13.157svh}   /* 201 for the first band */
     .navrow{gap:4px}
     /* width:auto is not enough on Safari — it sized this to 113 against
        three 95 stops and then laid the round button over the second one.
        min-width:max-content is the floor a flex container cannot be shrunk
        below, and it is derived from the stops rather than stated. */
-    .nav{width:auto;min-width:max-content}
+    /* An EXPLICIT width, computed from the stop. width:auto cannot be
+       transitioned — it recomputes and jumps — which is why the shrink read
+       as a snap while everything inside it eased. Stated as three stops plus
+       the pill's own padding, it is the same number and it interpolates. */
+    .nav{width:calc(3 * var(--seg-w) + 2 * var(--nav-pad));min-width:max-content}
     /* width, NOT flex-basis. A clamp() in flex-basis is the one place
        WebKit still gets wrong — it falls back toward auto and the stop
        collapses, which takes the pill down with it. Stated as a width on
        flex:0 0 auto it is the same number through a path every engine
        resolves the same way. */
-    .seg{flex:0 0 auto;width:clamp(72px,24.173vw,110px);
+    .seg{flex:0 0 auto;width:var(--seg-w);
          flex-direction:column;gap:6px;padding:0;
          transition:color .3s ease, background-color .3s ease,
                     box-shadow .3s ease, height .46s var(--nav-ease),
-                    gap .46s var(--nav-ease), padding .46s var(--nav-ease),
-                    flex-basis .46s var(--nav-ease)}
-    .seg:last-of-type{flex:0 0 auto;width:clamp(72px,24.173vw,110px);gap:6px;padding:0}
+                    width .46s var(--nav-ease), gap .46s var(--nav-ease),
+                    padding .46s var(--nav-ease)}
+    .seg:last-of-type{flex:0 0 auto;width:var(--seg-w);gap:6px;padding:0}
     .segl{font-size:10px}
     .segi{transition:width .46s var(--nav-ease), height .46s var(--nav-ease)}
     .seglw{overflow:hidden;max-height:1.4em;opacity:1;
            transition:max-height .46s var(--nav-ease), opacity .2s ease}
     .navroll{transition:width .46s var(--nav-ease),
                         height .46s var(--nav-ease)}
+    /* the marks are percentages of a box that is now easing rather than
+       jumping, so they need the same curve or they arrive ahead of it */
+    .nrwin,.nrcell,.nrcell svg{transition:width .46s var(--nav-ease),
+                               height .46s var(--nav-ease)}
 
     /* ── minimised, on the way down — 417:55262 ──────────────────────
        The bar does not leave on a phone, it shrinks: 181 x 48 across three
        57.67 stops on a 4 padding, the words folded away, a 24 icon in each,
        and the round button 4 to its right rather than 8. */
     html.nav-mini{--seg-h:clamp(34px,10.178vw,46px);--btn-size:clamp(40px,12.214vw,54px);
-                  --segi:clamp(20px,6.107vw,28px)}
+                  --segi:clamp(20px,6.107vw,28px);
+                  --seg-w:clamp(46px,14.674vw,68px)}
     html.nav-mini .navrow{gap:4px}
     html.nav-mini .seg,
-    html.nav-mini .seg:last-of-type{flex:0 0 auto;
-                  width:clamp(46px,14.674vw,68px);padding:0;gap:0}
+    html.nav-mini .seg:last-of-type{padding:0;gap:0}
     html.nav-mini .seglw{max-height:0;opacity:0;
            transition:max-height .46s var(--nav-ease), opacity .16s ease}
 
@@ -4931,7 +4944,10 @@
     (function chase(){ place(true);
       if(performance.now()-t0 < (ms||520)) requestAnimationFrame(chase); })();
   };
-  segs.forEach(s=>s.addEventListener('click',()=>markSel(s)));
+  segs.forEach(s=>s.addEventListener('click',()=>{
+    window.__navTap && window.__navTap();
+    markSel(s);
+  }));
   /* ── the case-study panel — 226:7880 ─────────────────────────────────
      One class on the root drives the scrim, the panel and the CLOSE button,
      so opening and closing are the same transition run in either direction.
@@ -5202,6 +5218,8 @@
         + parseFloat(getComputedStyle(root).getPropertyValue('--nav-bottom')) + 24);
 
     const NAV_MINI=matchMedia('(max-width:1080px)');
+    let NAV_TAP=-1e9;
+    window.__navTap=()=>{ NAV_TAP=performance.now(); };
     let lastY=scrollY, hidden=false, ticking=false;
     function onScroll(){
       if(ticking) return; ticking=true;
@@ -5211,7 +5229,9 @@
         const thresh=parseFloat(getComputedStyle(root).getPropertyValue('--dir-thresh'))||6;
         /* Direction, not movement: the deadband keeps a trackpad's jitter from
            reading as either a dismissal or a reach. */
-        if(y<=8){ hidden=false; }
+        const tapHeld = performance.now() - NAV_TAP < 900;
+        if(tapHeld){ /* hold whatever it was */ }
+        else if(y<=8){ hidden=false; }
         else if(dy>thresh){ hidden=true; }
         else if(dy<-thresh){ hidden=false; }
         if(Math.abs(dy)>thresh) lastY=y;
@@ -5233,6 +5253,12 @@
            Same three stops, same button, the words fold away and the row
            shortens. It still leaves at the bottom of the page, where the
            footer carries the links and there is nothing for it to say. */
+        /* A tap is not a scroll up. Going to a page jumps the document to
+           the top, the direction test reads that as a big upward gesture,
+           and the bar unfolded — which is not what tapping a stop asks for.
+           For a moment after a tap the position is accepted and the state is
+           not: only a real upward gesture opens it again. */
+        if(performance.now() - NAV_TAP < 900){ lastY=y; }
         const mini = NAV_MINI.matches && hidden && !atBottom;
         if(root.classList.contains('nav-mini') !== mini){
           root.classList.toggle('nav-mini', mini);
@@ -7530,13 +7556,17 @@
       sraf=0;
       if(noMotion){ els.forEach(e=>{e.style.transform='';}); return; }
       const H=innerHeight;
-      for(const e of els){
+      /* Alternating, like the bands: the second device turns the opposite
+         way to the first, so the two cards do not read as one repeated
+         move. Index parity, so a third would go back to the first's. */
+      els.forEach((e,i)=>{
         const b=e.getBoundingClientRect();
-        if(!b.width || b.bottom < -H || b.top > 2*H) continue;
+        if(!b.width || b.bottom < -H || b.top > 2*H) return;
+        const dir = i % 2 ? -1 : 1;
         const t=Math.max(-1, Math.min(1, ((b.top+b.height/2) - H/2) / (H*SPAN)));
         e.style.transform='perspective('+(b.width*P_PER_W).toFixed(0)+'px) rotateY('
-                          +(-t*SKEW_MAX).toFixed(2)+'deg)';
-      }
+                          +(-t*SKEW_MAX*dir).toFixed(2)+'deg)';
+      });
     }
     const tick=()=>{ if(!sraf) sraf=requestAnimationFrame(paint); };
     addEventListener('scroll',tick,{passive:true});
@@ -7587,6 +7617,11 @@
       const lastR=kids.length? kids[kids.length-1].getBoundingClientRect().right : 0;
       const padR=parseFloat(getComputedStyle(railTrack).paddingRight)||0;
       over=Math.max(0, lastR + padR - innerWidth);
+      /* A hundredth of a pixel is not an overhang. The row is three equal
+         columns now, so the sum rounds a fraction either side of the window
+         and `over ? 160 : 0` was reading 0.02 as "there is a run here" and
+         growing the section by a lead, a tail and a pin for it. */
+      if(over < 1) over = 0;
       inner.style.transform=prev;
       /* The row used to park in the middle of the window. It parks near the
          TOP now — the cards' own top edge lands on twice the frame margin,
