@@ -287,7 +287,11 @@
   /* Lines two and three, and the phone's shorter sentence, exist in the
      markup at every width and are simply not shown on the desktop — the
      one thing CSS cannot do is change what a word says. */
-  .lines span.ln.mq2{display:none}
+  /* Two bands on the desktop, three on a phone. The third line is the only
+     one that is not shown here — and the second runs the other way, so the
+     pair reads as a weave rather than as one band doubled. */
+  .lines span.ln:nth-child(3){display:none}
+  .lines span.ln:nth-child(2) .mqtrack{animation-direction:reverse}
   /* The band is a full-bleed strip: 100vw starting at the column's own
      margin is 100vw + --m, and the page scrolled sideways by exactly that
      margin at every width under ~1050. .ln.mq already asked for the pull —
@@ -1882,10 +1886,12 @@
 
   /* WORK / <label> — one eyebrow for every block in the section.
      20 Saans Regular, the trail in White 3 and the label in White 1. */
-  .weyebrow{display:flex;gap:9px;align-items:center;padding:0 2px;
-            font-family:var(--font-ui);font-size:18px;font-weight:400;
+  .weyebrow{display:flex;gap:10px;align-items:center;padding:0 2px;
+            font-family:var(--font-ui);font-size:20px;font-weight:400;
             line-height:1.45;white-space:nowrap;color:var(--c-1)}
   .weyebrow .dim{color:var(--c-3)}
+  /* the slash is a step under the words either side of it */
+  .weyebrow > :nth-child(2){font-size:18px}
 
   /* Every eyebrow resolves the same way the headline words do — same blur,
      same lift, same curve. The one in .work-in is scrubbed on the page scroll
@@ -1912,13 +1918,16 @@
   /* 410:47427 — Saans Regular 56/1.15, tracking -.01em, measure 696, and
      cap-trimmed. It was Inter Regular 72 on a 1014 measure: a different face,
      16px larger, and running a third wider than the frame draws it. */
-  .work h2{max-width:48.3333vw;                         /* 696 @1440 */
+  /* 410:47427 — 48 Regular on 1.15, wrapping at 590, and "and" is the one
+     word set in White 2 rather than White 1. */
+  .work h2{max-width:40.9722vw;                         /* 590 @1440 */
            font-family:var(--font-ui);
-           font-size:clamp(34px,3.8889vw,70px);         /* 56  @1440 */
+           font-size:clamp(30px,3.3333vw,60px);         /* 48  @1440 */
            font-weight:400;letter-spacing:-.01em;line-height:1.15;
            color:var(--c-1);
            text-box:trim-both cap alphabetic;
            text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .work h2 .w2{color:var(--c-2)}
 
   /* Word by word, not the whole line at once: each word carries its OWN
      transparency and its own blur, so at any moment the words ahead are still
@@ -3528,7 +3537,7 @@
     .bfull{display:none}
     .hs-d{display:none}
     .hs-m{display:inline}
-    .lines span.ln.mq2{display:block}
+    .lines span.ln:nth-child(3){display:block}
 
     /* em, not --hl-fit. The fit only runs when there is a non-marquee line
        to measure, and on the phone there is none — so --hl-fit is unset and
@@ -3550,6 +3559,7 @@
        cannot open a gap at either edge. */
     .lines span.ln:nth-child(1) .mqtrack,
     .lines span.ln:nth-child(3) .mqtrack{animation-direction:reverse}
+    .lines span.ln:nth-child(2) .mqtrack{animation-direction:normal}
 
     .primary{gap:9.066vw}                         /* 35.63 @393 */
     /* 20 flat across every phone — the floor is the value, so it reads the
@@ -5317,7 +5327,10 @@
   workHead.textContent='';
   WORDS.forEach((w,i)=>{
     const el=document.createElement('span');
-    el.className='w'; el.textContent=w+(i<WORDS.length-1?' ':'');
+    /* the split already gives every word its own box for the reveal, so the
+       one word the frame sets in White 2 only needs a second class */
+    el.className = 'w' + (w.toLowerCase()==='and' ? ' w2' : '');
+    el.textContent=w+(i<WORDS.length-1?' ':'');
     workHead.appendChild(el);
   });
   const wordEls=[...workHead.querySelectorAll('.w')];
@@ -6172,7 +6185,12 @@
         mqLines.forEach((ln,i)=> mqLine(ln,[MQ_WORDS[i%MQ_WORDS.length]],true));
         mqSlash();
       }else{
+        /* two bands, both carrying the whole sequence. They are the same
+           words at the same pace running opposite ways, so the join between
+           copies has to be seamless in both directions — which the fill
+           already guarantees: the track covers the window plus a cycle. */
         mqLine(mqLines[0], MQ_WORDS, true);
+        if(mqLines[1]) mqLine(mqLines[1], MQ_WORDS, true);
         mqSlash();
       }
     }
