@@ -63,7 +63,8 @@
        back in the column at 28, the block is exactly tall enough that plain
        vertical centring lands the cap tops on 260 / 424. Every previous value
        here was correcting for a column that had drifted from the drawing. */
-    --hero-shift:-1.372svh;  /* 95:2702 — block 240→616 of 900, 22 above centre */              /* optical lift off dead centre */
+    --hero-shift:-1.372svh;
+    --hl-scale:.85;   /* the band's size, off the fit. 1 is where it was. */  /* 95:2702 — block 240→616 of 900, 22 above centre */              /* optical lift off dead centre */
     --flip-dur:560ms;               /* one card turn */
     --flip-stagger:30ms;            /* per character, left to right */
     --flip-persp:1400px;            /* higher = flatter turn */
@@ -267,8 +268,9 @@
      ran 10px off the right edge at 1398 — which reads as a clipping accident
      rather than a bleed. */
   .lines{display:flex;flex-direction:column;align-items:flex-start;
-         gap:calc(var(--hl-fit, var(--hl)) * .186047);         /* 32 @172 */
-         font-size:var(--hl-fit, var(--hl));font-weight:900;letter-spacing:var(--track);
+         gap:.186047em;                                        /* 32 @172 */
+         font-size:calc(var(--hl-fit, var(--hl)) * var(--hl-scale, 1));
+         font-weight:900;letter-spacing:var(--track);
          line-height:1.2083333;                                /* 232/192 */
          white-space:nowrap;user-select:none}
   /* The optical nudge off the 40 guide, set in the file rather than derived at
@@ -277,7 +279,7 @@
      Both lines now start on a flat stem, B and F, so they take the same 34
      and the second nudge has no reason to differ. */
   /* the optical nudge off the 40 guide — the frame draws FOR MILLIONS at 31 */
-  .lines span.ln{margin-left:calc(var(--hl-fit, var(--hl)) * -.05233)}  /* -9 @172 */
+  .lines span.ln{margin-left:-.05233em}                  /* -9 @172 */
   /* 90%, as drawn: the second line sits a shade back from the loop above it */
   .lines span.ln:not(.mq){opacity:.9}
   .lines span.ln{display:block;position:relative;
@@ -340,7 +342,7 @@
          width:100vw;margin-left:calc(-1 * var(--m));
          text-box:normal;text-box-trim:none;text-box-edge:auto}
   .mqtrack{display:flex;align-items:center;width:max-content;
-           gap:calc(var(--hl-fit, var(--hl)) * .232558);       /* 40 @172 */
+           gap:.232558em;                                      /* 40 @172 */
            will-change:transform;
            animation:mqRun var(--mq-dur, 70s) linear infinite}
   @keyframes mqRun{ from{transform:translate3d(0,0,0)}
@@ -366,9 +368,9 @@
      advance comes down by the same factor so the 40 gaps stay 40 to the ink. */
   .mqtrack .ms{color:#EBEBEB;                                  /* Black 5 */
            flex:none;text-align:center;
-           width:calc(var(--hl-fit, var(--hl)) * var(--sl-w, .4));
+           width:calc(1em * var(--sl-w, .4));
            transform-origin:50% 100%;
-           transform:translateY(calc(var(--hl-fit, var(--hl)) * var(--sl-y, 0) * -1))
+           transform:translateY(calc(1em * var(--sl-y, 0) * -1))
                      scale(var(--sl-s, 1))}
   @media (prefers-reduced-motion:reduce){ .mqtrack{animation:none} }
 
@@ -468,9 +470,15 @@
      lines at three different heights. Equal-height cards with the text block
      filling them means the stat is measured from the BOTTOM in all three. */
   .rail-track{display:flex;align-items:stretch;gap:1.6667vw;             /* 24  */
+              flex:1 1 auto;min-width:0;
               padding:0 2.7778vw;will-change:transform}                  /* 40  */
   /* 553 wide · media 311 · 32 to the text block · text 176 = 519 tall (97:3333) */
+  /* flex:1 so it FILLS the track. The cards are flex:1 1 0 now, and a basis
+     of 0 resolves against the parent — which, on a content-sized box, is
+     circular: they fell back to their own min-content and the row came out
+     narrower than the grid. One definite width up the chain settles it. */
   .rail-inner{display:flex;align-items:stretch;gap:1.6667vw;
+              flex:1 1 auto;min-width:0;
               will-change:transform}
   /* Three across on the 1360 grid — (1360 - 48)/3 = 437.33 — rather than a
      row longer than the window. Nothing had to be said to stop the pin:
@@ -2399,17 +2407,14 @@
 
      What is left is only the close-up: 80/80/80 → 32/32/56, written as the
      distance each line has to rise to meet the title, which does not move. */
-  .card.css-timeline .card-main h3,
-  .card.css-timeline .card-main p,
-  .card.css-timeline .kpi,
+  /* h3, p and the stat left this list when they took the line reveal —
+     two arrivals on one element is the thing that reads as a glitch. The
+     button keeps it: it is one object, not a line of reading. */
   .card.css-timeline .cta{
         animation:cardSquash cubic-bezier(.22,.61,.36,1) both, fadeIn linear both;
         animation-timeline:--cardTL,--cardTL;
         animation-range:contain 3% contain 19%, entry 86% contain 9%;
         will-change:transform,opacity}
-  .card.css-timeline .card-main h3{--sq:0px}
-  .card.css-timeline .card-main p {--sq:48px}    /* 112 → 64  */
-  .card.css-timeline .kpi         {--sq:96px}    /* 294 → 198 */
   .card.css-timeline .cta         {--sq:120px}   /* 397 → 277 */
 
   @media (prefers-reduced-motion:reduce){
@@ -2545,6 +2550,27 @@
         white-space:nowrap;
         text-box:trim-both cap alphabetic;
         text-box-trim:trim-both;text-box-edge:cap alphabetic}
+
+  /* ══ line reveal ═══════════════════════════════════════════════════
+     Each VISUAL line gets a clipping box of its own and starts pushed down
+     out of it, so what arrives is the line coming from behind its own edge
+     rather than a block fading in. A line is not a thing in the DOM — it
+     has to be found by measuring where the words sit — so this is built in
+     JS and re-built on resize, because the breaks move.
+
+     The numbers are the ones off the prototype: 1050 over 120 of stagger,
+     85% of rise, and 180 more before the stat goes. */
+  :root{--lr-dur:1050ms;--lr-stg:120ms;--lr-rise:85%;--lr-block:180ms;
+        --lr-ease:cubic-bezier(.65,0,.35,1)}
+  .ln-mask{display:block;overflow:hidden}
+  .ln-in{display:block;will-change:transform,opacity;
+         transform:translateY(var(--lr-rise));opacity:0}
+  .lr-go .ln-in{transform:translateY(0);opacity:1;
+         transition:transform var(--lr-dur) var(--lr-ease) var(--d,0ms),
+                    opacity   var(--lr-dur) linear         var(--d,0ms)}
+  @media (prefers-reduced-motion:reduce){
+    .ln-in{transform:none;opacity:1;transition:none}
+  }
 
   /* ── the case-study button — 216:7402 ────────────────────────────────
      Sized outright, not stretched to the row. `align-self:stretch` with
@@ -3502,7 +3528,7 @@
                 scrollbar-width:none}
     .rail-stage::-webkit-scrollbar{display:none}
     .rail-track{width:max-content;padding:0 20px;gap:12px;will-change:auto}
-    .rail-inner{gap:12px}
+    .rail-inner{gap:12px;flex:none}   /* the phone's row is a scroller */
     .rcard{flex:0 0 calc(100vw - 40px);                    /* 353 @393 */
            gap:20px;scroll-snap-align:center}
     .gmedia{aspect-ratio:353/255}
@@ -7635,6 +7661,82 @@
     tick();
   })();
 
+  /* ── the line reveal, on the five project cards ──────────────────────
+     Split into visual lines, wrap each in its own mask, stagger them, and
+     fire once the card is properly on screen. The stat rides as ONE line —
+     a number and its caption are one object, not two lines of reading. */
+  (function(){
+    const CARDS = [...document.querySelectorAll('#cs, .card[data-study], .rcard')];
+    if(!CARDS.length) return;
+    const num = n => parseFloat(getComputedStyle(root).getPropertyValue(n)) || 0;
+
+    function splitLines(el){
+      if(!el.dataset.lrRaw) el.dataset.lrRaw = el.innerHTML;
+      el.innerHTML = el.dataset.lrRaw;
+      const words = el.textContent.trim().split(/\s+/);
+      el.textContent = '';
+      const spans = words.map((w,i)=>{
+        const sp = document.createElement('span');
+        sp.textContent = w + (i < words.length-1 ? ' ' : '');
+        el.appendChild(sp); return sp;
+      });
+      const rows=[]; let top=null;
+      spans.forEach(sp=>{
+        const t = Math.round(sp.getBoundingClientRect().top);
+        if(top===null || Math.abs(t-top) > 2){ rows.push([]); top=t; }
+        rows[rows.length-1].push(sp);
+      });
+      el.textContent='';
+      return rows.map(group=>{
+        const m=document.createElement('span'); m.className='ln-mask';
+        const i2=document.createElement('span'); i2.className='ln-in';
+        group.forEach(sp=>i2.appendChild(sp));
+        m.appendChild(i2); el.appendChild(m); return i2;
+      });
+    }
+    /* the stat keeps its own flex row — the gap has to be read BEFORE the
+       children move, or it applies to nothing once they are a level down */
+    function wrapBlock(el){
+      if(el.dataset.lrWrapped) return [el.querySelector(':scope > .ln-mask > .ln-in')];
+      const gap=getComputedStyle(el).columnGap;
+      const m=document.createElement('span'); m.className='ln-mask';
+      const i2=document.createElement('span'); i2.className='ln-in';
+      i2.style.display='flex'; i2.style.gap=gap; i2.style.alignItems='flex-end';
+      i2.style.width='100%';
+      while(el.firstChild) i2.appendChild(el.firstChild);
+      m.appendChild(i2); el.appendChild(m); el.dataset.lrWrapped='1';
+      return [i2];
+    }
+
+    function build(card){
+      const seq=[];
+      card.querySelectorAll('.card-main h3, .gtext h3').forEach(e=>seq.push(...splitLines(e)));
+      card.querySelectorAll('.card-main > .tblock > p, .gtext p').forEach(e=>seq.push(...splitLines(e)));
+      const stat=card.querySelector('.kpi, .gstat');
+      const statLines = stat ? wrapBlock(stat) : [];
+      const stg=num('--lr-stg'), blk=num('--lr-block');
+      seq.forEach((el,i)=> el.style.setProperty('--d', (i*stg)+'ms'));
+      statLines.forEach(el=> el.style.setProperty('--d', (seq.length*stg + blk)+'ms'));
+      card.__lr = seq.concat(statLines);
+    }
+
+    let raf=0;
+    function buildAll(){ CARDS.forEach(c=>{ c.classList.remove('lr-go'); build(c); }); }
+    buildAll();
+
+    const io=new IntersectionObserver(es=>{
+      es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('lr-go'); });
+    },{threshold:.25});
+    CARDS.forEach(c=>io.observe(c));
+
+    let t;
+    addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=>{
+      const on = CARDS.filter(c=>c.classList.contains('lr-go'));
+      buildAll();
+      requestAnimationFrame(()=>on.forEach(c=>c.classList.add('lr-go')));
+    }, 220); }, {passive:true});
+  })();
+
   const rail=document.getElementById('rail'), railTrack=document.getElementById('railTrack');
   if(rail&&railTrack){
     const inner=document.createElement('div');
@@ -7778,7 +7880,9 @@
        .48 puts them about 20px apart at the middle of the wave. */
     if(!noMotion && window.__rv){
       const rv=window.__rv;
-      const cards=[...railTrack.querySelectorAll('.rcard')];
+      /* the picture keeps the wave; the words have the line reveal, and
+         a card that fades in while its lines rise is two arrivals */
+      const cards=[...railTrack.querySelectorAll('.rcard .gmedia')];
       cards.forEach(c=>c.classList.add('soft'));
       /* no `once`. The rule was that objects latch and type does not, and
          that held while this row arrived on its own clock and stayed put.
