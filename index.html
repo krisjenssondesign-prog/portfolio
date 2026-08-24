@@ -2407,15 +2407,8 @@
 
      What is left is only the close-up: 80/80/80 → 32/32/56, written as the
      distance each line has to rise to meet the title, which does not move. */
-  /* h3, p and the stat left this list when they took the line reveal —
-     two arrivals on one element is the thing that reads as a glitch. The
-     button keeps it: it is one object, not a line of reading. */
-  .card.css-timeline .cta{
-        animation:cardSquash cubic-bezier(.22,.61,.36,1) both, fadeIn linear both;
-        animation-timeline:--cardTL,--cardTL;
-        animation-range:contain 3% contain 19%, entry 86% contain 9%;
-        will-change:transform,opacity}
-  .card.css-timeline .cta         {--sq:120px}   /* 397 → 277 */
+  /* h3, p, the stat and the button all left this list when they took the
+     line reveal — two arrivals on one element is what reads as a glitch. */
 
   @media (prefers-reduced-motion:reduce){
     .card.css-timeline *{animation:none!important;opacity:1!important}
@@ -2563,6 +2556,7 @@
   :root{--lr-dur:1050ms;--lr-stg:120ms;--lr-rise:85%;--lr-block:180ms;
         --lr-ease:cubic-bezier(.65,0,.35,1)}
   .ln-mask{display:block;overflow:hidden}
+  .gtext > .ln-mask{display:none}
   .ln-in{display:block;will-change:transform,opacity;
          transform:translateY(var(--lr-rise));opacity:0}
   .lr-go .ln-in{transform:translateY(0);opacity:1;
@@ -3545,6 +3539,7 @@
     .gstat .cap{font-size:clamp(17px,5.089vw,24px);font-weight:400}
 
     /* 353 x 48, the word centred, nothing either side of it */
+    .gtext > .ln-mask{display:block}
     .gcta{display:flex;align-items:center;justify-content:center;
           box-sizing:border-box;width:100%;height:48px;margin-top:20px;
           border:0;box-shadow:inset 0 0 0 1px var(--c-3);border-radius:999px;
@@ -7708,16 +7703,33 @@
       return [i2];
     }
 
+    /* the button is one object too — it rides in its own mask, in place */
+    function wrapSelf(el){
+      if(el.dataset.lrWrapped) return el.parentNode;
+      const m=document.createElement('span'); m.className='ln-mask';
+      const i2=document.createElement('span'); i2.className='ln-in';
+      el.parentNode.insertBefore(m, el); i2.appendChild(el); m.appendChild(i2);
+      el.dataset.lrWrapped='1'; return i2;
+    }
+
     function build(card){
       const seq=[];
       card.querySelectorAll('.card-main h3, .gtext h3').forEach(e=>seq.push(...splitLines(e)));
       card.querySelectorAll('.card-main > .tblock > p, .gtext p').forEach(e=>seq.push(...splitLines(e)));
       const stat=card.querySelector('.kpi, .gstat');
       const statLines = stat ? wrapBlock(stat) : [];
+      const cta=card.querySelector('.card-main > .cta, .gtext > .gcta');
+      const ctaLines = cta ? [wrapSelf(cta)] : [];
       const stg=num('--lr-stg'), blk=num('--lr-block');
+      const statD = seq.length*stg + blk;
       seq.forEach((el,i)=> el.style.setProperty('--d', (i*stg)+'ms'));
-      statLines.forEach(el=> el.style.setProperty('--d', (seq.length*stg + blk)+'ms'));
-      card.__lr = seq.concat(statLines);
+      statLines.forEach(el=> el.style.setProperty('--d', statD+'ms'));
+      ctaLines.forEach(el=> el.style.setProperty('--d', (statD + blk)+'ms'));
+      card.__lr = seq.concat(statLines, ctaLines);
+      /* fire off the FIRST LINE, not the card box: these cards are twice the
+         height of the window, so 25% of the card is met while the copy is
+         still a screen below the fold — the whole run would be over unseen */
+      card.__lrAnchor = card.querySelector('.card-main h3, .gtext h3') || card;
     }
 
     let raf=0;
@@ -7725,14 +7737,20 @@
     buildAll();
 
     const io=new IntersectionObserver(es=>{
-      es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('lr-go'); });
-    },{threshold:.25});
-    CARDS.forEach(c=>io.observe(c));
+      es.forEach(e=>{
+        if(!e.isIntersecting) return;
+        const card = CARDS.find(c=>c.__lrAnchor===e.target);
+        if(card) card.classList.add('lr-go');
+      });
+    },{rootMargin:'0px 0px -14% 0px', threshold:0});
+    CARDS.forEach(c=>io.observe(c.__lrAnchor));
 
     let t;
     addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=>{
       const on = CARDS.filter(c=>c.classList.contains('lr-go'));
+      CARDS.forEach(c=>io.unobserve(c.__lrAnchor));
       buildAll();
+      CARDS.forEach(c=>io.observe(c.__lrAnchor));
       requestAnimationFrame(()=>on.forEach(c=>c.classList.add('lr-go')));
     }, 220); }, {passive:true});
   })();
