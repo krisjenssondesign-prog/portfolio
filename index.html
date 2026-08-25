@@ -32,6 +32,12 @@
     --ink:#1A1A1A;
     /* the named styles in 97:3173 */
     --c-1:#fff; --c-2:#bfbfbf; --c-3:#808080; --c-4:#404040;
+    /* 2:100 — the work section's own ramp. Named for Kris's styles:
+       Text White 1 / Secondary Light / Surface Dark / Containers on Dark /
+       Secondary Light on Container. Scoped to the work section only — the
+       rest of the page still runs on --c-1..4. */
+    --w-1:#F8F8F8; --w-2:#9F9F9F;
+    --w-sur:#101010; --w-cont:#1C1C1C; --w-onc:#A9A9A9;
     --c-rule:rgba(255,255,255,.15);
     /* Every rule and outline on the site. 1.4 because that is the stroke the
        drawings carry — Figma exports the dividers as a w-0 vector inset by
@@ -495,7 +501,7 @@
      `over` is the row's overhang, the row no longer has one, and every
      part of that engine is already written to stand down at over = 0. */
   .rcard{flex:1 1 0;min-width:0;                                         /* 437 */
-         display:flex;flex-direction:column;gap:1.6667vw;                /* 24  */
+         display:flex;flex-direction:column;gap:1.3889vw;                /* 20  */
          perspective:1400px}
   /* The tilt lives on .gmedia, not on .rcard: the card itself carries the
      scroll-driven arrival, and an animation beats an inline transform in the
@@ -561,25 +567,25 @@
      than a fixed 24 gap, which is what holds the stat on the card's baseline
      whether the copy runs two lines or three. */
   .gtext{display:flex;flex-direction:column;justify-content:space-between;
-         gap:2.2222vw;                                      /* 32  @1440 */
+         gap:1.6667vw;                                      /* 24  @1440 */
          width:100%;flex:1 1 auto;
          padding-left:.8333vw;                              /* 12  @1440 */
          padding-right:1.6667vw}                            /* 24  @1440 */
-  .gcopy{display:flex;flex-direction:column;gap:1.1111vw;   /* 16 @1440 */
+  .gcopy{display:flex;flex-direction:column;gap:.8333vw;    /* 12 @1440 */
          width:100%}
   /* Saans SemiBold 28/1.45, cap-trimmed — the drawn box is 20 tall, which is
      the cap height of 28, not the 40 a full line box would be. */
   .gtext h3{font-family:var(--font-ui);
             font-size:clamp(16px,1.6667vw,30px);            /* 24 @1440 */
             font-weight:600;line-height:1.45;letter-spacing:0;
-            color:var(--c-1);
+            color:var(--w-1);
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .gtext p{font-family:var(--font-ui);
            font-size:clamp(16px,1.25vw,20px);               /* 18 @1440 */
            font-weight:500;line-height:1.25;letter-spacing:0;
-           max-width:22.3611vw;                             /* 322 @1440 */
-           color:var(--c-2)}
+           max-width:none;                                  /* 401 = the box */
+           color:var(--w-2)}
 
   /* ── Impact / In-Line — 410:52848 ────────────────────────────────────
      One component, three faces, and that is the point of it: the sign is
@@ -590,9 +596,11 @@
   /* 417:55214 — drawn on the phone frame only, so it is not in the desktop
      card at all: full width, centred, no lock and no arrow. */
   .gcta{display:none}
-  .gstat{display:flex;gap:1.1111vw;align-items:flex-end;width:100%}
+  /* 2:441 — 12 between the figure and its caption, not the 16 the big
+     cards run. */
+  .gstat{display:flex;gap:.8333vw;align-items:flex-end;width:100%}
   .gstat .fig{display:flex;gap:4px;align-items:flex-end;
-              color:var(--c-1);white-space:nowrap}
+              color:var(--w-1);white-space:nowrap}
   .gstat .fig i,.gstat .fig b{font-style:normal;
               text-box:trim-both cap alphabetic;
               text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -610,7 +618,7 @@
               line-height:1;letter-spacing:0}
   .gstat .cap{flex:1 0 0;min-width:0;font-family:var(--font-ui);
               font-size:clamp(16px,1.25vw,20px);font-weight:500;
-              line-height:1.25;letter-spacing:0;color:var(--c-2);
+              line-height:1.25;letter-spacing:0;color:var(--w-2);
               text-box:trim-both cap alphabetic;
               text-box-trim:trim-both;text-box-edge:cap alphabetic}
 
@@ -643,9 +651,9 @@
      and both sit on the 40px page guide the nav uses. 120 between blocks. */
   /* opaque and above the testimonials, so the white section can sit UNDER it
      and be wiped clear as this one scrolls up */
-  .clients{position:relative;z-index:4;background:#000;
+  .clients{position:relative;z-index:4;background:var(--w-sur);
            padding:var(--sec-gap) 0 calc(12svh + 120px)}
-  .cblock{padding:0 40px;display:flex;flex-direction:column;gap:64px}
+  .cblock{padding:0 40px;display:flex;flex-direction:column;gap:80px}
   /* No divider. 410:47499 draws none — the eyebrow, the marks and the award
      cards are one block with nothing ruled between them. */
   /* 410:47499 is ONE block: eyebrow, logobank, awards. The awards used to be
@@ -653,7 +661,7 @@
      are gone from the frame. */
   /* 80 between the marks and the cards: the logobank frame sits at 93 with
      the marks 152 tall, and the award row starts at 325. */
-  .cblock + .cblock{margin-top:80px}
+  .cblock + .cblock{margin-top:64px}
   .ceyebrow{display:flex;gap:9px;align-items:center;
             font-size:18px;font-weight:500;letter-spacing:var(--track);
             line-height:1;text-transform:uppercase;color:#fff}
@@ -691,6 +699,15 @@
            backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .lb-face.b{transform:translate(-50%,-50%) rotateY(180deg)}
   .lb-face svg{width:100%;height:100%;display:block;overflow:visible}
+  /* Every logobank export was drawn white at 50% and carries
+     fill-opacity="0.5" in its own markup — 76 paths of it. The frame draws
+     them solid now, so the opacity is overridden here rather than
+     re-exporting sixteen files. */
+  .lb-face svg *{fill-opacity:1}
+  /* venmo and PayPal were exported a different way again — a hard #808080
+     fill rather than white at 50% — so opacity alone left those two grey
+     while the other fourteen went solid. */
+  .lb-face svg [fill="#808080"]{fill:#fff}
   .lb-store{display:none}
 
   /* ── the float ──────────────────────────────────────────────────────
@@ -735,26 +752,45 @@
      figure at 88 in White 3 and the label at 24 Light in White 1, 120 apart.
      The flip-card counter went with the old row — these run the impact
      count-up instead, which is what the rest of the site uses. */
+  /* ── awards — 29:1668 ───────────────────────────────────────────────
+     The stacked card is gone. Four cards on a 24 gutter, each one ROW:
+     figure left, label right, both sitting on the same baseline. Ground is
+     Containers on Dark on a 12 radius, 32 in on the left and 24 on the
+     right, 40 top and bottom. The figure came down 88 -> 64 and gained a
+     weight; the label went up to SemiBold in Secondary Light on Container. */
   .stats{display:flex;align-items:stretch;gap:1.6667vw;width:100%}   /* 24 */
-  .stat{flex:1 1 0;min-width:0;
-        display:flex;flex-direction:column;align-items:flex-start;
-        gap:8.3333vw;                                                /* 120 */
-        background:rgba(255,255,255,.05);
-        padding:56px 32px 40px}
+  .stat{flex:1 0 0;min-width:0;
+        display:flex;flex-direction:row;align-items:flex-end;
+        justify-content:space-between;gap:2.7778vw;                     /* 40 */
+        background:var(--w-cont);border-radius:12px;
+        /* the drawn 40 / 24 / 32 exactly at 1440. Held in vw because the
+           card and the type are both fluid: at fixed px the content box
+           shrinks faster than the type and the longest label runs out of
+           card below 1280. */
+        padding:40px 1.6667vw 40px 2.2222vw}                         /* 24 / 32 */
   .anum{margin:0;font-family:var(--font-ui);
-        font-size:clamp(48px,6.1111vw,110px);                        /* 88  */
-        font-weight:400;line-height:1.15;letter-spacing:-.01em;
-        color:var(--c-3);
+        font-size:clamp(40px,4.4444vw,80px);                         /* 64  */
+        font-weight:500;line-height:1.15;letter-spacing:-.01em;
+        color:var(--w-1);
         text-box:trim-both cap alphabetic;
         text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .acap{margin:0;font-family:var(--font-ui);
         font-size:clamp(17px,1.6667vw,30px);                         /* 24  */
-        font-weight:400;line-height:1.35;letter-spacing:-.01em;
-        color:var(--c-1);white-space:nowrap}
+        font-weight:600;line-height:1.45;letter-spacing:0;
+        color:var(--w-onc);white-space:nowrap;
+        text-box:trim-both cap alphabetic;
+        text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* the hidden sizer holds the box at the final digit's width so the card
      never reflows while the number runs — same trick the impact row uses,
      left-aligned here rather than centred */
-  .awards .cival{position:relative;display:inline-block}
+  /* .cival is the case-study impact counter — 96px Regular, -.02em — and it
+     is declared LATER in the file, so its font won the cascade over .anum
+     and the award figure has been painting at 96/400 all along, whatever
+     .anum asked for. The awards borrow the counter's machinery, not its
+     type: take the size, weight, leading and tracking from .anum. */
+  .awards .cival{position:relative;display:inline-block;
+                 font-size:inherit;font-weight:inherit;
+                 line-height:inherit;letter-spacing:inherit}
   .awards .cival .cisz{visibility:hidden}
   .awards .cival .civ{position:absolute;left:0;top:0;text-align:left}
   .awards .cival.counting .civ{font-variant-numeric:tabular-nums}
@@ -1687,6 +1723,51 @@
     .cur.big text{opacity:1;transition:opacity .3s ease .12s}
   }
   @media (prefers-reduced-motion:reduce){ .cur circle{transition:none} }
+
+  /* ── the READ MORE chip — 442:2601 / 444:2682 ──────────────────────
+     Over a card's picture the pointer stops being a ring and becomes the
+     button. Two grounds, and which one shows is not a property of the card:
+     the JBL plate is a video, so what is under the chip changes frame to
+     frame. It samples.
+
+     Light chip  F9F9F9 at 80% + #1A1A1A ink   — on a dark or saturated plate
+     Dark chip   1A1A1A at 85% + #FFFFFF ink   — on a light one
+
+     Two elements because there are two motions: the OUTER one is the
+     pointer's position and must never be eased, the inner one is the
+     arrival and must be. */
+  .curchip{display:none}
+  @media (hover:hover) and (pointer:fine){
+    .curchip{display:block;position:fixed;left:0;top:0;width:0;height:0;
+             z-index:9998;pointer-events:none;will-change:transform}
+    .curchip > span{
+             position:absolute;left:0;top:0;
+             display:flex;align-items:center;justify-content:center;
+             height:48px;padding:0 24px;border-radius:999px;
+             font-family:var(--font-ui);font-size:14px;font-weight:600;
+             line-height:1;letter-spacing:0;text-transform:uppercase;
+             white-space:nowrap;
+             background:rgba(249,249,249,.8);color:#1A1A1A;
+             -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
+             box-shadow:0 4px 32px rgba(26,26,26,.04);
+             opacity:0;transform:translate(-50%,-50%) scale(.86);
+             transition:opacity .2s ease,
+                        transform .38s cubic-bezier(.22,1,.3,1),
+                        background-color .3s ease, color .3s ease}
+    .curchip.live > span{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    .curchip.dark > span{background:rgba(26,26,26,.85);color:#FFFFFF}
+    /* one pointer at a time — the ring stands down while the chip is up */
+    html.chip .cur{opacity:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .curchip > span{transition:opacity .2s ease,
+                               background-color .3s ease, color .3s ease;
+                    transform:translate(-50%,-50%)}
+    .curchip.live > span{transform:translate(-50%,-50%)}
+  }
+  /* the clip fades over the plate rather than cutting to it */
+  .gmedia i > video{opacity:0;transition:opacity .34s ease}
+  .gmedia.playing i > video{opacity:1}
   /* ── impact metric count-up ──────────────────────────────────────────
      The number runs from zero to its value on the same two-face card the rest
      of the site turns on. Tabular figures are what make it possible without a
@@ -1870,7 +1951,7 @@
     to  { transform:translateY(0) }
   }
   .veil{position:fixed;left:0;top:0;width:100vw;height:100svh;
-        background:#000;z-index:1;pointer-events:none;
+        background:var(--w-sur);z-index:1;pointer-events:none;
         transform:translateY(var(--vy,100svh));
         will-change:transform;backface-visibility:hidden}
   .veil.css-timeline{
@@ -1919,6 +2000,11 @@
   .weyebrow .dim{color:var(--c-3)}
   /* the slash is a step under the words either side of it */
   .weyebrow > :nth-child(2){font-size:18px}
+  /* 2:366 — the work eyebrow moved onto the new ramp: the trail is
+     Secondary Light, the label Text White 1. The clients one (27:1433) is
+     still the old instance and still draws White 3 / White. */
+  .work-in .weyebrow{color:var(--w-1)}
+  .work-in .weyebrow .dim{color:var(--w-2)}
 
   /* Every eyebrow resolves the same way the headline words do — same blur,
      same lift, same curve. The one in .work-in is scrubbed on the page scroll
@@ -1951,7 +2037,7 @@
            font-family:var(--font-ui);
            font-size:clamp(24px,2.7778vw,60px);         /* 40  @1440 */
            font-weight:500;letter-spacing:0;line-height:1.1;
-           color:var(--c-1);
+           color:var(--w-1);
            text-box:trim-both cap alphabetic;
            text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .work h2 .w2{color:var(--c-2)}
@@ -2031,20 +2117,26 @@
   .tblock{display:flex;flex-direction:column;align-items:flex-start;gap:24px;
           width:100%}
   .tblock .kpi{margin-top:0}
+  /* 2:103 draws Venmo's stat OUTSIDE the copy group — 32 inside, 48 down to
+     the stat. 2:406 keeps NFL's inside the group on a flat 24. */
+  #cs .tblock{gap:32px}
   /* Saans SemiBold 36 on leading-none — the drawn box is 36 tall, which is
      the type size itself, not a 1.45 line box. */
   .card-main h3{font-family:var(--font-ui);
                 font-size:clamp(24px,2.7778vw,44px);           /* 40 @1440 */
                 font-weight:600;line-height:1.1;letter-spacing:0;
-                color:var(--c-1);
+                color:var(--w-1);
                 text-box:trim-both cap alphabetic;
                 text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* Regular on 1.35, not Light on 1.5 — Black/Shout Body */
+  /* 2:372 / 2:409 — up to 22 from 18, on the new Secondary Light. The
+     measure is drawn per card (346 Venmo, 314 NFL), not shared. */
   .card-main p{font-family:var(--font-ui);
-               font-size:clamp(16px,1.25vw,30px);              /* 18 @1440 */
+               font-size:clamp(16px,1.5278vw,30px);            /* 22 @1440 */
                font-weight:500;line-height:1.25;letter-spacing:0;
-               max-width:22.3611vw;                            /* 322 @1440 */
-               color:var(--c-2)}
+               max-width:24.0278vw;                            /* 346 @1440 */
+               color:var(--w-2)}
+  .card[data-study="nfl"] .card-main p{max-width:21.8056vw}    /* 314 @1440 */
 
   /* ── the stat line — 410:52777 ────────────────────────────────────
      The same Impact / In-Line component the rail carries: Inter Regular sign,
@@ -2053,7 +2145,7 @@
      big cards, Medium on the rail. */
   .kpi{display:flex;gap:16px;align-items:flex-end;width:100%}
   .kpi .fig{display:flex;gap:4px;align-items:flex-end;
-            color:var(--c-1);white-space:nowrap}
+            color:var(--w-1);white-space:nowrap}
   .kpi .fig i,.kpi .fig b{font-style:normal;
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -2070,7 +2162,7 @@
             line-height:1;letter-spacing:0}
   .kpi .cap{font-family:var(--font-ui);
             font-size:clamp(16px,1.25vw,30px);font-weight:500;   /* 18 @1440 */
-            line-height:1.25;letter-spacing:0;color:var(--c-2);
+            line-height:1.25;letter-spacing:0;color:var(--w-2);
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
 
@@ -2100,7 +2192,7 @@
             border-radius:999px;
             background:none;cursor:pointer;
             font-family:var(--font-ui);font-size:14px;font-weight:500;line-height:1;
-            letter-spacing:-.02em;text-transform:uppercase;color:#fff;
+            letter-spacing:0;text-transform:uppercase;color:var(--w-1);
             transition:width .56s var(--ind-ease),
                        background-color .4s ease,box-shadow .4s ease}
   .card-cta:hover{background:rgba(255,255,255,.1);
@@ -2108,7 +2200,7 @@
   /* lock and field are one group on a 4 gap — the pill's own 16 is between
      that group and the arrow, not between the lock and the word */
   .ctagrp{display:flex;align-items:center;gap:4px;min-width:0;flex:1 1 auto}
-  .ctalock{display:block;flex:0 0 16px;width:16px;height:16px;color:#fff}
+  .ctalock{display:block;flex:0 0 16px;width:16px;height:16px;color:var(--w-1)}
   .ctalock svg{display:block}
 
   /* the label and the field are the same 16px line in the same place — one
@@ -2121,7 +2213,8 @@
             display:flex;align-items:center}
   .ctalabel,.ctainput{font:inherit;letter-spacing:inherit;
             transition:opacity .2s ease}
-  .ctalabel{position:relative;white-space:nowrap;color:#fff}
+  /* 440:2340 draws the label in Text White 1, not White 1 */
+  .ctalabel{position:relative;white-space:nowrap;color:var(--w-1)}
   .ctainput{position:absolute;left:0;top:50%;translate:0 -50%;
             box-sizing:border-box;
             width:100%;margin:0;padding:0;border:0;background:none;outline:none;
@@ -2136,7 +2229,7 @@
   /* In flow and present in every state now — the frame draws it on the
      default pill too, which is what makes 183 the rest width. */
   .ctago{flex:0 0 15px;display:block;width:15px;height:10px;
-            margin:0;padding:0;border:0;background:none;color:#fff;
+            margin:0;padding:0;border:0;background:none;color:var(--w-1);
             cursor:pointer;transition:opacity .28s ease}
   .ctago svg{display:block}
 
@@ -2574,6 +2667,15 @@
   :root{--lr-dur:1050ms;--lr-stg:120ms;--lr-rise:85%;--lr-block:180ms;
         --lr-ease:cubic-bezier(.65,0,.35,1)}
   .ln-mask{display:block;overflow:hidden}
+  /* Splitting a heading moves the line box off the heading and onto the
+     mask, and text-box-trim does not follow it — so a cap-trimmed title
+     grew its half-leading and descent back the moment the reveal built,
+     9.7px on the 24 rail titles. The mask lays out the line now, so the
+     mask carries the trim. The vent's padding still lets descenders paint
+     past the baseline without adding to the box. */
+  .card-main h3 > .ln-mask,
+  .gtext h3 > .ln-mask{text-box:trim-both cap alphabetic;
+        text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .gtext > .ln-mask{display:none}
   .ln-in{display:block;will-change:transform,opacity;
          transform:translateY(var(--lr-rise));opacity:0}
@@ -3560,19 +3662,32 @@
           .nav-wrap .seg:last-of-type{flex-direction:row;gap:6px}
     /* the one thing that must know what it stands on: ink on a light
        backdrop, white on a dark one, mixed on the surf the sampler reports */
-    /* ── hover ────────────────────────────────────────────────────────
-       --link-hover is #fff, from the bar that only ever floated over black.
-       On the light bar it made whatever you pointed at go WHITE ON WHITE —
-       the label vanishing under the cursor, and the mark in the round button
-       disappearing on hover. Hover takes the same surf-aware ink the selected
-       label does: near-black on a light backdrop, white on a dark one. */
+    /* ══ TWO SURFACES ══════════════════════════════════════════════════
+       There is the hero, which is light, and there is everything below it,
+       which is dark. That is the whole question, and the page already knows
+       the answer: past-hero. No sampling, no averaging, no colour functions —
+       two plain hexes and one switch.
+
+         on the hero      selected #181818   idle #9D9D9D   chip ink 5%
+         past the hero    selected #FFFFFF   idle #9D9D9D   chip white 9%
+
+       (What was here read the luminance under the bar every frame and mixed
+       a colour from it. It could be wrong, it could be mid-transition, and it
+       leaned on color-mix with a calc inside it — the newest thing in the
+       file. Three ways to fail at a job with two answers.) */
+      .nav-wrap .seg[aria-selected="true"],
       .nav-wrap .seg:hover,
       .nav-wrap .navroll:hover .nrcell,
-      .nav-wrap .navroll:hover .nbr{
-            color:color-mix(in srgb,#FFFFFF,#181818 calc(var(--surf) * 100%))}
-      .nav-wrap .navroll:focus-visible{outline-color:currentColor}
-      .nav-wrap .seg[aria-selected="true"]{
-            color:color-mix(in srgb,#FFFFFF,#181818 calc(var(--surf) * 100%))}
+      .nav-wrap .navroll:hover .nbr{color:#181818}
+      html.nav-dark .nav-wrap .seg[aria-selected="true"],
+      html.nav-dark .nav-wrap .seg:hover,
+      html.nav-dark .nav-wrap .navroll:hover .nrcell,
+      html.nav-dark .nav-wrap .navroll:hover .nbr{color:#FFFFFF}
+      /* the focus ring was a white 60% outline from the dark bar — on the
+         hero that is a white ring on a white pill */
+      .nav-wrap .seg:focus-visible,
+      .nav-wrap .navroll:focus-visible{
+            outline:2px solid currentColor;outline-offset:2px}
     .nav-wrap .segi{width:18px;height:18px}
           .nav-wrap .segl{font-size:16px;font-weight:500;letter-spacing:0;
             line-height:1}
@@ -3590,11 +3705,8 @@
             -webkit-backdrop-filter:none;backdrop-filter:none;
             box-shadow:none}
     /* two fills, one fading out as the other fades in */
-      .nav-wrap .ind{
-            background-color:rgba(255,255,255,calc(.09 * (1 - var(--surf))));
-            background-image:linear-gradient(
-              rgba(26,26,26,calc(.05 * var(--surf))),
-              rgba(26,26,26,calc(.05 * var(--surf))))}
+      .nav-wrap .ind{background:rgba(26,26,26,.05);background-image:none}
+      html.nav-dark .nav-wrap .ind{background:rgba(255,255,255,.09)}
     /* Get in touch — 60 square, and the mark sits in it at Ink 3 */
     .nav-wrap .navroll{overflow:hidden}
           .nav-wrap .navroll{
@@ -3847,9 +3959,13 @@
        The gutter and the left padding are load-bearing, the right one is
        slack, so the 3 comes off there and "Webby Awards" still fits on one
        line at 131. */
-    .stat{gap:64px;padding:32px 21px 24px 16px}
+    .stat{flex-direction:column;align-items:flex-start;
+          justify-content:flex-start;gap:64px;padding:32px 21px 24px 16px}
     .anum{font-size:clamp(32px,10.178vw,48px)}
-    .acap{font-size:clamp(17px,5.089vw,24px)}
+    /* the phone card is a column, so the label has room to turn — nowrap
+       ran ANA Ace Awards 21 past the card edge (it ran 15 past before this
+       frame too, at Regular). */
+    .acap{font-size:clamp(17px,5.089vw,24px);white-space:normal}
 
     /* ── the bar — 417:55262 ─────────────────────────────────────────
        At 393 the desktop bar is 440 across — it hangs off BOTH edges. The
@@ -3969,6 +4085,7 @@
 </style>
 </head>
 <body>
+<div class="curchip" id="curchip" aria-hidden="true"><span>Read more</span></div>
 <div class="cur" id="cur" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24"/><text x="24" y="24" text-anchor="middle" dominant-baseline="central">Read more</text></svg></div>
 
 <div class="loader" id="loader">
@@ -4008,7 +4125,7 @@
 <section class="work" id="work">
   <div class="work-in">
     <div class="weyebrow"><span class="dim">WORK</span><span class="dim">/</span><span>CASE STUDIES</span></div>
-    <h2 id="workhead">The work im proudest of, and the impact that came with it.</h2>
+    <h2 id="workhead">The work im proudest of, and the impact that came with it</h2>
   </div>
 </section>
 
@@ -4018,11 +4135,11 @@
       <div class="card-main">
         <div class="tblock">
           <h3>Venmo</h3>
-          <p>Reimagining the experience at the center of how people move money.</p>
-          <div class="kpi">
-            <span class="fig"><i>+</i><b>320</b><i>%</i></span>
-            <span class="cap">Increase in P2P transactions</span>
-          </div>
+          <p>Leading design in Venmos biggest redesign in a decade</p>
+        </div>
+        <div class="kpi">
+          <span class="fig"><i>+</i><b>320</b><i>%</i></span>
+          <span class="cap">Increase in P2P transactions</span>
         </div>
         <div class="cta" data-code="VENMO">
           <div class="card-cta" role="button" tabindex="0" aria-expanded="false">
@@ -4059,7 +4176,7 @@
       <div class="card-main">
         <div class="tblock">
           <h3>NFL</h3>
-          <p>Rebuilding the digital surface for NFL around game-day urgency</p>
+          <p>Turning NFL into a D2C growth engine</p>
           <div class="kpi">
             <span class="fig"><i>+</i><b>3.2</b><i>X</i></span>
             <span class="cap">Acquisition for NFL+</span>
@@ -4111,7 +4228,7 @@
         <div class="gtext">
           <div class="gcopy">
             <h3>JBL</h3>
-            <p>Redesign of JBL’s bold design system that capture it’s legacy and values.</p>
+            <p>System / Web. Truck launch that rewrote the industry playbook</p>
           </div>
           <div class="gstat">
             <span class="fig"><i>+</i><b>4,700</b><i>%</i></span>
@@ -4122,10 +4239,20 @@
       </article>
       <article class="rcard">
         <div class="gmedia fb volvo" data-mark="9"><i></i></div>
+        <template class="gmedia-clip" data-for="volvo"><i>
+          <!-- Volvo_ProjectCard.mp4, 874x646 — exactly 2x the drawn 437x323.
+               No autoplay: the hover handler mounts and starts it, so nothing
+               is fetched until you land on the card. -->
+          <video muted loop playsinline
+                 poster="media/volvo-card.webp">
+            <source src="media/volvo-card.webm" type="video/webm">
+            <source src="media/volvo-card.mp4" type="video/mp4">
+          </video>
+        </i></template>
         <div class="gtext">
           <div class="gcopy">
             <h3>Volvo</h3>
-            <p>Redesign featuring a 3D truck configurator, personalised experiences</p>
+            <p>System / Web. Turning 40+ scattered sites into one global voice</p>
           </div>
           <div class="gstat">
             <span class="fig"><i>+</i><b>991</b><i>%</i></span>
@@ -4139,7 +4266,7 @@
         <div class="gtext">
           <div class="gcopy">
             <h3>ETS</h3>
-            <p>Web redesign that transformed ETS into a Global Leader in Education.</p>
+            <p>System / Web / Brand Transforming ETS into a global leader in education</p>
           </div>
           <div class="gstat">
             <span class="fig"><i>+</i><b>991</b><i>%</i></span>
@@ -5439,6 +5566,18 @@
          old derivation only where the bar is still at the bottom. */
       const atTop=getComputedStyle(row.parentNode).top!=='auto';
       const top=atTop ? r.top : innerHeight-nb-r.height;
+      /* LIGHTEST-WINS was written for a bar 430 wide sitting over a row of
+         plates: one white plate under any part of it and the bar has to take
+         the light material or the marks in it vanish. At the TOP of the page
+         that same rule breaks the other way — the bar straddles the seam
+         between the white hero and the black section below it, one sample
+         catches paper, and a bar that is nine-tenths over black goes light,
+         which is a near-black label on a near-black bar.
+
+         So the top bar asks a different question: what is MOST of what is
+         behind me. Average, not max, and one row of samples down its middle
+         rather than five down its height — the height is 58 and five rows of
+         it are all reading the same thing anyway. */
       let worst=0;
       for(const gx of XS){
         const sx=r.left+r.width*gx;
@@ -5520,7 +5659,116 @@
     const NAV_MINI=matchMedia('(max-width:1080px)');
     let NAV_TAP=-1e9;
     window.__navTap=()=>{ NAV_TAP=performance.now(); };
-    let lastY=scrollY, hidden=false, ticking=false, navHover=false;
+    let lastY=scrollY, hidden=false, ticking=false;
+
+    /* ── what is under the bar ─────────────────────────────────────────
+       Not two surfaces — five. Down the page it runs light hero, black
+       veil, black case studies, black clients, then the testimonials
+       section which is WHITE again, and a fixed "past the hero means dark"
+       rule turns the bar invisible for the whole last third of the site.
+
+       And not a luminance sample either. That reads a pixel and can be
+       caught mid-transition, behind the bar's own material, or on the seam
+       between two sections — which is every wrong answer you have seen.
+
+       The page KNOWS what it is. Each block is asked once for its own
+       background, the answer is cached, and the bar looks up whichever
+       block its bottom edge is currently over. Deterministic, and it cannot
+       disagree with what is actually painted there. */
+    let gDark=[0,0];
+    function mapGround(){
+      /* Where the page is dark is TWO numbers, and neither of them needs a
+         pixel read.
+
+         It starts at the bottom of the hero — everything below it is covered
+         by .veil, which is position:fixed and scroll-driven, so its own rect
+         is useless as a marker (measured mid-scroll it reported the black
+         starting at y 0, which is how the bar came up dark on the hero).
+
+         It ENDS at the bottom of the last block that paints a dark ground of
+         its own — the clients section. Not at the top of the white one after
+         it: that section is on a timeline and its white slides in some way
+         into its own box, so its top edge is not where it starts looking
+         white. A dark block's own bottom is a fact; the next block's top is
+         a guess. */
+      const host=document.querySelector('main.page.on')||document.body;
+      const hero=host.querySelector('.hero');
+      const start=hero ? hero.offsetTop+hero.offsetHeight : 0;
+      let end=start;
+      [...host.children].forEach(el=>{
+        if(!(el instanceof HTMLElement)) return;
+        if(getComputedStyle(el).position==='fixed') return;   /* the veil */
+        const r=el.getBoundingClientRect();
+        if(r.height<200) return;
+        const m=getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
+        if(!m || (m.length>3 && +m[3]<.9)) return;
+        const dark=(+m[0]*.299 + +m[1]*.587 + +m[2]*.114) < 110;
+        if(dark) end=Math.max(end, r.top+scrollY+r.height);
+      });
+      gDark=[start,end];
+    }
+    /* ── and then the OBJECTS on it ────────────────────────────────────
+       The ground map gets the sections right and is still wrong twice: the
+       white Volvo card passes under the bar on a dark section, and the
+       testimonials block runs black inside the white one. Both put the bar
+       over the opposite of what its section says.
+
+       So the ground is the fallback and the pixel is the answer: five points
+       across the bar's own middle, each a plain "is what is painted here
+       light or dark", majority wins. Binary per point — an average of a
+       half-and-half backdrop is a mid-grey label illegible on both halves,
+       which is the mush this had before. Anything belonging to the bar is
+       skipped, or it reads its own material. */
+    function groundAt(x,y){
+      for(const el of document.elementsFromPoint(x,y)){
+        /* body and html are the PAPER, not a ground. Answering with them
+           ends the walk before the veil — which is pointer-events:none and
+           therefore never in this stack — gets asked, and the black middle
+           of the page came back light. They are the last resort, below. */
+        if(el===document.documentElement||el===document.body) break;
+        if(el.closest('.nav-wrap')||el.closest('.navopen')||el.closest('.navscrim')
+           ||el.closest('.loader')||el.closest('.cur')) continue;
+        const r=el.getBoundingClientRect();
+        if(r.width<80||r.height<40) continue;
+        if(/^(IMG|VIDEO|SVG|CANVAS)$/.test(el.tagName)) return 1;
+        const m=getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
+        if(!m || (m.length>3 && +m[3]<.9)) continue;
+        return (+m[0]*.299 + +m[1]*.587 + +m[2]*.114) >= 128 ? 1 : 0;
+      }
+      /* The veil is the black behind the whole middle of the page and it is
+         pointer-events:none, so hit-testing walks straight past it. Its rect
+         is the only way to see it — and it is only asked once the stack has
+         offered nothing, so a browser that has not sampled its scroll
+         animation yet cannot make the bar dark over the white hero. */
+      const v=document.getElementById('veil');
+      if(v){ const b=v.getBoundingClientRect();
+        if(b.top<=y && b.bottom>=y && b.left<=x && b.right>=x) return 0; }
+      /* nothing between the bar and the paper */
+      const pm=getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g);
+      if(pm) return (+pm[0]*.299 + +pm[1]*.587 + +pm[2]*.114) >= 128 ? 1 : 0;
+      return null;
+    }
+    function navGround(){
+      const row=document.getElementById('navRow');
+      if(!row) return 'light';
+      const r=row.getBoundingClientRect();
+      if(r.width){
+        const cy=r.top+r.height/2;
+        let light=0, n=0;
+        for(const gx of [.02,.26,.5,.74,.98]){
+          const v=groundAt(r.left+r.width*gx, cy);
+          if(v===null) continue;
+          light+=v; n++;
+        }
+        if(n) return light*2 >= n ? 'light' : 'dark';
+      }
+      if(!gDark[1]) mapGround();
+      const y = scrollY + (r.height ? r.bottom : 80);
+      return (y>=gDark[0] && y<gDark[1]) ? 'dark' : 'light';
+    }
+    addEventListener('resize',()=>{ gDark=[0,0]; });
+    (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{ gDark=[0,0]; });
+
     /* the pill's width is a transition, so the stop's final size does not
        exist until it ends — re-measure the chip when it does */
     (function(){ const n=document.getElementById('nav'); if(!n) return;
@@ -5528,16 +5776,8 @@
         if(e.propertyName==='width') window.__navPlace && window.__navPlace(120);
       });
     })();
-    /* held open on hover — and the measure runs on the way out too, so the
-       bar tightens the moment the pointer leaves if you are still going down */
-    (function(){ const r=document.getElementById('navRow'); if(!r) return;
-      r.addEventListener('pointerenter',()=>{ navHover=true;
-        document.documentElement.classList.remove('nav-tight');
-        window.__navPlace && window.__navPlace(); });
-      r.addEventListener('pointerleave',()=>{ navHover=false;
-        document.documentElement.classList.toggle('nav-tight', hidden);
-        window.__navPlace && window.__navPlace(); });
-    })();
+    /* hover does nothing to the bar's size. It used to hold it open, which
+       is scaling it back up — that was never asked for. */
     function onScroll(){
       if(ticking) return; ticking=true;
       requestAnimationFrame(()=>{
@@ -5604,7 +5844,8 @@
            The bar is held open while the pointer is on it: collapsing
            under the cursor moves the thing you were about to click. */
         const past = y > innerHeight * .2;
-        const tight = hidden && !navHover;
+        root.classList.toggle('nav-dark', navGround() === 'dark');
+        const tight = hidden;
         root.classList.toggle('nav-tight', tight);
         if(root.classList.contains('past-hero') !== past){
           root.classList.toggle('past-hero', past);
@@ -7066,6 +7307,150 @@
     addEventListener('pointerdown',()=>cur.classList.add('on'),{passive:true});
     document.addEventListener('mouseleave',()=>cur.classList.remove('live'));
     document.addEventListener('mouseenter',()=>cur.classList.add('live'));
+  })();
+
+  /* ── the chip, and the clip under it ────────────────────────────────
+     Two things keyed to the same hover, because they are the same gesture:
+     the pointer becomes 442:2601, and the card's own clip starts.
+
+     WHICH clip: each card carries its parked footage in a
+     <template class="gmedia-clip"> of its own, so "only JBL's video" needs no
+     list of names — Volvo and ETS simply have no template and stay flat. The
+     clip is mounted the first time you land on the card and kept after that;
+     re-cloning on every hover would re-fetch it.
+
+     Neither of the page's two video governors can reach it: both captured
+     their <video> lists at load, and this one does not exist until you hover.
+     That is deliberate — a clip that only runs under the pointer is already
+     doing what the scroll gate was written to enforce.
+
+     WHICH GROUND: not the card's. The JBL plate is footage, so what sits
+     under the chip changes frame to frame and by where in the frame you are.
+     While a clip is running the chip samples the video itself — the patch it
+     actually covers, drawn down to 16x16 and averaged — and falls back to the
+     plate's own fill for the two still cards, and for any browser that taints
+     the canvas. */
+  (function(){
+    const chip=document.getElementById('curchip');
+    const cur =document.getElementById('cur');
+    if(!chip || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+    const root=document.documentElement;
+    const box=chip.firstElementChild;
+    const cvs=document.createElement('canvas'); cvs.width=cvs.height=16;
+    const ctx=cvs.getContext&&cvs.getContext('2d',{willReadFrequently:true});
+    const CW=130, CH=48;                       /* the drawn chip, 442:2601 */
+    let host=null, live=null, x=0, y=0, queued=false, sampleAt=0, raf=0, tainted=false;
+
+    const lum=(r,g,b)=>r*.299+g*.587+b*.114;
+
+    /* the clip belonging to this plate, mounted on first use */
+    function clip(media){
+      let v=media.querySelector('video');
+      if(v) return v;
+      const card=media.closest('.rcard');
+      const t=card && card.querySelector('template.gmedia-clip');
+      if(!t) return null;
+      const frag=t.content.cloneNode(true);
+      v=frag.querySelector('video');
+      if(!v) return null;
+      v.removeAttribute('autoplay'); v.autoplay=false;
+      v.muted=true; v.loop=true; v.playsInline=true;
+      (media.querySelector('i')||media).appendChild(v);
+      return v;
+    }
+
+    /* what colour is actually under the chip right now */
+    function ground(media){
+      const v=media.querySelector('video');
+      const r=media.getBoundingClientRect();
+      if(ctx && !tainted && v && v.videoWidth && v.readyState>=2 && !v.paused){
+        const pw=v.videoWidth, ph=v.videoHeight;
+        const bw=Math.max(4, Math.round(pw*CW/r.width));
+        const bh=Math.max(4, Math.round(ph*CH/r.height));
+        let sx=Math.round((x-r.left)/r.width  * pw - bw/2);
+        let sy=Math.round((y-r.top )/r.height * ph - bh/2);
+        sx=Math.min(Math.max(0,sx), Math.max(0,pw-bw));
+        sy=Math.min(Math.max(0,sy), Math.max(0,ph-bh));
+        try{
+          ctx.drawImage(v, sx,sy, bw,bh, 0,0, 16,16);
+          const d=ctx.getImageData(0,0,16,16).data;
+          let t=0; for(let i=0;i<d.length;i+=4) t+=lum(d[i],d[i+1],d[i+2]);
+          return t/(d.length>>2);
+        }catch(e){ tainted=true; }      /* file:// taints it — ask the plate */
+      }
+      const m=getComputedStyle(media.querySelector('i')||media)
+                .backgroundColor.match(/[\d.]+/g);
+      return m ? lum(+m[0],+m[1],+m[2]) : 0;
+    }
+    /* light ground -> dark chip, and the other way about */
+    function ink(){ if(host) chip.classList.toggle('dark', ground(host)>=128); }
+
+    function paint(){ queued=false;
+      chip.style.transform='translate3d('+x+'px,'+y+'px,0)'; }
+
+    function watch(t){
+      raf=0;
+      if(!live) return;
+      if(host && t-sampleAt>90){ sampleAt=t; ink(); }
+      const v=live.querySelector('video');
+      if(v && !v.paused) raf=requestAnimationFrame(watch);
+    }
+
+    /* The clip is keyed to the CARD and the chip to the PICTURE, which is
+       where each was asked for: the footage runs whenever you are on the
+       card, the pointer only becomes the button over the picture itself —
+       putting a 130-wide pill over the copy would cover the copy. */
+    function playCard(card){
+      if(live===card) return;
+      stopCard();
+      live=card;
+      const media=card.querySelector('.gmedia');
+      const v=media && clip(media);
+      if(v){
+        media.classList.add('playing');
+        v.play().catch(()=>{});
+        if(!raf) raf=requestAnimationFrame(watch);
+      }
+      card.classList.add('hovered');
+    }
+    function stopCard(){
+      if(!live) return;
+      const card=live, media=card.querySelector('.gmedia'); live=null;
+      if(raf){ cancelAnimationFrame(raf); raf=0; }
+      card.classList.remove('hovered');
+      const v=media && media.querySelector('video');
+      if(v){
+        media.classList.remove('playing');
+        /* pause after the fade, so nothing cuts back to frame 0 on screen */
+        setTimeout(()=>{ if(!media.classList.contains('playing')){
+                           v.pause(); try{ v.currentTime=0; }catch(e){} } },360);
+      }
+    }
+    function showChip(media){
+      if(host===media) return;
+      host=media;
+      chip.classList.add('live'); root.classList.add('chip');
+      ink();
+    }
+    function hideChip(){
+      if(!host) return;
+      host=null;
+      chip.classList.remove('live'); root.classList.remove('chip');
+    }
+
+    addEventListener('pointermove', e=>{
+      if(e.pointerType!=='mouse') return;
+      x=e.clientX; y=e.clientY;
+      const t=e.target.closest ? e.target : null;
+      const card  = t && t.closest('.rcard');
+      const media = t && t.closest('.rcard .gmedia');
+      if(card) playCard(card); else stopCard();
+      if(media) showChip(media); else hideChip();
+      if(host) ink();
+      if(!queued){ queued=true; requestAnimationFrame(paint); }
+    },{passive:true});
+    document.addEventListener('mouseleave', ()=>{ stopCard(); hideChip(); });
+    addEventListener('scroll', ()=>{ if(host) ink(); }, {passive:true});
   })();
   /* ── impact metric count-up ─────────────────────────────────────────
      Quick and eased: 760ms on an easeOutQuint, so it covers most of the range
