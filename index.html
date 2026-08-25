@@ -4213,7 +4213,7 @@
 <section class="rail" id="rail">
   <div class="rail-stage">
     <div class="rail-track" id="railTrack">
-      <article class="rcard">
+      <article class="rcard" data-page="jbl">
         <div class="gmedia fb jbl" data-mark="2"><i></i></div>
         <template class="gmedia-clip" data-for="jbl"><i>
           <!-- Embedded so the file plays wherever it is opened, with no folder
@@ -4237,7 +4237,7 @@
             <button class="gcta" type="button">Read more</button>
         </div>
       </article>
-      <article class="rcard">
+      <article class="rcard" data-page="volvo">
         <div class="gmedia fb volvo" data-mark="9"><i></i></div>
         <template class="gmedia-clip" data-for="volvo"><i>
           <!-- Volvo_ProjectCard.mp4, 874x646 — exactly 2x the drawn 437x323.
@@ -4261,8 +4261,16 @@
             <button class="gcta" type="button">Read more</button>
         </div>
       </article>
-      <article class="rcard">
+      <article class="rcard" data-page="ets">
         <div class="gmedia fb ets" data-mark="10"><i></i></div>
+        <template class="gmedia-clip" data-for="ets"><i>
+          <!-- Project Card_ETS.mp4, 874x646 — 2x the drawn 437x323. -->
+          <video muted loop playsinline
+                 poster="media/ets-card.webp">
+            <source src="media/ets-card.webm" type="video/webm">
+            <source src="media/ets-card.mp4" type="video/mp4">
+          </video>
+        </i></template>
         <div class="gtext">
           <div class="gcopy">
             <h3>ETS</h3>
@@ -6097,6 +6105,25 @@
       c.addEventListener('click',()=>{
         if(typeof window.__navOpen==='function') window.__navOpen(false);
         goTo(c.dataset.page,true);
+      });
+    });
+
+    /* and so is the rail. The chip that replaces the pointer over a card
+       says READ MORE, so the card had better be the thing that reads more —
+       it was decoration until now. role=link rather than a <button> because
+       it goes somewhere; the whole card is the target, and the phone's own
+       READ MORE button inside it bubbles up to the same handler. */
+    document.querySelectorAll('.rcard[data-page]').forEach(c=>{
+      const key=c.dataset.page;
+      if(!pages[key]) return;
+      const name=(c.querySelector('.gtext h3')||{}).textContent||key;
+      c.tabIndex=0;
+      c.setAttribute('role','link');
+      c.setAttribute('aria-label','Read the '+name.trim()+' case study');
+      const open=e=>{ e.preventDefault(); goTo(key,true); };
+      c.addEventListener('click', open);
+      c.addEventListener('keydown', e=>{
+        if(e.key==='Enter'||e.key===' '||e.key==='Spacebar') open(e);
       });
     });
   })();
