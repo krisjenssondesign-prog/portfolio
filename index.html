@@ -539,7 +539,16 @@
   .gmedia i > video,
   .gmedia > video{position:absolute;inset:0;width:100%;height:100%;
                     display:block;object-fit:cover;pointer-events:none;
-                    z-index:1}
+                    z-index:1;
+                    /* its own layer. The tilt writes a 3D transform on the
+                       .gmedia above it every frame, and a video sharing that
+                       element's rendering context gets re-rasterised with it —
+                       which is what a judder on hover looks like. translateZ
+                       and backface-visibility pull it onto a plane of its own
+                       so the tilt moves the layer instead of redrawing it. */
+                    transform:translateZ(0);
+                    backface-visibility:hidden;
+                    -webkit-backface-visibility:hidden}
 
   /* ── the stand-in plates ────────────────────────────────────────────
      Flat brand ground with the mark centred on it, until the real clips
@@ -3000,7 +3009,10 @@
   .csplate.tilting{box-shadow:0 34px 70px -24px rgba(0,0,0,.75)}
   /* cover, so the frame is always filled and the crop is shared evenly — the
      source is 2764 x 1448, wider than any frame this will make. */
-  .csplate video,.csplate img{width:100%;height:100%;display:block;object-fit:cover}
+  .csplate video,.csplate img{width:100%;height:100%;display:block;object-fit:cover;
+                              transform:translateZ(0);
+                              backface-visibility:hidden;
+                              -webkit-backface-visibility:hidden}
 
   /* 312:16760 — the body is on the column now, same 155 guides as the bar,
      the rule and the video. It used to hang on its own 147; that is gone. */
@@ -8281,8 +8293,26 @@
     if(noMotion||!media) return st;
     /* bound to the MEDIA, not the card — the caption underneath is not part of
        the surface you're tilting, and hovering it shouldn't move the picture */
+    /* The UNTRANSFORMED box, and that is the whole point of it.
+       getBoundingClientRect on the element being tilted returns the TILTED
+       rect — scale and rotate are baked in — so as the lift came on the box
+       grew 437 -> 450 and slid 7px left, measured. Dividing the pointer by a
+       denominator that the tilt itself is moving makes the target chase the
+       chase: every pointermove re-reads a box the previous frame changed, the
+       eased loop follows, and the picture oscillates. That is the bounce.
+       offsetWidth/Height are layout rather than paint, and the offset parent
+       is not scaled or rotated, so this box holds still. */
+    const box=()=>{
+      const host=media.offsetParent||media.parentElement;
+      const w=media.offsetWidth, h=media.offsetHeight;
+      if(!host||!w||!h) return media.getBoundingClientRect();
+      const r=host.getBoundingClientRect();
+      return {left:r.left+host.clientLeft+media.offsetLeft,
+              top :r.top +host.clientTop +media.offsetTop,
+              width:w, height:h};
+    };
     media.addEventListener('pointermove',e=>{
-      const b=media.getBoundingClientRect();
+      const b=box();
       st.tx=(e.clientX-b.left)/b.width -.5;
       st.ty=(e.clientY-b.top )/b.height-.5;
       st.tk=LIFT;
