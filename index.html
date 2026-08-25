@@ -8331,7 +8331,18 @@
         s.cx+=dx*EASE; s.cy+=dy*EASE; s.k+=dk*EASE;
         s.media.style.transform=
           'rotateX('+(-s.cy*TILT).toFixed(3)+'deg) rotateY('+(s.cx*TILT).toFixed(3)+'deg) scale('+s.k.toFixed(4)+')';
-      } else if(s.cx||s.cy||s.k!==1){
+      } else if(!s.on && (s.cx||s.cy||s.k!==1)){
+        /* Only snap to REST when rest is what we are heading for. Without
+           that gate this branch fired the moment the ease SETTLED — including
+           settling on a hover target — and hard-cleared the transform. The
+           next frame saw the full delta again and eased back up, and the card
+           sat there breathing: ~0.66s to arrive, ~0.66s of sub-pixel decay
+           until all three deltas crossed the threshold, then a one-frame
+           collapse and round again. Measured off Kris's recording at 60fps:
+           the plate ran 859 -> 879px wide, held, dropped to 854 in a single
+           frame, and repeated on a 1.33s period with the pointer stationary.
+           s.on is true while the pointer is on the media, so the reset now
+           belongs to pointerleave, which is the only thing that wants it. */
         s.cx=s.cy=0; s.k=1; s.media.style.transform='';
       }
     }
