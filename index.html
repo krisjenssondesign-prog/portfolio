@@ -967,8 +967,9 @@
          background:none;border:0;padding:0;margin:0;text-align:left;
          font:inherit;color:inherit;cursor:pointer}
   /* 464:15807 - 367 x 268.128, and 12 like every other container */
-  .numedia{flex:none;width:367px;max-width:42%;
-           aspect-ratio:367 / 268.128;border-radius:12px;overflow:hidden;
+  /* 464:15807 - 421 x 308 now, and 12 like every other container */
+  .numedia{flex:none;width:421px;max-width:46%;
+           aspect-ratio:421 / 308;border-radius:12px;overflow:hidden;
            background:#000;position:relative}
   /* 1% over, so the resampled edge never lands inside the frame */
   .numedia video,.numedia img{position:absolute;inset:0;
@@ -976,14 +977,31 @@
            transform:scale(1.01);
            transition:transform .6s cubic-bezier(.22,1,.3,1)}
   .nutext{min-width:0;display:flex;flex-direction:column;
-          justify-content:center;gap:40px;padding-top:40px}
+          justify-content:center;gap:48px;padding-top:40px}
+  .nuhead{display:flex;flex-direction:column;gap:24px;min-width:0}
+  /* 467:19056 - the same pill as the case-study CTA, inverted for a light
+     ground: Text Dark 1 fill, Text White 1 label. */
+  .nucta{display:inline-flex;align-items:center;justify-content:center;
+         align-self:flex-start;height:48px;padding:0 24px;border-radius:999px;
+         background:var(--ink);backdrop-filter:blur(5px);
+         -webkit-backdrop-filter:blur(5px);
+         box-shadow:0 4px 16px rgba(26,26,26,.04);
+         font-family:var(--font-ui);font-size:14px;font-weight:600;
+         line-height:1;letter-spacing:0;text-transform:uppercase;
+         color:var(--w-1);white-space:nowrap;
+         transition:background-color .3s ease, color .3s ease}
+  .nurow:hover .nucta,.nurow:focus-visible .nucta{
+         background:var(--w-1);color:var(--ink)}
   /* 464:19032 - 104 Heavy at -2.08, which is -.02em */
   .nuname{margin:0;font-family:var(--font-display);font-size:104px;
           font-weight:900;line-height:normal;letter-spacing:-.02em;
           white-space:nowrap;color:var(--ink);
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .nusub{margin:0;width:min(442px,100%);
+  /* the drawn 494 is Saans's measure; Inter sets the same two lines wider,
+     so the box hugs the <br> lines and caps at the column instead of
+     forcing a third line at a number that only holds in the drawing */
+  .nusub{margin:0;width:fit-content;max-width:100%;
          font-family:var(--font-display);font-size:40px;font-weight:500;
          line-height:1.1;letter-spacing:0;color:var(--ink);
          text-box:trim-both cap alphabetic;
@@ -1015,6 +1033,7 @@
   .nu.css-timeline .numedia,
   .nu.css-timeline .nuname,
   .nu.css-timeline .nusub,
+  .nu.css-timeline .nucta,
   .nu.css-timeline .tfoot{opacity:0}
   .nu.css-timeline .nut{
        animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
@@ -1028,6 +1047,9 @@
   .nu.css-timeline .nusub{
        animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
        animation-timeline:--nuTL;animation-range:entry 32% entry 86%}
+  .nu.css-timeline .nucta{
+       animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
+       animation-timeline:--nuTL;animation-range:entry 40% entry 92%}
   /* last thing in, exactly as the testimonial's footer behaves */
   .nu.css-timeline .tfoot{
        animation:nuFootIn linear(0, .38 25%, .70 50%, .89 75%, 1) both;
@@ -1037,6 +1059,7 @@
     .nu.css-timeline .numedia,
     .nu.css-timeline .nuname,
     .nu.css-timeline .nusub,
+    .nu.css-timeline .nucta,
     .nu.css-timeline .tfoot{animation:none;transform:none;opacity:1}
   }
 
@@ -5123,8 +5146,11 @@
           </video>
         </span>
         <span class="nutext">
-          <span class="nuname">Volvo</span>
-          <span class="nusub">Resetting the stage<br>for a global audio brand</span>
+          <span class="nuhead">
+            <span class="nuname">Volvo</span>
+            <span class="nusub">A truck launch that rewrote<br>the industry playbook</span>
+          </span>
+          <span class="nucta">Read more</span>
         </span>
       </button>
     </div>
