@@ -7949,17 +7949,21 @@
      window: the hero clip ran four thousand pixels up the page and both
      motion bites ran while you were reading the strategy copy.
 
-     TWO — nothing decodes during a scroll. Ablating the process section put
-     the videos at p90 54ms with 42 dropped frames per 150, and removing them
-     entirely took it to 17ms with none: decoding is by a wide margin the
-     most expensive thing on this page, and it competes for frames with
-     exactly the scroll-driven type animations you notice it in. Nobody
-     watches a clip during a flick, so they hold still until you stop. 140ms
-     covers the gaps inside a trackpad gesture and is short enough that
-     stopping feels like nothing was ever paused.
+     There WAS a second rule — nothing decodes during a scroll, every video
+     paused on scrollstart and resumed 140ms after you stopped. It was put in
+     against a measurement taken on the inlined build: 9.55MB of base64 video
+     with five decoders live at once, p90 54ms and 42 dropped frames per 150.
+     That page no longer exists. The clips are external now and the rule
+     above already pauses everything off screen, so a scroll on a case study
+     has one or two videos alive, not five. Re-measured on this build, three
+     runs each way down the JBL page: frames over 32ms came out 12.1 / 10.0 /
+     12.1 percent with the scroll rule on and 14.9 / 7.2 / 11.0 with it off,
+     median and p90 identical. It was buying nothing, and on a long study you
+     are scrolling most of the time — so it read as the videos being broken.
+     Removed. Visibility is the only gate.
 
-     `want` is the set that SHOULD be running; the two rules are filters over
-     it, so neither can strand a video in the wrong state.
+     `want` is the set that SHOULD be running, and the observer is the only
+     thing that writes to it.
 
      A video with no `loop` that has reached its end is finished and is
      holding its last frame deliberately — play() on an ended video rewinds
@@ -7970,11 +7974,10 @@
     const vids=[...document.querySelectorAll('video')];
     if(!vids.length||!('IntersectionObserver' in window)) return;
     const want=new Set();
-    let scrolling=false, idle=0;
 
     function apply(){
       for(const v of vids){
-        const should = want.has(v) && !scrolling && !v.ended;
+        const should = want.has(v) && !v.ended;
         if(should){ if(v.paused) v.play().catch(()=>{}); }
         else if(!v.paused) v.pause();
       }
@@ -7986,12 +7989,6 @@
       apply();
     },{rootMargin:'0px'});
     vids.forEach(v=>io.observe(v));
-
-    addEventListener('scroll',()=>{
-      if(!scrolling){ scrolling=true; apply(); }
-      clearTimeout(idle);
-      idle=setTimeout(()=>{ scrolling=false; apply(); },140);
-    },{passive:true});
   })();
 
   /* ── pushed by the cursor ───────────────────────────────────────────
