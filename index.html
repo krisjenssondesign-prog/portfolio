@@ -4936,23 +4936,23 @@
            because 463:12994 is flex-[1_0_0] there. -->
       <div class="vc">
         <div class="vcol">
-          <span class="vct pending" style="aspect-ratio:322 / 195.66"></span>
-          <span class="vct" style="aspect-ratio:322 / 201.25"><video muted loop playsinline preload="none" aria-hidden="true" poster="media/jblc-v1.webp"><source src="media/jblc-v1.webm" type="video/webm"><source src="media/jblc-v1.mp4" type="video/mp4"></video></span>
+          <span class="vct" style="aspect-ratio:322 / 195.66"><img src="media/jblc-s7.webp" alt="JBL gaming subcategory walkthrough" loading="lazy" decoding="async"></span>
+          <span class="vct" style="aspect-ratio:322 / 201.25"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v1.webp"><source src="media/jblc-v1.mp4" type="video/mp4"></video></span>
           <span class="vct" style="aspect-ratio:322 / 264"><img src="media/jblc-s1.webp" alt="JBL storefront" loading="lazy" decoding="async"></span>
         </div>
         <div class="vcol">
-          <span class="vct" style="aspect-ratio:322 / 229.87"><video muted loop playsinline preload="none" aria-hidden="true" poster="media/jblc-v4.webp"><source src="media/jblc-v4.webm" type="video/webm"><source src="media/jblc-v4.mp4" type="video/mp4"></video></span>
+          <span class="vct" style="aspect-ratio:322 / 229.87"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v4.webp"><source src="media/jblc-v4.mp4" type="video/mp4"></video></span>
           <span class="vct grow" style="aspect-ratio:322 / 235.88"><img src="media/jblc-s2.webp" alt="JBL product band" loading="lazy" decoding="async"></span>
           <span class="vct" style="aspect-ratio:322 / 201.28"><img src="media/jblc-s4.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
         </div>
         <div class="vcol">
           <span class="vct" style="aspect-ratio:322 / 264"><img src="media/jblc-s3.webp" alt="JBL tune series" loading="lazy" decoding="async"></span>
           <span class="vct" style="aspect-ratio:322 / 201.28"><img src="media/jblc-s5.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
-          <span class="vct" style="aspect-ratio:322 / 201.75"><video muted loop playsinline preload="none" aria-hidden="true" poster="media/jblc-v2.webp"><source src="media/jblc-v2.webm" type="video/webm"><source src="media/jblc-v2.mp4" type="video/mp4"></video></span>
+          <span class="vct" style="aspect-ratio:322 / 201.75"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v2.webp"><source src="media/jblc-v2.mp4" type="video/mp4"></video></span>
         </div>
         <div class="vcol">
           <span class="vct" style="aspect-ratio:315 / 357.94"><img src="media/jblc-s6.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
-          <span class="vct" style="aspect-ratio:315 / 332.15"><video muted loop playsinline preload="none" aria-hidden="true" poster="media/jblc-v3.webp"><source src="media/jblc-v3.webm" type="video/webm"><source src="media/jblc-v3.mp4" type="video/mp4"></video></span>
+          <span class="vct" style="aspect-ratio:315 / 332.15"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v3.webp"><source src="media/jblc-v3.mp4" type="video/mp4"></video></span>
         </div>
       </div>
   </section>
@@ -8041,7 +8041,7 @@
         if(e.isIntersecting) want.add(e.target); else want.delete(e.target);
       }
       apply();
-    },{rootMargin:'0px'});
+    },{rootMargin:'30% 0px'});
     vids.forEach(v=>io.observe(v));
   })();
 
@@ -8223,7 +8223,7 @@
          settling, not twelve cards queueing. */
       const M=parseFloat(getComputedStyle(document.documentElement)
                 .getPropertyValue('--m'))||40;
-      rv.add({els:tiles, host:vc, from:.95, toPx:M, lag:.12,
+      rv.add({els:tiles, host:vc, from:.95, toPx:M, lag:.26,
               dys, ease:'soft', once:true});
       rv.tick();
     }
