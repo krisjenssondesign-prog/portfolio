@@ -955,61 +955,82 @@
   /* -- 464:15803 . Next up / Volvo --------------------------------------
      80 top, 80 between the block and the footer, 155 side guides on the
      block and 40 on the footer. */
+  /* -- 464:15803 . Next up / Volvo ------------------------------------ */
   .nu{background:var(--paper);color:var(--ink);
-      padding:80px 0 0;display:flex;flex-direction:column;gap:80px}
-  .nublock{display:flex;flex-direction:column;gap:40px;
+      padding:64px 0 0;display:flex;flex-direction:column;gap:64px}
+  .nublock{display:flex;flex-direction:column;gap:32px;
            padding:0 calc(155 / 1440 * 100%)}
   .nut{margin:0;width:min(442px,100%);
        font-family:var(--font-display);font-size:40px;font-weight:500;
        line-height:1.1;letter-spacing:0;color:var(--ink);
        text-box:trim-both cap alphabetic;
        text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .nurow{display:flex;align-items:center;gap:40px;width:100%;
+  /* items-end: the plate and the text column are set on their BOTTOMS in
+     464:15806, which is what puts the button on the plate's own baseline */
+  .nurow{display:flex;align-items:flex-end;gap:48px;width:100%;
          background:none;border:0;padding:0;margin:0;text-align:left;
          font:inherit;color:inherit;cursor:pointer}
-  /* 464:15807 - 367 x 268.128, and 12 like every other container */
-  /* 464:15807 - 421 x 308 now, and 12 like every other container */
-  .numedia{flex:none;width:421px;max-width:46%;
-           aspect-ratio:421 / 308;border-radius:12px;overflow:hidden;
+  /* 464:15807 - 322 x 236, and 12 like every other container */
+  .numedia{flex:none;width:322px;max-width:44%;
+           aspect-ratio:322 / 236;border-radius:12px;overflow:hidden;
            background:#000;position:relative}
   /* 1% over, so the resampled edge never lands inside the frame */
   .numedia video,.numedia img{position:absolute;inset:0;
            width:100%;height:100%;display:block;object-fit:cover;
            transform:scale(1.01);
            transition:transform .6s cubic-bezier(.22,1,.3,1)}
-  .nutext{min-width:0;display:flex;flex-direction:column;
-          justify-content:center;gap:48px;padding-top:40px}
-  .nuhead{display:flex;flex-direction:column;gap:24px;min-width:0}
-  /* 467:19056 - the same pill as the case-study CTA, inverted for a light
-     ground: Text Dark 1 fill, Text White 1 label. */
-  .nucta{display:inline-flex;align-items:center;justify-content:center;
-         align-self:flex-start;height:48px;padding:0 24px;border-radius:999px;
-         background:var(--ink);backdrop-filter:blur(5px);
-         -webkit-backdrop-filter:blur(5px);
-         box-shadow:0 4px 16px rgba(26,26,26,.04);
-         font-family:var(--font-ui);font-size:14px;font-weight:600;
-         line-height:1;letter-spacing:0;text-transform:uppercase;
-         color:var(--w-1);white-space:nowrap;
-         transition:background-color .3s ease, color .3s ease}
-  .nurow:hover .nucta,.nurow:focus-visible .nucta{
-         background:var(--w-1);color:var(--ink)}
-  /* 464:19032 - 104 Heavy at -2.08, which is -.02em */
-  .nuname{margin:0;font-family:var(--font-display);font-size:104px;
+  /* 464:19031 - 413 wide, 40 between the block and the button, and 12 of
+     air under it so the button's own box sits off the plate's bottom edge */
+  .nutext{flex:none;width:413px;max-width:56%;min-width:0;
+          display:flex;flex-direction:column;justify-content:center;
+          gap:40px;padding-bottom:12px}
+  .nuhead{display:flex;flex-direction:column;gap:16px;width:100%;min-width:0}
+  /* 464:19032 - 64 Heavy at -1.28, which is -.02em */
+  .nuname{margin:0;font-family:var(--font-display);font-size:64px;
           font-weight:900;line-height:normal;letter-spacing:-.02em;
           white-space:nowrap;color:var(--ink);
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  /* the drawn 494 is Saans's measure; Inter sets the same two lines wider,
-     so the box hugs the <br> lines and caps at the column instead of
-     forcing a third line at a number that only holds in the drawing */
-  .nusub{margin:0;width:fit-content;max-width:100%;
-         font-family:var(--font-display);font-size:40px;font-weight:500;
-         line-height:1.1;letter-spacing:0;color:var(--ink);
-         text-box:trim-both cap alphabetic;
-         text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* 471:19069 - 24 Medium on 1.1, Secondary dark on light, 297 measure.
+     Not trimmed in the frame, and it wraps on its own rather than on a
+     break, so the measure is what sets the lines. */
+  .nusub{margin:0;width:min(297px,100%);
+         font-family:var(--font-display);font-size:24px;font-weight:500;
+         line-height:1.1;letter-spacing:0;color:#515151}
+
+  /* -- 472:19266 / 472:19263 . the action button --------------------
+     Dark, 40 tall, 24 either side, and on hover it keeps its fill, takes
+     the 4/16 shadow and OPENS: the right padding drops to 16 and a 19-wide
+     slot with the arrow in it grows out of nothing, 130 -> 147. The label
+     never moves, which is why the slot animates and not the box. */
+  .nucta{display:inline-flex;align-items:center;align-self:flex-start;
+         height:40px;padding:0 24px;border-radius:999px;
+         background:var(--ink);
+         font-family:var(--font-ui);font-size:14px;font-weight:600;
+         line-height:1;letter-spacing:0;text-transform:uppercase;
+         color:var(--w-1);white-space:nowrap;
+         box-shadow:0 4px 16px rgba(26,26,26,0);
+         transition:padding-right .42s cubic-bezier(.22,1,.3,1),
+                    box-shadow .42s ease}
+  .nuctai{flex:none;display:block;width:0;height:20px;overflow:hidden;
+          margin-left:0;opacity:0;
+          transition:width .42s cubic-bezier(.22,1,.3,1),
+                     margin-left .42s cubic-bezier(.22,1,.3,1),
+                     opacity .28s ease}
+  .nuctai svg{display:block;width:15px;height:10px;margin:5px 2px;
+              color:var(--w-1)}
+  .nurow:hover .nucta,.nurow:focus-visible .nucta{
+         padding-right:16px;box-shadow:0 4px 16px rgba(26,26,26,.04)}
+  .nurow:hover .nuctai,.nurow:focus-visible .nuctai{
+         width:19px;margin-left:6px;opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .nucta,.nuctai{transition:none}
+  }
+
   /* hover rides the video, not the frame - the frame carries the reveal */
   .nurow:hover .numedia video{transform:scale(1.03)}
-  .nu .tfoot{position:static;padding:0 40px 60px}
+  /* 464:15812 - 40 under the row now, not 60 */
+  .nu .tfoot{position:static;padding:0 40px 40px}
   @media (max-width:900px){
     .nurow{flex-direction:column;align-items:flex-start}
     .numedia{width:100%;max-width:none}
@@ -5132,9 +5153,9 @@
         <span class="nutext">
           <span class="nuhead">
             <span class="nuname">Volvo</span>
-            <span class="nusub">A truck launch that rewrote<br>the industry playbook</span>
+            <span class="nusub">A truck launch that rewrote the industry playbook.</span>
           </span>
-          <span class="nucta">Read more</span>
+          <span class="nucta">Read more<span class="nuctai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
         </span>
       </button>
     </div>
@@ -8301,8 +8322,14 @@
           if(sr.bottom <= mr.top + 2){
             if(armed){
               armed=false;
-              try{ plate.currentTime=0; }catch(e){}
-              plate.play().catch(()=>{});
+              /* setting currentTime before there is any data is silently
+                 dropped, which is how this kept opening mid-shot. Seek when
+                 it has metadata, and seek AGAIN once it is actually running
+                 in case the first one landed on an empty buffer. */
+              const seek=()=>{ try{ if(plate.currentTime>.05) plate.currentTime=0; }catch(e){} };
+              const go=()=>{ seek(); plate.play().then(seek).catch(()=>{}); };
+              if(plate.readyState>=1) go();
+              else plate.addEventListener('loadedmetadata',go,{once:true});
             }
           }else{
             armed=true;
