@@ -8135,14 +8135,21 @@
        same strip in the drawing and sliding them apart would tear it. The
        numbers are deliberately not a ramp — a left-to-right gradient reads as
        the whole board shearing. Mixed, they read as depth. */
-    const SPEED=[0.55, -0.30, 0.95, -0.15, 0.75, -0.45, 0.35];
-    const SPREAD=110;          /* px of travel at the extremes, at 1440 */
+    const FLOAT=[
+      {a: 9, p:6.2, ph:0.00},
+      {a:-7, p:7.7, ph:1.90},
+      {a:11, p:5.4, ph:3.40},
+      {a:-8, p:8.3, ph:0.80},
+      {a:10, p:6.8, ph:2.60},
+      {a:-9, p:7.1, ph:4.20},
+      {a: 8, p:5.9, ph:1.30}
+    ];
     const EASE=.085;           /* the lerp — this is the "smooth" */
 
     const PAPER=getComputedStyle(stage).backgroundColor==='rgba(0, 0, 0, 0)'
       ? getComputedStyle(stage.closest('.pw')).backgroundColor
       : getComputedStyle(stage).backgroundColor;
-    let W=0,H=0,K=1,dpr=1, cur=0, tgt=0, alive=false, running=false;
+    let W=0,H=0,K=1,dpr=1, alive=false, running=false, born=performance.now();
 
     function size(){
       const r=stage.getBoundingClientRect();
@@ -8178,10 +8185,11 @@
          the ARTWORK's box, not the file's. */
       const s=Math.max(W/CROP.w, H/CROP.h);
       const ox=(W-CROP.w*s)/2, oy=(H-CROP.h*s)/2;
-      const amp=SPREAD*(W/1440);
+      const k=W/1440, TAU=Math.PI*2;
+      const t0=(performance.now()-born)/1000;
       for(let i=0;i<TILES.length;i++){
-        const t=TILES[i];
-        const dy=cur*SPEED[t.c]*amp;
+        const t=TILES[i], f=FLOAT[t.c];
+        const dy = f.a * k * Math.sin(TAU*t0/f.p + f.ph);
         ctx.drawImage(vid, t.x,t.y,t.w,t.h,
                       (t.x-CROP.x)*s+ox, (t.y-CROP.y)*s+oy+dy,
                       t.w*s, t.h*s);
@@ -8191,11 +8199,10 @@
     /* Idle when there is nothing to do. The lerp converges but never
        arrives, so without a floor this repainted seventeen crops every frame
        forever — for a picture that had stopped moving. It wakes on scroll. */
+    const STILL=matchMedia('(prefers-reduced-motion: reduce)');
     function frame(){
       if(!alive){ running=false; return; }
-      const d=tgt-cur;
-      if(Math.abs(d)<0.0004 && vid.paused){ cur=tgt; paint(); running=false; return; }
-      cur += d*EASE;
+      if(STILL.matches){ running=false; paint(); return; }
       paint();
       requestAnimationFrame(frame);
     }
@@ -8206,12 +8213,11 @@
        nothing. */
     const io=new IntersectionObserver(es=>{
       alive=es[0].isIntersecting;
-      if(alive){ size(); tgt=cur=progress(); start(); }
+      if(alive){ size(); start(); }
     },{rootMargin:'200px 0px'});
 
-    const kick=()=>{ if(size()){ tgt=cur=progress(); paint(); io.observe(stage); } };
+    const kick=()=>{ if(size()){ born=performance.now(); paint(); io.observe(stage); } };
     if(vid.readyState>=2) kick(); else vid.addEventListener('loadeddata',kick,{once:true});
-    addEventListener('scroll',()=>{ if(alive){ tgt=progress(); start(); } },{passive:true});
     addEventListener('resize',()=>{ if(size()&&alive) paint(); });
     /* the page is hidden until you route to it, so the first measure has to
        happen when it is shown, not at parse */
