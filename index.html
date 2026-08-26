@@ -3853,12 +3853,19 @@
          floating over a dark page. On the light page that is the blob. Its
          chip is white at 11%, which on a white pill is nothing. Both are
          overridden here, in every position, and --surf does the flipping. */
+      /* 472:19386 / 472:19311 - the glass MATCHES its ground rather than
+         opposing it: white at 20% over a light surface, black at 10% over a
+         dark one. Blur is 10, flat - the saturate was mine and is gone.
+         The shadow is drawn as one drop-shadow on the row; it is a
+         box-shadow per shape here because a `filter` on the row would make
+         it a backdrop root and kill the blur underneath it in Safari. */
       .nav-wrap .nav{
             width:var(--pw);padding:4px;border-radius:100px;
-            background:rgba(255,255,255,.1);background-image:none;
-            -webkit-backdrop-filter:blur(20px) saturate(1.4);
-            backdrop-filter:blur(20px) saturate(1.4);
-            box-shadow:0 4px 32px rgba(26,26,26,.04)}
+            background:rgba(255,255,255,.2);background-image:none;
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            box-shadow:0 4px 16px rgba(26,26,26,.04)}
+      html.nav-dark .nav-wrap .nav{background:rgba(0,0,0,.1)}
           .nav-wrap .seg{z-index:3}
           .nav-wrap .ind{z-index:1}
     /* each stop is a third of the track and states its PADDING, not a height:
@@ -3869,7 +3876,10 @@
        wide, 52 tall chip, which is the egg. Padding states the size now, so
        the collapsed stop is 50 square and the chip is a circle. */
     .nav-wrap .seg{height:auto;flex:1 0 0;padding:16px 0;border-radius:999px}
-          .nav-wrap .seg{gap:8px;color:#9D9D9D}
+          /* idle: Secondary dark on light over a light ground, Secondary
+             Light over a dark one */
+          .nav-wrap .seg{gap:8px;color:#515151}
+          html.nav-dark .nav-wrap .seg{color:#9F9F9F}
           .nav-wrap .seg:nth-of-type(2){gap:6px}
           .nav-wrap .seg:last-of-type{flex-direction:row;gap:6px}
     /* the one thing that must know what it stands on: ink on a light
@@ -3880,8 +3890,11 @@
        the answer: past-hero. No sampling, no averaging, no colour functions —
        two plain hexes and one switch.
 
-         on the hero      selected #181818   idle #9D9D9D   chip ink 5%
-         past the hero    selected #FFFFFF   idle #9D9D9D   chip white 9%
+         light ground   glass white 20%   selected #1A1A1A  idle #515151
+                        chip ink 5%
+         dark ground    glass black 10%   selected #F8F8F8  idle #9F9F9F
+                        chip Text White 1 at 5%
+         Blur is 10 flat on both, and the shadow is 0 4 16 at 4% ink.
 
        (What was here read the luminance under the bar every frame and mixed
        a colour from it. It could be wrong, it could be mid-transition, and it
@@ -3890,11 +3903,11 @@
       .nav-wrap .seg[aria-selected="true"],
       .nav-wrap .seg:hover,
       .nav-wrap .navroll:hover .nrcell,
-      .nav-wrap .navroll:hover .nbr{color:#181818}
+      .nav-wrap .navroll:hover .nbr{color:#1A1A1A}
       html.nav-dark .nav-wrap .seg[aria-selected="true"],
       html.nav-dark .nav-wrap .seg:hover,
       html.nav-dark .nav-wrap .navroll:hover .nrcell,
-      html.nav-dark .nav-wrap .navroll:hover .nbr{color:#FFFFFF}
+      html.nav-dark .nav-wrap .navroll:hover .nbr{color:#F8F8F8}
       /* the focus ring was a white 60% outline from the dark bar — on the
          hero that is a white ring on a white pill */
       .nav-wrap .seg:focus-visible,
@@ -3917,17 +3930,21 @@
             -webkit-backdrop-filter:none;backdrop-filter:none;
             box-shadow:none}
     /* two fills, one fading out as the other fades in */
+      /* 472:19387 - Ink at 5% on the light ground, 472:19312 - Text White 1
+         at 5% on the dark one. Not white at 9%. */
       .nav-wrap .ind{background:rgba(26,26,26,.05);background-image:none}
-      html.nav-dark .nav-wrap .ind{background:rgba(255,255,255,.09)}
+      html.nav-dark .nav-wrap .ind{background:rgba(249,249,249,.05)}
     /* Get in touch — 60 square, and the mark sits in it at Ink 3 */
     .nav-wrap .navroll{overflow:hidden}
           .nav-wrap .navroll{
             width:60px;height:60px;border-radius:999px;overflow:hidden;
-            background:rgba(255,255,255,.1);background-image:none;
-            -webkit-backdrop-filter:blur(20px) saturate(1.4);
-            backdrop-filter:blur(20px) saturate(1.4);
-            box-shadow:0 4px 32px rgba(26,26,26,.04);
-            color:#9D9D9D}
+            background:rgba(255,255,255,.2);background-image:none;
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            box-shadow:0 4px 16px rgba(26,26,26,.04);
+            color:#515151}
+          html.nav-dark .nav-wrap .navroll{background:rgba(0,0,0,.1);
+            color:#9F9F9F}
 
     /* the collapsed cut: 3 stops at 50 square on the pill's own 4 of
        padding — 158. Stated as a number rather than `auto` because a width
