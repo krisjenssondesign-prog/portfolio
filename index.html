@@ -150,7 +150,8 @@
     --link-hover:#fff;
     --link-idle:#808080;            /* White 3 — the drawn idle stop */
     --p:0;                          /* 0 = hero · 1 = scrolled */
-    --ty:0px;                       /* slide-out offset */
+    --ty:0px;                       /* slide-out offset - phone */
+    --nty:0px;                      /* the desktop bar's own slide-out */
     --dir-thresh:6px;
     --veil-end:1;               /* the panel is full exactly one viewport in */
 
@@ -1019,48 +1020,20 @@
   }
 
   /* -- Next up . the reveal --------------------------------------------
-     The same instrument the testimonial uses: one view-timeline on the
-     section, and each part scrubbed over its own slice of it, so the block
-     assembles as you arrive rather than popping. Same settle easing. */
-  .nu.css-timeline{view-timeline-name:--nuTL;view-timeline-axis:block}
-  @keyframes nuRise{ from{opacity:0;transform:translateY(56px)}
-                       to{opacity:1;transform:none} }
-  @keyframes nuPlate{ from{opacity:0;transform:translateY(88px) scale(.96)}
-                        to{opacity:1;transform:none} }
-  @keyframes nuFootIn{ from{opacity:0;transform:translateY(16px)}
-                         to{opacity:1;transform:none} }
-  .nu.css-timeline .nut,
-  .nu.css-timeline .numedia,
-  .nu.css-timeline .nuname,
-  .nu.css-timeline .nusub,
-  .nu.css-timeline .nucta,
-  .nu.css-timeline .tfoot{opacity:0}
-  .nu.css-timeline .nut{
-       animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
-       animation-timeline:--nuTL;animation-range:entry 4% entry 54%}
-  .nu.css-timeline .numedia{
-       animation:nuPlate linear(0, .38 25%, .70 50%, .89 75%, 1) both;
-       animation-timeline:--nuTL;animation-range:entry 14% entry 68%}
-  .nu.css-timeline .nuname{
-       animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
-       animation-timeline:--nuTL;animation-range:entry 24% entry 78%}
-  .nu.css-timeline .nusub{
-       animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
-       animation-timeline:--nuTL;animation-range:entry 32% entry 86%}
-  .nu.css-timeline .nucta{
-       animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
-       animation-timeline:--nuTL;animation-range:entry 40% entry 92%}
-  /* last thing in, exactly as the testimonial's footer behaves */
-  .nu.css-timeline .tfoot{
-       animation:nuFootIn linear(0, .38 25%, .70 50%, .89 75%, 1) both;
-       animation-timeline:--nuTL;animation-range:entry 62% entry 98%}
-  @media (prefers-reduced-motion:reduce){
-    .nu.css-timeline .nut,
-    .nu.css-timeline .numedia,
-    .nu.css-timeline .nuname,
-    .nu.css-timeline .nusub,
-    .nu.css-timeline .nucta,
-    .nu.css-timeline .tfoot{animation:none;transform:none;opacity:1}
+     The testimonial's move, not a fade. The dark section above is the sheet:
+     it scrolls up and OFF the block, and the block underneath does not
+     travel with it - it is already in place, pinned to the bottom of the
+     window, and the black simply stops covering it.
+
+     Two facts make it work: .fd paints an opaque ground and sits a layer
+     above, and .nu is sticky to the bottom so it arrives before its own
+     turn in the flow and waits there.
+
+     Height-guarded: on a short screen a sticky bottom would pin the block
+     with its own top cut off, so below 640 it sits in the flow. */
+  @media (min-width:1081px) and (min-height:640px){
+    #pgJbl .fd{position:relative;z-index:2}
+    .nu{position:sticky;bottom:0;z-index:1}
   }
 
   /* -- 465:19037 . JBL testimonial --------------------------------------
@@ -3334,8 +3307,28 @@
      gap is worse than being 22px taller than the frame. */
   .pwvid{position:relative;margin:39px 0 0 -5.52%;width:111.04%;
          aspect-ratio:1920 / 1080;border-radius:12px;overflow:hidden}
+  /* cover, the same way the frame's video fill is set to CROP - the file is
+     16:9 and the drawn box is 1.834, so ~3% of the height goes rather than
+     the composition sitting in letterbox bars */
   .pwvid video,.pwvid canvas{position:absolute;inset:0;
-         width:100%;height:100%;display:block}
+         width:100%;height:100%;display:block;object-fit:cover}
+  /* -- the framing ------------------------------------------------------
+     The export carries white around the collage: scanned against its own
+     254 ground, the tiles occupy x 160-1793 and y 48-984 of 1920 x 1080,
+     which is 85.1% of the width and 86.8% of the height. Played straight,
+     that margin is what you see.
+
+     So the BOX is framed onto the artwork rather than the file: 1.12 stands
+     the collage exactly as tall as the band, which crops nothing of it, and
+     the translate is the offset between the artwork's own centre
+     (976.5, 516) and the frame's (960, 540). The ~36px of white left at
+     each end falls inside the band's 77px overhang, so it never reaches
+     the page.
+
+     The FILE is untouched - this is where it sits in its frame, not a
+     re-encode. */
+  .pwvid video{transform:translate(-0.96%, 2.57%) scale(1.12);
+               transform-origin:50% 50%}
   /* The film IS the picture now. It used to feed a canvas that re-cut it
      into 21 scroll-parallax tiles - which meant resampling a 1920 source up
      to about 3100 device pixels, and that is what made it soft. One decode,
@@ -3829,8 +3822,14 @@
     /* 6 more either side of each stop: 18 + 44 = 62, so the collapsed pill
        is 3 x 62 + its own 8 = 194. The chip is then a shade wider than tall
        rather than a bare circle, which read as pinched. */
-    html.nav-tight .nav-wrap{--pw:194px}
-    .navrow{pointer-events:auto;transform:none;gap:8px;
+    /* The centre piece rides out of the top of the window on the way down
+       and comes back on the way up. transform only - no width, no scale, no
+       layout - so the whole thing is one composited property on one clock.
+       The travel is measured live in JS (--nty). */
+    .navrow{pointer-events:auto;gap:8px;
+            transform:translate3d(0,var(--nty,0px),0);
+            transition:transform .62s cubic-bezier(.22,1,.32,1);
+            will-change:transform;backface-visibility:hidden;
             /* NO filter here. Chained drop-shadows COMPOUND: the second one
                shadows the result of the first — shape plus shadow — so two
                passes at 6% and 4% rendered as one dark cloud far heavier
@@ -3838,6 +3837,8 @@
                instead, where layers are drawn independently from the border
                box and 4% means 4%. */
             filter:none}
+    @media (prefers-reduced-motion:reduce){ .navrow{transition:none} }
+
     /* ── no glass. A blurred backdrop and nothing else ────────────────
        The refraction pass, the shine and every hairline are gone. What is
        left is the thing a blurred surface actually is: it softens what
@@ -3930,9 +3931,9 @@
     /* one width source in every state — past the hero the pill was falling
        back to the dark bar's own 372 and stepping off centre */
     .nav-wrap .nav{width:var(--pw)}
-    html.nav-tight .seg{padding:16px 22px;gap:0}
-    html.nav-tight .seglw{display:none}
-    html.nav-tight .navrow{filter:none}
+    /* The pill used to collapse to 194 and drop its labels on the way down.
+       It does not resize at all any more - it LEAVES, and comes back the
+       moment you scroll up. One property, one clock, on the compositor. */
 
     /* 435:2195 — the pair sits at the right, uppercase, on a quarter-ink rule */
     .navr{gap:16px;font-size:16px;font-weight:500;letter-spacing:0;
@@ -4984,6 +4985,7 @@
          offset, so the columns travel at different speeds off a single file. -->
     <div class="pwvid" id="stgStage">
       <video id="stgVid" autoplay muted loop playsinline preload="auto"
+             poster="media/jbl-strategy.webp"
              aria-label="JBL regional site tiles">
         <source type="video/mp4" src="media/jbl-strategy.mp4">
       </video>
@@ -6112,6 +6114,18 @@
            collapses instead. --ty is the phone's affair only. */
         root.style.setProperty('--ty',
           (mob && (hidden||atBottom)) ? hideDistance()+'px' : '0px');
+        /* Desktop: the bar LEAVES rather than shrinking. Travel is its own
+           height plus the 21 it sits down from the top plus 24 of air, so it
+           clears the window's edge with its shadow rather than parking a
+           blurred hairline on it. Measured, not typed. */
+        if(!mob){
+          const nr=row.getBoundingClientRect();
+          const top=parseFloat(getComputedStyle(row.parentElement).top)||0;
+          root.style.setProperty('--nty',
+            hidden ? '-'+Math.ceil(nr.height+top+24)+'px' : '0px');
+        }else{
+          root.style.setProperty('--nty','0px');
+        }
         /* 2:386 — the hero has a bar of its own along the top, so the bottom
            bar stays away until the hero is behind you. One threshold drives
            both, and it is a fifth of the window rather than a pixel, so a
