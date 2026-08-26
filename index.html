@@ -3300,11 +3300,11 @@
      .721 of the em, which is 18.000 exactly; at 18 the three runs then set to
      58.38 / 7.87 / 87.25 against a drawn 58.38 / 7.87 / 87.25, and the whole
      line to the 173 the artboard is wide. 22 was simply too big. */
-  .pweb{display:flex;align-items:center;gap:10px;margin:0 auto;width:var(--cs-col);
-        font-family:var(--font-ui);font-size:20px;font-weight:500;line-height:1.45;
+  .pweb{display:flex;align-items:center;gap:8px;margin:0 auto;width:var(--cs-col);
+        font-family:var(--font-ui);font-size:16px;font-weight:600;line-height:1.45;
         text-transform:uppercase;white-space:nowrap;color:var(--ink)}
-  .pweb b,.pweb s{font-weight:500;text-decoration:none;color:#9F9F9F}
-  .pweb s{font-size:18px}
+  .pweb b,.pweb s{font-weight:600;text-decoration:none;color:#9F9F9F}
+  .pweb s{font-size:14px}
   .pweb em{font-style:normal}
 
   /* 326:19335 — 438 / 139 / 553, and the title STICKS: the right column is
@@ -3314,7 +3314,7 @@
      40 in the centred and Final Design heads — measured off the drawn pair:
      eyebrow ink bottom to title cap top comes out 33.6, and 28 is the margin
      that lands it there once the eyebrow's own descender space is counted. */
-  .pwrow{display:flex;align-items:flex-start;margin:28px auto 0;
+  .pwrow{display:flex;align-items:flex-start;margin:24px auto 0;
          width:var(--cs-col);gap:calc(139 / 1130 * 100%)}
   .pwt{margin:0;flex:0 0 calc(438 / 1130 * 100%);
        position:sticky;top:80px;align-self:flex-start;
@@ -3344,18 +3344,18 @@
 
   /* 327:19966 — 663 centred, the one block on the page that is */
   .pwmid{margin:240px auto 0;width:min(663px, var(--cs-col));
-         display:flex;flex-direction:column;align-items:center;gap:28px}
+         display:flex;flex-direction:column;align-items:center;gap:24px}
   .pwmid .pweb{width:auto}
-  .pwct{display:flex;flex-direction:column;align-items:center;gap:24px;width:100%}
+  .pwct{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
   /* align-self is the whole bug. .pwt carries align-self:flex-start so the
      sticky left-column titles hug the top of their row — and align-self on
      the CHILD beats align-items:center on the parent, so the centred title
      was laid out as a shrink-to-fit box parked against the left edge. Its
      text-align:center then centred the text inside a box the width of the
      text, which is no centring at all. stretch gives it the full 663 back. */
-  .pwt-c{position:static;flex:none;align-self:stretch;
-         text-align:center;max-width:100%}
-  .pwlead{text-align:center;width:100%}
+  .pwt-c{position:static;flex:none;align-self:center;
+         width:min(494px,100%);text-align:center;max-width:100%}
+  .pwlead{text-align:center;width:min(558px,100%);color:#515151}
 
   /* 327:19841 — placeholders, and the ratio is the drawn mock's so the strip
      is the right height before there is anything in it */
@@ -3374,7 +3374,7 @@
         aspect-ratio:258.29 / 560;border-radius:28px;background:rgba(0,0,0,.07)}
 
   .pwmot{margin:120px auto 0;width:var(--cs-col)}
-  .pwmot .pwrow{margin-top:28px;width:100%}
+  .pwmot .pwrow{margin-top:24px;width:100%}
   /* 327:19845 — the cymatics clip. The drawn box is 553 x 511.5 (1.081) and
      the source is 16:9, so the crop is baked in at 1167 x 1080 centred rather
      than left to object-fit: the plate sits dead centre in frame and cutting
@@ -3454,17 +3454,17 @@
 
   /* 327:22167 — 716 centred, its own eyebrow, its own measure */
   .fdhead{margin:0 auto;width:min(716px, var(--cs-col));
-          display:flex;flex-direction:column;align-items:center;gap:28px}
+          display:flex;flex-direction:column;align-items:center;gap:24px}
   /* Saans REGULAR here, not the Medium the process eyebrows use, and White 3
      rather than a black at 50% — this section is drawn on black. */
-  .fdeb{display:flex;align-items:center;gap:10px;margin:0;
-        font-family:var(--font-ui);font-size:20px;font-weight:500;
+  .fdeb{display:flex;align-items:center;gap:8px;margin:0;
+        font-family:var(--font-ui);font-size:16px;font-weight:600;
         line-height:1.45;text-transform:uppercase;
         white-space:nowrap;color:var(--c-1)}
-  .fdeb b,.fdeb s{font-weight:500;text-decoration:none;color:var(--c-3)}
-  .fdeb s{font-size:18px}
+  .fdeb b,.fdeb s{font-weight:600;text-decoration:none;color:var(--c-3)}
+  .fdeb s{font-size:14px}
   .fdeb em{font-style:normal}
-  .fdct{display:flex;flex-direction:column;align-items:center;gap:24px;width:100%}
+  .fdct{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
   /* 40 Inter REGULAR — the black-section weight, same as the intro claim.
      The process page runs Medium because it is on white. */
   .fdt{margin:0;width:438px;max-width:100%;text-align:center;
