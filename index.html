@@ -4266,9 +4266,11 @@
           <!-- Volvo_ProjectCard.mp4, 874x646 — exactly 2x the drawn 437x323.
                No autoplay: the hover handler mounts and starts it, so nothing
                is fetched until you land on the card. -->
+          <!-- mp4 only, and it is Kris's own stream copied rather than
+               re-encoded. VP9 came out both larger and measurably worse on
+               this footage, and every target browser plays H.264. -->
           <video muted loop playsinline
                  poster="media/volvo-card.webp">
-            <source src="media/volvo-card.webm" type="video/webm">
             <source src="media/volvo-card.mp4" type="video/mp4">
           </video>
         </i></template>
@@ -6286,9 +6288,25 @@
                 overlap:o.overlap!==undefined?o.overlap:.55});
       tick();
     }
+    /* Force one run to its arrived state and stop scrubbing it. Only the
+       watchdog below calls this, and only when a reveal has demonstrably
+       failed — a run that has finished is exactly what `once` already
+       models, so this is that state reached by another road. */
+    function forceArrive(el){
+      for(const e of reg){
+        if(e.els.indexOf(el)===-1) continue;
+        e.hi=1; e.done=true;
+        for(const x of e.els){
+          x.style.opacity='1'; x.style.filter='none'; x.style.transform='none';
+          x.classList.remove('soft');
+        }
+      }
+    }
     addEventListener('scroll',tick,{passive:true});
     addEventListener('resize',tick);
-    return {words,add,tick,noMo};
+    addEventListener('load',tick);
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(tick);
+    return {words,add,tick,noMo,forceArrive};
   })();
 
   /* ── the case study reads itself in ───────────────────────────────── */
@@ -8742,6 +8760,69 @@
 
      Tightening the cap spends itself out of the SPREAD, not out of the letters
      — the per-letter duration is what stops each one snapping. */
+  /* ── the reveal watchdog ────────────────────────────────────────────
+     A scroll-driven reveal must never be able to leave content permanently
+     invisible. Every one of them measures a host against the window, and
+     every measurement has a moment it can be taken wrong — a restored scroll
+     position, a late reflow, a rect read before the media laid out. When that
+     happens the run never arrives and the block stays at opacity 0 with the
+     page sitting on top of it, which is what Kris was seeing on the project
+     cards: refresh and they are gone, refresh again and they are there.
+
+     So this does not try to enumerate the races. It watches the OUTCOME. If
+     a .soft element is more than 60% inside the window and is still fully
+     transparent 1.2s later, its reveal has failed by definition — 60% is
+     well past the point any of these runs are meant to have started, and
+     nothing on this site takes 1.2 seconds to arrive once it has. It is
+     handed to rv.forceArrive, which lands the whole run and stops scrubbing
+     it so a later paint cannot put it back.
+
+     Threshold matters: a card can legitimately sit at opacity 0 with its top
+     edge just inside the window — measured at 5% visible, correctly still
+     dark — so a naive "in view at all" test would fire on healthy reveals
+     and pop them in early. */
+  (function(){
+    const rv=window.__rv;
+    if(!rv || rv.noMo || !('IntersectionObserver' in window)) return;
+    const timers=new Map(), seen=new WeakSet();
+    const io=new IntersectionObserver(es=>{
+      for(const e of es){
+        const el=e.target;
+        if(e.intersectionRatio>=.6){
+          if(timers.has(el)) continue;
+          timers.set(el, setTimeout(()=>{
+            timers.delete(el);
+            const r=el.getBoundingClientRect();
+            if(r.height && r.top<innerHeight && r.bottom>0 &&
+               parseFloat(getComputedStyle(el).opacity) < .05){
+              /* land THIS element first. rv.forceArrive can only help for a
+                 run it actually holds, and the worst version of this bug is
+                 the run never registering at all — in which case rv has never
+                 heard of the element and delegating to it does nothing. */
+              el.style.opacity='1'; el.style.filter='none'; el.style.transform='none';
+              el.classList.remove('soft');
+              rv.forceArrive(el);      /* and land its siblings, if rv has it */
+            }
+          }, 1200));
+        } else {
+          clearTimeout(timers.get(el)); timers.delete(el);
+        }
+      }
+    },{threshold:[0,.6,1]});
+    /* .soft is applied by each section as it registers its run, so the set is
+       swept rather than read once. */
+    function sweep(){
+      for(const el of document.querySelectorAll('.soft')){
+        if(seen.has(el)) continue;
+        seen.add(el); io.observe(el);
+      }
+    }
+    sweep();
+    addEventListener('load', sweep);
+    for(const t of [400,1200,2600]) setTimeout(sweep,t);
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(sweep);
+  })();
+
   const LOAD_CAP=2500;
   const LOAD_LIFT=620;        /* the black sliding off the top          */
   const LOAD_HOLD=320;        /* the beat after the last letter lands   */
@@ -8758,6 +8839,13 @@
        to be worked out again now rather than from the boot-time measurement */
     dispatchEvent(new Event('scroll'));
   }
+
+  /* The loader scrolls to the top and the hero landing is written against
+     starting there — so the browser restoring the previous scroll position is
+     a second hand on the wheel. Whichever won was a race, and losing it left
+     scroll-driven reveals measured against a position they never saw. */
+  try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }
+  catch(e){}
 
   function runLoader(){
     if(noMotion || !loader || !lmark){
