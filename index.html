@@ -1032,8 +1032,11 @@
      Height-guarded: on a short screen a sticky bottom would pin the block
      with its own top cut off, so below 640 it sits in the flow. */
   @media (min-width:1081px) and (min-height:640px){
-    #pgJbl .fd{position:relative;z-index:2}
-    .nu{position:sticky;bottom:0;z-index:1}
+    /* EVERY section above it is the sheet, not just the last one. .nu is
+       pinned to the bottom of the window for the whole page, so anything
+       that does not sit above it gets covered by it. */
+    #pgJbl .cs,#pgJbl .pw,#pgJbl .fd{position:relative;z-index:2}
+    #pgJbl .nu{position:sticky;bottom:0;z-index:1}
   }
 
   /* -- 465:19037 . JBL testimonial --------------------------------------
@@ -3318,16 +3321,15 @@
      which is 85.1% of the width and 86.8% of the height. Played straight,
      that margin is what you see.
 
-     So the BOX is framed onto the artwork rather than the file: 1.12 stands
-     the collage exactly as tall as the band, which crops nothing of it, and
-     the translate is the offset between the artwork's own centre
-     (976.5, 516) and the frame's (960, 540). The ~36px of white left at
-     each end falls inside the band's 77px overhang, so it never reaches
-     the page.
+     So it is CROPPED to the artwork. 1.175 is the factor that makes the
+     collage cover the band edge to edge - no white left anywhere - and the
+     translate is the offset between the artwork's own centre (976.5, 516)
+     and the frame's (960, 540). Covering the width runs the artwork 1.9%
+     past the band's height, so about 1% goes off the top and the bottom.
 
      The FILE is untouched - this is where it sits in its frame, not a
      re-encode. */
-  .pwvid video{transform:translate(-0.96%, 2.57%) scale(1.12);
+  .pwvid video{transform:translate(-1.01%, 2.61%) scale(1.175);
                transform-origin:50% 50%}
   /* The film IS the picture now. It used to feed a canvas that re-cut it
      into 21 scroll-parallax tiles - which meant resampling a 1920 source up
@@ -5142,7 +5144,7 @@
       <button class="nurow" type="button" data-page="volvo"
               aria-label="Read the Volvo case study">
         <span class="numedia">
-          <video muted loop playsinline preload="metadata" aria-hidden="true"
+          <video muted loop playsinline preload="auto" aria-hidden="true"
                  poster="media/volvo-card.webp">
             <source src="media/volvo-card.mp4" type="video/mp4">
           </video>
@@ -8253,7 +8255,11 @@
      Looping videos never fire `ended`, so this only catches the ones meant
      to hold. */
   (function(){
-    const vids=[...document.querySelectorAll('video')];
+    /* the Next-up plate runs on its own rule below - the governor's
+       geometry test is wrong for a sticky element that is painted
+       behind everything until the very end of the page */
+    const vids=[...document.querySelectorAll('video')]
+                 .filter(v=>!v.closest('.nu'));
     if(!vids.length||!('IntersectionObserver' in window)) return;
     const want=new Set();
 
@@ -8272,24 +8278,45 @@
     },{rootMargin:'0px'});
     vids.forEach(v=>io.observe(v));
 
-    /* A clip that has already been running while it was off screen has eaten
-       its own opening by the time you get to it. The Next-up plate is the one
-       that shows: it sits at the very end of the page, and its reveal only
-       finishes at the last pixel of scroll. So it starts from the top the
-       first time it is properly on screen - done under the reveal's own
-       fade, which is still short of opaque at 60%, so the snap is not seen. */
-    const started=new WeakSet();
-    const head=new IntersectionObserver(es=>{
-      for(const e of es){
-        if(!e.isIntersecting || e.intersectionRatio<.6) continue;
-        const v=e.target;
-        if(started.has(v)) continue;
-        started.add(v);
-        try{ v.currentTime=0; }catch(err){}
-        if(want.has(v)) v.play().catch(()=>{});
+    /* -- the Next-up plate is a special case ---------------------------
+       It is sticky: it sits pinned to the bottom of the window for the whole
+       page, painted BEHIND every section, and only stops being covered when
+       the black sheet above it has scrolled off. An IntersectionObserver
+       cannot see that - geometry says the plate has been on screen since the
+       top of the page, so the governor had it running for minutes and its
+       opening was long gone by the time you saw it.
+
+       What is actually being asked is "is the sheet still over it", which is
+       one rect test. Covered: paused and held at zero. Uncovered: it starts,
+       from the top, exactly when it appears. */
+    const nuSec=document.querySelector('.nu');
+    if(nuSec){
+      const plate=nuSec.querySelector('.numedia video');
+      const sheet=nuSec.previousElementSibling;
+      if(plate && sheet){
+        let armed=true;
+        const nuCheck=()=>{
+          const sr=sheet.getBoundingClientRect(), mr=plate.getBoundingClientRect();
+          if(!mr.height) return;
+          if(sr.bottom <= mr.top + 2){
+            if(armed){
+              armed=false;
+              try{ plate.currentTime=0; }catch(e){}
+              plate.play().catch(()=>{});
+            }
+          }else{
+            armed=true;
+            if(!plate.paused) plate.pause();
+            if(plate.currentTime>.05){ try{ plate.currentTime=0; }catch(e){} }
+          }
+        };
+        addEventListener('scroll',nuCheck,{passive:true});
+        addEventListener('resize',nuCheck);
+        if(document.fonts&&document.fonts.ready) document.fonts.ready.then(nuCheck);
+        addEventListener('load',nuCheck);
+        nuCheck();
       }
-    },{threshold:[0,.6,1]});
-    document.querySelectorAll('.numedia video').forEach(v=>head.observe(v));
+    }
   })();
 
   /* ── pushed by the cursor ───────────────────────────────────────────
