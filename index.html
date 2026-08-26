@@ -3310,32 +3310,13 @@
      gap is worse than being 22px taller than the frame. */
   .pwvid{position:relative;margin:39px 0 0 -5.52%;width:111.04%;
          aspect-ratio:1920 / 1080;border-radius:12px;overflow:hidden}
-  /* cover, the same way the frame's video fill is set to CROP - the file is
-     16:9 and the drawn box is 1.834, so ~3% of the height goes rather than
-     the composition sitting in letterbox bars */
   .pwvid video,.pwvid canvas{position:absolute;inset:0;
-         width:100%;height:100%;display:block;object-fit:cover}
-  /* -- the framing ------------------------------------------------------
-     The export carries white around the collage: scanned against its own
-     254 ground, the tiles occupy x 160-1793 and y 48-984 of 1920 x 1080,
-     which is 85.1% of the width and 86.8% of the height. Played straight,
-     that margin is what you see.
-
-     So it is CROPPED to the artwork. 1.175 is the factor that makes the
-     collage cover the band edge to edge - no white left anywhere - and the
-     translate is the offset between the artwork's own centre (976.5, 516)
-     and the frame's (960, 540). Covering the width runs the artwork 1.9%
-     past the band's height, so about 1% goes off the top and the bottom.
-
-     The FILE is untouched - this is where it sits in its frame, not a
-     re-encode. */
-  .pwvid video{transform:translate(-1.01%, 2.61%) scale(1.175);
-               transform-origin:50% 50%}
-  /* The film IS the picture now. It used to feed a canvas that re-cut it
-     into 21 scroll-parallax tiles - which meant resampling a 1920 source up
-     to about 3100 device pixels, and that is what made it soft. One decode,
-     one scale, done by the compositor. */
-  .pwvid video{pointer-events:none}
+         width:100%;height:100%;display:block}
+  /* the decoder, not the picture: it plays, the canvas reads it, nobody
+     sees it. Left at full size and merely transparent because a 1px or
+     off-screen video gets throttled or dropped to a lower decode. */
+  .pwvid video{opacity:0;pointer-events:none}
+  .pwvid canvas{z-index:1}
 
   /* 327:19966 — 663 centred, the one block on the page that is */
   .pwmid{margin:240px auto 0;width:min(663px, var(--cs-col));
@@ -4986,11 +4967,10 @@
          the canvas blits each tile's source rect to its own scroll-driven
          offset, so the columns travel at different speeds off a single file. -->
     <div class="pwvid" id="stgStage">
-      <video id="stgVid" autoplay muted loop playsinline preload="auto"
-             poster="media/jbl-strategy.webp"
-             aria-label="JBL regional site tiles">
+      <video id="stgVid" autoplay muted loop playsinline preload="auto" aria-hidden="true">
         <source type="video/mp4" src="media/jbl-strategy.mp4">
       </video>
+      <canvas id="stgCanvas" aria-label="JBL regional site tiles"></canvas>
     </div>
 
     <div class="pwmid">
@@ -7742,6 +7722,9 @@
       const v=media && clip(media);
       if(v){
         media.classList.add('playing');
+        /* from the top, every time. A second hover was picking the clip up
+           wherever the last one left it, which is the middle of a shot. */
+        try{ v.currentTime=0; }catch(e){}
         v.play().catch(()=>{});
         if(!raf) raf=requestAnimationFrame(watch);
       }
@@ -8144,6 +8127,8 @@
           cv=document.getElementById('stgCanvas');
     if(!stage||!vid||!cv) return;
     const T={"vw":1920,"vh":1080,"tiles":[{"c":0,"x":160,"y":293,"w":223,"h":485},{"c":1,"x":396,"y":158,"w":223,"h":150},{"c":1,"x":396,"y":323,"w":223,"h":348},{"c":1,"x":396,"y":686,"w":223,"h":234},{"c":2,"x":631,"y":65,"w":223,"h":145},{"c":2,"x":631,"y":223,"w":223,"h":483},{"c":2,"x":631,"y":719,"w":223,"h":292},{"c":3,"x":866,"y":172,"w":223,"h":151},{"c":3,"x":866,"y":337,"w":223,"h":139},{"c":3,"x":866,"y":482,"w":223,"h":70},{"c":3,"x":866,"y":588,"w":223,"h":70},{"c":3,"x":866,"y":685,"w":223,"h":107},{"c":3,"x":866,"y":868,"w":223,"h":116},{"c":4,"x":1101,"y":48,"w":223,"h":150},{"c":4,"x":1101,"y":212,"w":223,"h":483},{"c":4,"x":1101,"y":728,"w":223,"h":84},{"c":4,"x":1101,"y":846,"w":223,"h":100},{"c":5,"x":1336,"y":171,"w":223,"h":150},{"c":5,"x":1336,"y":334,"w":223,"h":482},{"c":5,"x":1336,"y":829,"w":223,"h":151},{"c":6,"x":1571,"y":363,"w":223,"h":345}]}, TILES=T.tiles;
+    /* measured off the file: the artwork's own bounding box inside the frame */
+    const CROP={x:160,y:48,w:1634,h:937};
     const ctx=cv.getContext('2d',{alpha:false});
 
     /* One speed per COLUMN, not per tile: tiles in a column belong to the
@@ -8183,14 +8168,23 @@
       /* the PAGE's background, read off the section — a hand-picked #fcfcfc
          drew a visible grey rectangle across the full bleed against the
          white page, which read as the video failing to load */
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
       ctx.fillStyle=PAPER;
       ctx.fillRect(0,0,W,H);
+      /* CROP, not the whole frame. The export carries white around the
+         collage - scanned against its own 254 ground the tiles occupy
+         x 160-1793 and y 48-984 of 1920 x 1080 - so the band is mapped onto
+         the ARTWORK's box, not the file's. */
+      const s=Math.max(W/CROP.w, H/CROP.h);
+      const ox=(W-CROP.w*s)/2, oy=(H-CROP.h*s)/2;
       const amp=SPREAD*(W/1440);
       for(let i=0;i<TILES.length;i++){
         const t=TILES[i];
         const dy=cur*SPEED[t.c]*amp;
         ctx.drawImage(vid, t.x,t.y,t.w,t.h,
-                      t.x*K, t.y*K+dy, t.w*K, t.h*K);
+                      (t.x-CROP.x)*s+ox, (t.y-CROP.y)*s+oy+dy,
+                      t.w*s, t.h*s);
       }
     }
 
