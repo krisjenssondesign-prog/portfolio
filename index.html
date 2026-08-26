@@ -3389,19 +3389,35 @@
     .fd .w,.fd .soft{opacity:1;filter:none;transform:none} }
 
 
-  /* ── 367:31802 · Video collage ───────────────────────────────────────
+  /* ── 463:12985 · Video collage ───────────────────────────────────────
      1360 on the page's 40 guides — the widest thing in the study. Four
-     columns on a 346 pitch (322 wide, 24 apart) with three tiles each, every
-     tile its own height, and each column starting a few pixels lower than
-     the last. That last part is the whole look: drop the offsets and it
-     stops being a collage and becomes a table. */
+     columns, and they are NOT equal: 322 / 322 / 322 / 315 on a 26 gutter,
+     which comes to 1359 and is why the flex-grow numbers below are the drawn
+     widths rather than 1. Tiles sit 24 apart at radius 12, each carrying its
+     own drawn aspect — that variety is the whole look.
+
+     The staggered --off the old frame used is gone. Every column is full
+     height in the frame (each is self-stretch with an h-full child) and the
+     tiles run from the top, so the ragged edge now comes out of the tile
+     heights themselves rather than a nudge per column. Stretch matters for
+     more than the look: without it column two has no height to give and its
+     flexible tile collapses to zero.
+
+     One tile has no fixed aspect: 463:12994 is flex-[1_0_0] in the frame and
+     absorbs whatever its column has left, which is what lands column two on
+     715 exactly. */
   .vc{margin:288px auto 0;width:min(1360px, calc(100% - var(--m) * 2));
-      display:flex;gap:calc(24 / 1360 * 100%)}
-  .vcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:24px;
-        margin-top:var(--off,0px)}
+      display:flex;align-items:stretch;gap:calc(26 / 1359 * 100%)}
+  .vcol{min-width:0;display:flex;flex-direction:column;gap:24px;flex:322 1 0}
+  .vcol:last-child{flex:315 1 0}
   .vct{display:block;width:100%;background:rgba(255,255,255,.07);
-       border-radius:16px;overflow:hidden}
+       border-radius:12px;overflow:hidden}
+  .vct.grow{flex:1 0 0;min-height:0}
   .vct video,.vct img{width:100%;height:100%;display:block;object-fit:cover}
+  /* 463:12988, the Gaming subcategory walkthrough — the one asset not
+     exported yet. Figma renders it only at its drawn 322x196, half what the
+     tile paints on a retina screen, so it wants a 2x export. */
+  .vct.pending{background:#1C1C1C}
 
   /* ── the reveal, on the shared tokens ───────────────────────────────
      Same family as the work headline and the About story: every word carries
@@ -4915,26 +4931,28 @@
       </div>
     </div>
 
+      <!-- 463:12985. Eleven tiles: four clips and seven stills, each at the
+           aspect the frame draws it. Column two's middle tile carries .grow
+           because 463:12994 is flex-[1_0_0] there. -->
       <div class="vc">
-        <div class="vcol" style="--off:0px">
-          <span class="vct" style="aspect-ratio:322 / 319"></span>
-          <span class="vct" style="aspect-ratio:322 / 267"></span>
-          <span class="vct" style="aspect-ratio:315 / 338"></span>
+        <div class="vcol">
+          <span class="vct pending" style="aspect-ratio:322 / 195.66"></span>
+          <span class="vct" style="aspect-ratio:322 / 201.25"><video muted loop playsinline preload="none" aria-hidden="true" poster="media/jblc-v1.webp"><source src="media/jblc-v1.webm" type="video/webm"><source src="media/jblc-v1.mp4" type="video/mp4"></video></span>
+          <span class="vct" style="aspect-ratio:322 / 264"><img src="media/jblc-s1.webp" alt="JBL storefront" loading="lazy" decoding="async"></span>
         </div>
-        <div class="vcol" style="--off:3px">
-          <span class="vct" style="aspect-ratio:315 / 423"></span>
-          <span class="vct" style="aspect-ratio:315 / 246"></span>
-          <span class="vct" style="aspect-ratio:315 / 250"></span>
+        <div class="vcol">
+          <span class="vct" style="aspect-ratio:322 / 229.87"><video muted loop playsinline preload="none" aria-hidden="true" poster="media/jblc-v4.webp"><source src="media/jblc-v4.webm" type="video/webm"><source src="media/jblc-v4.mp4" type="video/mp4"></video></span>
+          <span class="vct grow" style="aspect-ratio:322 / 235.88"><img src="media/jblc-s2.webp" alt="JBL product band" loading="lazy" decoding="async"></span>
+          <span class="vct" style="aspect-ratio:322 / 201.28"><img src="media/jblc-s4.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
         </div>
-        <div class="vcol" style="--off:0px">
-          <span class="vct" style="aspect-ratio:322 / 263"></span>
-          <span class="vct" style="aspect-ratio:322 / 313"></span>
-          <span class="vct" style="aspect-ratio:315 / 346"></span>
+        <div class="vcol">
+          <span class="vct" style="aspect-ratio:322 / 264"><img src="media/jblc-s3.webp" alt="JBL tune series" loading="lazy" decoding="async"></span>
+          <span class="vct" style="aspect-ratio:322 / 201.28"><img src="media/jblc-s5.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
+          <span class="vct" style="aspect-ratio:322 / 201.75"><video muted loop playsinline preload="none" aria-hidden="true" poster="media/jblc-v2.webp"><source src="media/jblc-v2.webm" type="video/webm"><source src="media/jblc-v2.mp4" type="video/mp4"></video></span>
         </div>
-        <div class="vcol" style="--off:7px">
-          <span class="vct" style="aspect-ratio:322 / 454"></span>
-          <span class="vct" style="aspect-ratio:322 / 246"></span>
-          <span class="vct" style="aspect-ratio:322 / 213"></span>
+        <div class="vcol">
+          <span class="vct" style="aspect-ratio:315 / 357.94"><img src="media/jblc-s6.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
+          <span class="vct" style="aspect-ratio:315 / 332.15"><video muted loop playsinline preload="none" aria-hidden="true" poster="media/jblc-v3.webp"><source src="media/jblc-v3.webm" type="video/webm"><source src="media/jblc-v3.mp4" type="video/mp4"></video></span>
         </div>
       </div>
   </section>
