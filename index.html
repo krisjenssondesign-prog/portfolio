@@ -8336,7 +8336,22 @@
         const nuCheck=()=>{
           const sr=sheet.getBoundingClientRect(), mr=plate.getBoundingClientRect();
           if(!mr.height) return;
-          if(sr.bottom <= mr.top + 2){
+          /* TWO conditions, and the second one alone was the bug. The sheet
+             test only means anything while the block is STICKY - and it is
+             only sticky above 1081 wide and 640 tall. In the flow layout the
+             sheet's bottom IS the block's top, so `sheet is clear of the
+             plate` is true at every scroll position including the top of the
+             page: the clip started immediately, ran while the section was
+             thousands of pixels below, and was a second and a half in by the
+             time you reached it. Measured off Kris's recording - the frame on
+             screen at the reveal matched 1.5-2.0s of the file, twice.
+             So it also has to actually be on screen. */
+          const vis=Math.max(0, Math.min(innerHeight, mr.bottom) - Math.max(0, mr.top)) / mr.height;
+          /* hysteresis: starts at 60% on screen, and does not re-arm until it
+             drops under 25% - otherwise the plate scrolling half off while you
+             read the button stopped and restarted it */
+          const show = armed ? (vis >= .6) : (vis >= .25);
+          if(show && sr.bottom <= mr.top + 2){
             if(armed){
               armed=false;
               /* setting currentTime before there is any data is silently
