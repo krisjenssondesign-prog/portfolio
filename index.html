@@ -549,6 +549,13 @@
                     transform:translateZ(0);
                     backface-visibility:hidden;
                     -webkit-backface-visibility:hidden}
+  /* Volvo only, and 1%: the recording carries a hairline at the very left of
+     the frame that lands on the card's edge. object-fit has already sized the
+     picture to cover, so this is a further 1% over that — 0.5% off each side,
+     about 4.5px of the painted 894, which takes the line past the edge.
+     Asked for at exactly 1%; the scale is on the same transform as the
+     compositing hint so the two cannot fight. */
+  .gmedia.volvo > video{transform:translateZ(0) scale(1.01)}
 
   /* ── the stand-in plates ────────────────────────────────────────────
      Flat brand ground with the mark centred on it, until the real clips
