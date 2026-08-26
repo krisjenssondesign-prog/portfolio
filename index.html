@@ -8255,8 +8255,27 @@
         if(e.isIntersecting) want.add(e.target); else want.delete(e.target);
       }
       apply();
-    },{rootMargin:'30% 0px'});
+    },{rootMargin:'0px'});
     vids.forEach(v=>io.observe(v));
+
+    /* A clip that has already been running while it was off screen has eaten
+       its own opening by the time you get to it. The Next-up plate is the one
+       that shows: it sits at the very end of the page, and its reveal only
+       finishes at the last pixel of scroll. So it starts from the top the
+       first time it is properly on screen - done under the reveal's own
+       fade, which is still short of opaque at 60%, so the snap is not seen. */
+    const started=new WeakSet();
+    const head=new IntersectionObserver(es=>{
+      for(const e of es){
+        if(!e.isIntersecting || e.intersectionRatio<.6) continue;
+        const v=e.target;
+        if(started.has(v)) continue;
+        started.add(v);
+        try{ v.currentTime=0; }catch(err){}
+        if(want.has(v)) v.play().catch(()=>{});
+      }
+    },{threshold:[0,.6,1]});
+    document.querySelectorAll('.numedia video').forEach(v=>head.observe(v));
   })();
 
   /* ── pushed by the cursor ───────────────────────────────────────────
