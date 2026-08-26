@@ -4263,12 +4263,23 @@
       <article class="rcard" data-page="volvo">
         <div class="gmedia fb volvo" data-mark="9"><i></i></div>
         <template class="gmedia-clip" data-for="volvo"><i>
-          <!-- Volvo_ProjectCard.mp4, 874x646 — exactly 2x the drawn 437x323.
-               No autoplay: the hover handler mounts and starts it, so nothing
-               is fetched until you land on the card. -->
-          <!-- mp4 only, and it is Kris's own stream copied rather than
-               re-encoded. VP9 came out both larger and measurably worse on
-               this footage, and every target browser plays H.264. -->
+          <!-- Volvo_2.0.mp4, 1920x1080. Kris's own H.264 stream COPIED, not
+               re-encoded, and CUT AT THE 4.100s KEYFRAME so the copy stays
+               lossless — 13.9s of the original 18.
+
+               What the first 4s cost: the clip opens on a bordered mockup that
+               expands to full bleed, and the card crops 11.9% off each side,
+               so its left edge samples x=229 of 1920. Measured on the source,
+               the mockup's left border sweeps x=204 -> x=256 between 2.1s and
+               3.6s at luminance ~150 — straight across the card's left edge.
+               That was the white line. Across the trimmed clip the worst
+               spike at that column is 6.5 against the 160+ it scored before.
+               It also drops a near-black opening that swung hard off the
+               white plate.
+
+               mp4 only: VP9 came out both larger and measurably worse here,
+               and every target browser plays H.264. No autoplay — the hover
+               handler mounts it, so nothing is fetched until you land. -->
           <video muted loop playsinline
                  poster="media/volvo-card.webp">
             <source src="media/volvo-card.mp4" type="video/mp4">
