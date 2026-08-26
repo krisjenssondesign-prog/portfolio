@@ -10,10 +10,6 @@
      Six faces, subset to latin plus the punctuation this site sets, and
      embedded so the page renders correctly opened from anywhere. Inter is
      the display face (headline, KRIS); Saans is everything else. */
-  /* live build: Inter stands in for Saans while the licence is
-     pending. 300 is ExtraLight, one step light of Saans Light —
-     see make-live.py for why it is not simply left to fall to 400. */
-  @font-face{font-family:'Inter';font-style:normal;font-weight:300;font-display:block;src:url(fonts/Inter-ExtraLight.woff) format('woff')}
   @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:block;src:url(fonts/Inter-Regular.woff) format('woff')}
   @font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/Inter-Medium.woff) format('woff')}
   @font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:block;src:url(fonts/Inter-SemiBold.woff) format('woff')}
@@ -24,6 +20,10 @@
      section's body copy is drawn Light 300 and was resolving DOWN to
      Regular, which is why black-ground body looked identical to the
      white-ground body it was meant to contrast with. */
+  /* live build: Inter stands in for Saans while the licence is
+     pending. 300 is ExtraLight, one step light of Saans Light —
+     see make-live.py for why it is not simply left to fall to 400. */
+  @font-face{font-family:'Inter';font-style:normal;font-weight:300;font-display:block;src:url(fonts/Inter-ExtraLight.woff) format('woff')}
 
   :root{
     --font-display:'Inter',-apple-system,'Helvetica Neue',sans-serif;  /* headline · KRIS */
@@ -960,11 +960,12 @@
       padding:64px 0 0;display:flex;flex-direction:column;gap:64px}
   .nublock{display:flex;flex-direction:column;gap:32px;
            padding:0 calc(155 / 1440 * 100%)}
-  .nut{margin:0;width:min(442px,100%);
-       font-family:var(--font-display);font-size:40px;font-weight:500;
-       line-height:1.1;letter-spacing:0;color:var(--ink);
-       text-box:trim-both cap alphabetic;
-       text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .nut{margin:0;display:flex;align-items:center;gap:8px;
+       font-family:var(--font-ui);font-size:16px;font-weight:600;
+       line-height:1.45;letter-spacing:0;text-transform:uppercase;
+       white-space:nowrap;color:var(--ink)}
+  .nut s{font-size:14px;text-decoration:none;color:#9F9F9F}
+  .nut em{font-style:normal}
   /* items-end: the plate and the text column are set on their BOTTOMS in
      464:15806, which is what puts the button on the plate's own baseline */
   .nurow{display:flex;align-items:flex-end;gap:48px;width:100%;
@@ -1063,14 +1064,17 @@
   /* -- 465:19037 . JBL testimonial --------------------------------------
      240 top, the column 611 wide inside a 379 side guide. The name is Inter
      Regular here - the one line in the section that is not the UI face. */
-  .jtm{margin:0 auto;padding:240px 0 0;width:100%;
-       display:flex;flex-direction:column;align-items:center;gap:24px}
+  .jtm{margin:0 auto;padding:240px 0 140px;width:100%;
+       display:flex;flex-direction:column;align-items:center;gap:80px}
+  .jtmquote{width:100%;display:flex;flex-direction:column;
+            align-items:center;gap:24px}
+  .jtm .jtmimp{margin:0 auto}
   .jtmav{flex:none;width:148px;height:148px;border-radius:999px;
          overflow:hidden;background:var(--w-cont);position:relative}
   .jtmav img{position:absolute;inset:0;width:100%;height:100%;
              display:block;object-fit:cover}
   .jtmcol{width:min(611px, calc(100% - var(--m) * 2));
-          display:flex;flex-direction:column;align-items:center;gap:32px}
+          display:flex;flex-direction:column;align-items:center;gap:24px}
   .jtmhead{display:flex;flex-direction:column;align-items:center;gap:16px;
            width:100%}
   .jtmname{margin:0;width:min(438px,100%);text-align:center;
@@ -1081,17 +1085,81 @@
   .jtmrole{margin:0;width:100%;display:flex;align-items:center;
            justify-content:center;gap:12px;
            font-family:var(--font-ui);font-size:24px;font-weight:500;
-           line-height:1.25;letter-spacing:0;color:#BFBFBF;white-space:nowrap}
+           line-height:1.25;letter-spacing:0;color:var(--w-1);white-space:nowrap}
   .jtmrole s{text-decoration:none}
   .jtmq{margin:0;width:100%;text-align:center;
         font-family:var(--font-ui);font-size:24px;font-weight:500;
-        line-height:1.25;letter-spacing:0;color:#BFBFBF}
+        line-height:1.25;letter-spacing:0;color:#9F9F9F}
   @media (max-width:720px){
     .jtm{padding-top:140px}
     .jtmname{font-size:clamp(28px,7vw,40px)}
     .jtmrole,.jtmq{font-size:clamp(18px,4.4vw,24px)}
     .jtmrole{flex-wrap:wrap;white-space:normal}
   }
+
+  /* -- 474:67482 . the strategy film, full bleed -----------------------
+     1445 on a 1440 frame - 5 over each side - and 785 tall, no radius. */
+  .fdfilm{position:relative;margin:140px 0 0 -0.347%;width:100.347%;
+          aspect-ratio:1445 / 785;overflow:hidden}
+  .fdfilm video,.fdfilm canvas{position:absolute;inset:0;
+          width:100%;height:100%;display:block}
+  .fdfilm video{opacity:0;pointer-events:none}
+  .fdfilm canvas{z-index:1}
+
+  /* -- 474:66285 . the strategy statics --------------------------------
+     1132 wide on its own 154 guides - no longer full-bleed. */
+  .pwsg{margin:90px auto 0;width:min(1132px, calc(100% - var(--m) * 2));
+        display:flex;gap:calc(21.643 / 1132 * 100%);align-items:stretch}
+  .pwsgr{flex:1 1 0;min-width:0;display:flex;flex-direction:column;
+         gap:calc(19.978 / 596 * 100%)}
+  .pwsg > .pwsgc{flex:1 1 0;min-width:0;aspect-ratio:555.179 / 596}
+  .pwsgr > .pwsgc{flex:1 1 0;min-height:0}
+  .pwsgc{display:block;border-radius:12px;overflow:hidden;
+         background:rgba(0,0,0,.05)}
+  .pwsgc img{width:100%;height:100%;display:block;object-fit:cover}
+
+  /* -- 474:65989 . SYSTEM SNAPSHOT ------------------------------------- */
+  .pwsn{margin:40px auto 0;width:100%;
+        display:flex;align-items:stretch;gap:calc(21.643 / 1131.254 * 100%);
+        aspect-ratio:1131.254 / 595.208}
+  .pwsnc{min-width:0;display:flex;flex-direction:column;gap:19.978px}
+  .pwsnt{display:block;min-height:0;border-radius:12px;overflow:hidden;
+         background:rgba(0,0,0,.05)}
+  .pwsnt img,.pwsnt video{width:100%;height:100%;display:block;object-fit:cover}
+  @media (max-width:900px){
+    .pwsg{flex-direction:column;gap:19.978px}
+    .pwsg > .pwsgc{aspect-ratio:555.179 / 596;flex:none}
+    .pwsn{aspect-ratio:auto;flex-wrap:wrap;gap:19.978px}
+    .pwsnc{flex:1 1 44% !important;aspect-ratio:268.038 / 595.208}
+  }
+
+  /* 474:65884 - label / list / button on a 40 rhythm; the "Overview"
+     heading is not in the final frame. */
+  #pgJbl .cslede{gap:40px}
+
+  /* -- 474:65930 / 474:65960 . the case-study page bar ------------------ */
+  .cs .cstop{height:auto;align-items:flex-start;margin-top:41px}
+  .cs .cstop .brand{font-family:var(--font-ui);font-size:20px;font-weight:700;
+        line-height:1.45;letter-spacing:-.02em;color:var(--c-1);
+        text-transform:none;
+        text-box:trim-both cap alphabetic;
+        text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .cs .cstop .rzlinks{gap:16px;font-size:16px;font-weight:500;
+        line-height:1;letter-spacing:0;text-transform:uppercase;
+        margin-top:-1px;color:var(--c-1)}
+  .cs .cstop .rzlinks a{color:var(--c-1);
+        text-box:trim-both cap alphabetic;
+        text-box-trim:trim-both;text-box-edge:cap alphabetic;
+        transition:color .25s ease}
+  .cs .cstop .rzlinks a:hover{color:var(--c-2)}
+  /* 474:65904 - 86 lands the hero cap top on the drawn 141 */
+  .cs .cshead{margin-top:86px}
+
+  /* 474:65907 - pure white numerals; captions BFBFBF / 9F9F9F / BFBFBF */
+  #pgJbl .cifig{color:#FFFFFF}
+  #pgJbl .cirow > .cistat:nth-of-type(1) .cicap,
+  #pgJbl .cirow > .cistat:nth-of-type(3) .cicap{color:#BFBFBF}
+  #pgJbl .cirule{--rule-c:#1C1C1C}
 
   .tfoot{position:absolute;left:0;bottom:0;width:100%;
          padding:0 40px 60px;display:flex;flex-direction:column;gap:40px}
@@ -1104,7 +1172,8 @@
   .testi.css-timeline .tfoot{opacity:0;
        animation:tFootIn linear(0, .38 25%, .70 50%, .89 75%, 1) both;
        animation-timeline:--testiTL;animation-range:contain 92% contain 99%}
-  .tfrule{--rule-c:rgba(0,0,0,.1);width:100%;height:var(--stroke)}
+  /* 474:67496 - Ink 3 at a quarter, 1px */
+  .tfrule{--rule-c:rgba(169,169,169,.25);width:100%;height:1px}
   .tfrow{display:flex;align-items:flex-start;justify-content:space-between;
          width:100%}
   .tflinks{display:flex;align-items:center;gap:40px}
@@ -3199,9 +3268,8 @@
   /* 44 tall on a 1px hairline, and the label is the same 16 the nav uses */
   .cslive{display:inline-flex;align-items:center;justify-content:center;
           height:48px;padding:0 24px;border-radius:999px;
-          background:var(--w-cont);backdrop-filter:blur(5px);
-          -webkit-backdrop-filter:blur(5px);
-          box-shadow:0 4px 16px rgba(26,26,26,.04);
+          /* 474:65892 - Text Dark 1, and the drop shadow is off in the frame */
+          background:var(--ink);
           font-family:var(--font-ui);font-size:14px;font-weight:600;
           line-height:1;letter-spacing:0;text-transform:uppercase;
           color:var(--c-1);white-space:nowrap;
@@ -3209,7 +3277,8 @@
   .cslive:hover{background:var(--c-1);color:var(--ink)}
 
   .csread{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:32px}
-  .csblock{display:flex;flex-direction:column;gap:8px}
+  /* 474:65894 - 12 inside a block, 32 between them */
+  .csblock{display:flex;flex-direction:column;gap:12px}
   .csblock h3{margin:0;font-family:var(--font-ui);font-size:20px;font-weight:600;
               line-height:1.45;letter-spacing:0;color:var(--c-1)}
   /* Saans Light in the drawing; the family is embedded at 400/500/600, so this
@@ -3228,7 +3297,8 @@
      is what makes them EQUAL: with auto they would be sized by their own
      captions and "Systemized, better, and cohesive brand" would take more
      room than "Increase in avg. session time on page". */
-  .csimp{margin:200px auto 0;width:min(1364px, calc(100% - var(--m) * 2));
+  /* 474:65907 - 240 down, and 36 either side rather than the page's 40 */
+  .csimp{margin:240px auto 0;width:min(1364px, calc(100% - 72px));
          display:flex;flex-direction:column;align-items:center;gap:120px}
   .csimp .cstitle{margin:0;width:100%;text-align:center}
   .cirow{display:flex;align-items:stretch;width:100%}
@@ -3303,6 +3373,13 @@
   .pweb b,.pweb s{font-weight:600;text-decoration:none;color:#9F9F9F}
   .pweb s{font-size:14px}
   .pweb em{font-style:normal}
+  .pweb-b{gap:16px;font-size:22px;font-weight:500;text-transform:none;
+          color:#000000}
+  .pweb-b s{font-size:22px;font-weight:500;color:rgba(0,0,0,.5)}
+  /* 474:65965 - the strategy eyebrow is the 20/18 Medium pair on a 10 gap */
+  .pweb-a{gap:10px;font-size:20px;font-weight:500}
+  .pweb-a b,.pweb-a s{font-weight:500}
+  .pweb-a s{font-size:18px}
 
   /* 326:19335 — 438 / 139 / 553, and the title STICKS: the right column is
      320 here and 791 in the motion block, so the title would otherwise sit
@@ -3319,9 +3396,11 @@
        line-height:1.1;letter-spacing:0;color:var(--ink);
        text-box:trim-both cap alphabetic;
        text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .pwcopy{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:32px}
+  /* 474:65971 - 16 between the paragraphs, the still 32 under the pair */
+  .pwcopy{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:16px}
+  /* 2.0 Body in Secondary Dark - #777777, not ink */
   .pwcopy p,.pwlead{margin:0;font-family:var(--font-ui);font-size:18px;font-weight:500;
-        line-height:1.25;letter-spacing:0;color:var(--ink)}
+        line-height:1.25;letter-spacing:0;color:#777777}
 
   /* 318:17212 — drawn -94 to 1505 on a 1440 frame, so it overhangs BOTH
      edges. Centred at 111.04% rather than built to the drawn asymmetry: the
@@ -3340,7 +3419,7 @@
   .pwvid canvas{z-index:1}
 
   /* 327:19966 — 663 centred, the one block on the page that is */
-  .pwmid{margin:240px auto 0;width:min(663px, var(--cs-col));
+  .pwmid{margin:212px auto 0;width:min(663px, var(--cs-col));
          display:flex;flex-direction:column;align-items:center;gap:24px}
   .pwmid .pweb{width:auto}
   .pwct{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
@@ -3352,7 +3431,7 @@
      text, which is no centring at all. stretch gives it the full 663 back. */
   .pwt-c{position:static;flex:none;align-self:center;
          width:min(494px,100%);text-align:center;max-width:100%}
-  .pwlead{text-align:center;width:min(558px,100%);color:#515151}
+  .pwlead{text-align:center;width:min(558px,100%)}
 
   /* 327:19841 — placeholders, and the ratio is the drawn mock's so the strip
      is the right height before there is anything in it */
@@ -3365,7 +3444,8 @@
      Anything nested inside a column block takes width:100%. */
   .pwmob .pweb,.pwmot .pweb{width:100%}
 
-  .pwmob{margin:120px auto 0;width:var(--cs-col)}
+  /* 474:65985 - 1132 on the 154 guides, not the 1130 column */
+  .pwmob{margin:120px auto 0;width:min(1132px, calc(100% - var(--m) * 2))}
   .pwphones{display:flex;gap:calc(33 / 1130 * 100%);margin-top:40px}
   .pwph{flex:1 1 0;min-width:0;display:block;
         aspect-ratio:258.29 / 560;border-radius:28px;background:rgba(0,0,0,.07)}
@@ -3377,8 +3457,9 @@
      than left to object-fit: the plate sits dead centre in frame and cutting
      the 39% of width that would be cropped anyway is 40% fewer pixels to
      ship. object-fit:cover still covers whatever the column resolves to. */
-  .pwcym{display:block;width:100%;aspect-ratio:553 / 511.5;
-         border-radius:12px;overflow:hidden;background:rgba(0,0,0,.07)}
+  /* 474:66019 - no radius on this one in the frame */
+  .pwcym{display:block;width:100%;aspect-ratio:553 / 511.5;margin-top:16px;
+         overflow:hidden;background:rgba(0,0,0,.07)}
   .pwcym video{width:100%;height:100%;display:block;object-fit:cover}
   .pwbites{display:flex;gap:calc(40 / 1129 * 100%);margin-top:40px}
   .pwbite{flex:1 1 0;min-width:0;display:block;aspect-ratio:1;
@@ -3397,10 +3478,12 @@
      not with the icon's box. Moving the eyebrow to 131 to "fix" it put the
      slash 24 to the left of every glyph. */
   .pwico{margin:120px auto 0;width:100%}
+  /* 474:66025 - the label alone is inset 24 so it lands on the 155 guide */
+  .pwico > .pweb{padding-left:24px}
   .pwico .pweb{width:var(--cs-col)}
   .pwgrid{margin:40px auto 0;width:min(1178px, calc(100% - var(--m) * 2));
           display:grid;grid-template-columns:repeat(8,1fr);
-          column-gap:calc(11 / 1178 * 100%);row-gap:21px}
+          column-gap:calc(11.009 / 1178 * 100%);row-gap:21px}
   /* Three motions, three properties, so none of them overwrites another:
      the reveal owns .pwi's TRANSFORM, the cursor push owns .pwi's TRANSLATE,
      and the idle float owns the svg's translate and transform. `translate`
@@ -3446,12 +3529,13 @@
       --cs-col:min(1130px, calc(100% - var(--cs-side) * 2));
       --c-1:var(--w-1); --c-2:var(--w-2); --c-3:var(--w-2);
       position:relative;display:flow-root;
-      background:var(--w-sur);color:var(--c-1);
-      padding:155px 0 200px;overflow-x:clip}
+      /* 474:66291 - pure black in the final frame, not Surface Dark */
+      background:#000000;color:var(--c-1);
+      padding:155px 0 0;overflow-x:clip}
 
   /* 327:22167 — 716 centred, its own eyebrow, its own measure */
-  .fdhead{margin:0 auto;width:min(716px, var(--cs-col));
-          display:flex;flex-direction:column;align-items:center;gap:24px}
+  .fdhead{margin:0 auto;width:var(--cs-col);
+          display:flex;flex-direction:column;align-items:flex-start;gap:24px}
   /* Saans REGULAR here, not the Medium the process eyebrows use, and White 3
      rather than a black at 50% — this section is drawn on black. */
   .fdeb{display:flex;align-items:center;gap:8px;margin:0;
@@ -3461,21 +3545,23 @@
   .fdeb b,.fdeb s{font-weight:600;text-decoration:none;color:var(--c-3)}
   .fdeb s{font-size:14px}
   .fdeb em{font-style:normal}
-  .fdct{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+  .fdct{display:flex;flex-direction:column;align-items:flex-start;gap:16px;
+        width:min(553px,100%)}
   /* 40 Inter REGULAR — the black-section weight, same as the intro claim.
      The process page runs Medium because it is on white. */
-  .fdt{margin:0;width:438px;max-width:100%;text-align:center;
+  .fdt{margin:0;width:min(553px,100%);text-align:left;
        font-family:var(--font-display);font-size:40px;font-weight:500;
        line-height:1.1;letter-spacing:0;color:var(--c-1);
        text-box:trim-both cap alphabetic;
        text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .fdlead{margin:0;width:100%;text-align:center;
+  .fdlead{margin:0;width:100%;text-align:left;
           font-family:var(--font-ui);font-size:18px;font-weight:500;
           line-height:1.25;letter-spacing:0;color:var(--c-2)}
   /* the three theme names sit up in White 1 inside the paragraph */
   .fdlead b{font-weight:400;color:var(--c-1)}
 
-  .fdrow{display:flex;align-items:flex-start;margin:100px auto 0;
+  /* 474:66304 - 193 under the head in the final frame */
+  .fdrow{display:flex;align-items:flex-start;margin:193px auto 0;
          width:var(--cs-col);gap:calc(139 / 1130 * 100%)}
 
   /* 334:34870 — 400 tall against 3206 of panels, so it sticks. Centred in
@@ -3491,22 +3577,23 @@
      because a button's content model is phrasing content and these hold a
      heading and a paragraph. */
   .fdi{display:flex;flex-direction:column;gap:8px;padding-right:48px;
-       color:var(--c-4);cursor:pointer;
+       color:#1C1C1C;cursor:pointer;
        -webkit-tap-highlight-color:transparent;
        transition:color .55s cubic-bezier(.33,1,.68,1)}
   /* the dormant two lift halfway on hover — enough to say "this is a thing
      you can press" without competing with the one that is actually current */
-  .fdi:not(.on):hover{color:var(--c-3)}
+  .fdi:not(.on):hover{color:#5A5A5A}
   .fdi:focus-visible{outline:var(--stroke) solid var(--c-1);
                      outline-offset:12px;border-radius:2px}
-  .fdi h3{margin:0;font-family:var(--font-ui);font-size:20px;font-weight:600;
+  /* 474:66310 - 22 Medium, and the two dormant rows are #1C1C1C */
+  .fdi h3{margin:0;font-family:var(--font-ui);font-size:22px;font-weight:500;
           line-height:1.45;color:inherit;
           transition:color .55s cubic-bezier(.33,1,.68,1)}
   .fdi p {margin:0;font-family:var(--font-ui);font-size:18px;font-weight:500;
           line-height:1.25;letter-spacing:0;color:inherit;
           transition:color .55s cubic-bezier(.33,1,.68,1)}
-  .fdi.on h3{color:var(--c-1)}
-  .fdi.on p {color:var(--c-2)}
+  .fdi.on h3{color:#FFFFFF}
+  .fdi.on p {color:#BFBFBF}
   .fdrule{display:block;width:100%;height:var(--stroke);--rule-c:var(--c-4)}
 
   /* Fixed px, not percentages. A percentage ROW-gap resolves against the
@@ -3526,14 +3613,18 @@
      every other section on the site unscrollable past. */
   .fdtwo,.fdsc{scroll-snap-align:center;scroll-margin:24px}
   .fdtwo{display:flex;gap:calc(40 / 557 * 100%)}
+  /* 474:66331 - the export carries the bezel, so the radius is the device's
+     own 39.07 and there is no inset screen to draw */
   .fdph{flex:1 1 0;min-width:0;display:block;position:relative;overflow:hidden;
-        aspect-ratio:258.29 / 559.99;border-radius:28px;
+        aspect-ratio:258.29 / 559.99;border-radius:39.07px;
         background:rgba(255,255,255,.07)}
+  .fdph img{position:absolute;inset:0;width:100%;height:100%;
+            display:block;object-fit:cover}
   /* 334:24923 — 557 x 376 with the screen inset 9 all round */
-  .fdsc{display:block;width:100%;aspect-ratio:557 / 376;border-radius:12px;
-        padding:9px;background:rgba(255,255,255,.07)}
-  .fdsc i{display:block;width:100%;height:100%;border-radius:6px;
-          background:rgba(255,255,255,.05)}
+  /* 474:67208 - the desktop export includes its frame, radius 20 */
+  .fdsc{display:block;width:100%;aspect-ratio:557 / 376;border-radius:20px;
+        overflow:hidden;background:rgba(255,255,255,.07)}
+  .fdsc img{width:100%;height:100%;display:block;object-fit:cover}
   .fdph video{position:absolute;inset:0;width:100%;height:100%;
               display:block;object-fit:cover}
 
@@ -3818,7 +3909,7 @@
        501 + 32 + 417/2 = 741.5 of 1440. */
     .nav-wrap{
             --pw:417px;
-            top:21px;bottom:auto;
+            top:16px;bottom:auto;
             justify-content:flex-start;
             padding-left:calc(51.4931% - var(--pw) / 2);
             transition:padding-left .46s cubic-bezier(.32,.72,0,1);
@@ -4906,16 +4997,14 @@
      holds this study's own mark. -->
 <main class="page" id="pgJbl" data-page="jbl" data-logo="jbl" hidden>
   <section class="cs">
+    <!-- 474:65930 / 474:65960 - the wordmark is the full name now, the right
+         side is one link, and the rule under them is gone. -->
     <div class="cstop">
-      <span class="brand">KRIS</span>
+      <span class="brand">Kris Jensson</span>
       <nav class="rzlinks">
-        <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
-        <span class="sep">/</span>
         <a href="mailto:kris.jensson@gmail.com">Get in touch</a>
       </nav>
     </div>
-
-    <hr class="csrule ruleh">
 
     <div class="cshead">
       <h1 class="cshl">JBL</h1>
@@ -4932,7 +5021,6 @@
 
     <div class="csbody">
       <div class="cslede">
-        <h2 class="csclaim cstitle">Overview</h2>
         <ul class="csdisc">
           <li class="csdlab">What we did</li>
           <li>Strategy</li>
@@ -4992,7 +5080,7 @@
        which is why this is its own section rather than more of .cs — the
        nav's surface sampler reads the change on its own. -->
   <section class="pw">
-    <p class="pweb"><b>JBL</b><s>/</s><em>STRATEGY</em></p>
+    <p class="pweb pweb-a"><b>JBL</b><s>/</s><em>strategy</em></p>
     <div class="pwrow">
       <h2 class="pwt">Designing for different audience needs</h2>
       <div class="pwcopy">
@@ -5004,11 +5092,14 @@
     <!-- One video, seventeen destinations. The <video> is the only decoder;
          the canvas blits each tile's source rect to its own scroll-driven
          offset, so the columns travel at different speeds off a single file. -->
-    <div class="pwvid" id="stgStage">
-      <video id="stgVid" autoplay muted loop playsinline preload="auto" aria-hidden="true">
-        <source type="video/mp4" src="media/jbl-strategy.mp4">
-      </video>
-      <canvas id="stgCanvas" aria-label="JBL regional site tiles"></canvas>
+    <!-- 474:66285 - three statics where the film used to be. The film itself
+         has moved down to the Final Design band. -->
+    <div class="pwsg">
+      <span class="pwsgc"><img src="media/jbl-str-a.webp" alt="JBL regional site walkthrough" loading="lazy" decoding="async"></span>
+      <span class="pwsgr">
+        <span class="pwsgc"><img src="media/jbl-str-b.webp" alt="JBL campaign layout" loading="lazy" decoding="async"></span>
+        <span class="pwsgc"><img src="media/jbl-str-c.webp" alt="JBL product layout" loading="lazy" decoding="async"></span>
+      </span>
     </div>
 
     <div class="pwmid">
@@ -5019,10 +5110,30 @@
       </div>
     </div>
 
+    <!-- 474:65989 - the SYSTEM SNAPSHOT board. Four columns on a 21.643
+         gap, tiles 19.978 apart; flex-basis carries each drawn size. -->
     <div class="pwmob">
-      <p class="pweb"><s>/</s><em>MOBILE UI UX</em></p>
-      <div class="pwphones">
-        <span class="pwph"></span><span class="pwph"></span><span class="pwph"></span><span class="pwph"></span>
+      <p class="pweb pweb-b"><s>/</s><em>SYSTEM SNAPSHOT</em></p>
+      <div class="pwsn">
+        <div class="pwsnc" style="flex:268.038 1 0">
+          <span class="pwsnt" style="flex:162.87 1 0"><img src="media/jblc-s7.webp" alt="JBL gaming subcategory walkthrough" loading="lazy" decoding="async"></span>
+          <span class="pwsnt" style="flex:167.524 1 0"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v1.webp"><source src="media/jblc-v1.mp4" type="video/mp4"></video></span>
+          <span class="pwsnt" style="flex:219.758 1 0"><img src="media/jblc-s1.webp" alt="JBL storefront" loading="lazy" decoding="async"></span>
+        </div>
+        <div class="pwsnc" style="flex:268.038 1 0">
+          <span class="pwsnt" style="flex:191.349 1 0"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v4.webp"><source src="media/jblc-v4.mp4" type="video/mp4"></video></span>
+          <span class="pwsnt" style="flex:196.351 1 0"><img src="media/jblc-s2.webp" alt="JBL product band" loading="lazy" decoding="async"></span>
+          <span class="pwsnt" style="flex:167.552 1 0"><img src="media/jblc-s4.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
+        </div>
+        <div class="pwsnc" style="flex:268.038 1 0">
+          <span class="pwsnt" style="flex:219.758 1 0"><img src="media/jblc-s3.webp" alt="JBL tune series" loading="lazy" decoding="async"></span>
+          <span class="pwsnt" style="flex:167.552 1 0"><img src="media/jblc-s5.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
+          <span class="pwsnt" style="flex:167.943 1 0"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v2.webp"><source src="media/jblc-v2.mp4" type="video/mp4"></video></span>
+        </div>
+        <div class="pwsnc" style="flex:262.211 1 0">
+          <span class="pwsnt" style="flex:297.951 1 0"><img src="media/jblc-s6.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
+          <span class="pwsnt" style="flex:276.49 1 0"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v3.webp"><source src="media/jblc-v3.mp4" type="video/mp4"></video></span>
+        </div>
       </div>
     </div>
 
@@ -5076,11 +5187,12 @@
 
   <!-- ── 327:20009 · JBL / Final Design ──────────────────────────────── -->
   <section class="fd">
+    <!-- 474:66296 - 553 wide on the left guide now, not centred on 716. -->
     <div class="fdhead">
-      <p class="fdeb"><b>JBL</b><s>/</s><em>Final</em></p>
+      <p class="fdeb"><b>JBL</b><s>/</s><em>Final design</em></p>
       <div class="fdct">
-        <h2 class="fdt">One brand,<br>three expressions</h2>
-        <p class="fdlead">We created three distinct themes: <b>Evergreen</b>, <b>Gaming</b>, and <b>Luxury,</b> giving the brand flexibility to feel just as relevant for a $29 pair of earbuds as it does for a $50K sound system, without ever losing what makes JBL feel like JBL.</p>
+        <h2 class="fdt">One brand, three expressions</h2>
+        <p class="fdlead">We created three distinct themes: Evergreen, Gaming, and Luxury, giving the brand flexibility to feel just as relevant for a $29 pair of earbuds as it does for a $50K sound system, without ever losing what makes JBL feel like JBL.</p>
       </div>
     </div>
 
@@ -5103,16 +5215,16 @@
       </div>
       <div class="fdpanels" id="fdPanels">
         <div class="fdpanel" data-i="0">
-          <div class="fdtwo"><span class="fdph"><video autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source type="video/webm" src="media/jbl-evergreen.webm"><source type="video/mp4" src="media/jbl-evergreen.mp4"></video></span><span class="fdph"></span></div>
-          <span class="fdsc"><i></i></span>
+          <div class="fdtwo"><span class="fdph"><img src="media/jbl-ev-m1.webp" alt="" loading="lazy" decoding="async"></span><span class="fdph"><img src="media/jbl-ev-m2.webp" alt="" loading="lazy" decoding="async"></span></div>
+          <span class="fdsc"><img src="media/jbl-ev-d.webp" alt="" loading="lazy" decoding="async"></span>
         </div>
         <div class="fdpanel" data-i="1">
-          <div class="fdtwo"><span class="fdph"></span><span class="fdph"></span></div>
-          <span class="fdsc"><i></i></span>
+          <div class="fdtwo"><span class="fdph"><img src="media/jbl-ga-m1.webp" alt="" loading="lazy" decoding="async"></span><span class="fdph"><img src="media/jbl-ga-m2.webp" alt="" loading="lazy" decoding="async"></span></div>
+          <span class="fdsc"><img src="media/jbl-ga-d.webp" alt="" loading="lazy" decoding="async"></span>
         </div>
         <div class="fdpanel" data-i="2">
-          <div class="fdtwo"><span class="fdph"></span><span class="fdph"></span></div>
-          <span class="fdsc"><i></i></span>
+          <div class="fdtwo"><span class="fdph"><img src="media/jbl-lu-m1.webp" alt="" loading="lazy" decoding="async"></span><span class="fdph"><img src="media/jbl-lu-m2.webp" alt="" loading="lazy" decoding="async"></span></div>
+          <span class="fdsc"><img src="media/jbl-lu-d.webp" alt="" loading="lazy" decoding="async"></span>
         </div>
       </div>
     </div>
@@ -5120,45 +5232,55 @@
       <!-- 463:12985. Eleven tiles: four clips and seven stills, each at the
            aspect the frame draws it. Column two's middle tile carries .grow
            because 463:12994 is flex-[1_0_0] there. -->
-      <div class="vc">
-        <div class="vcol">
-          <span class="vct" style="aspect-ratio:322 / 195.66"><img src="media/jblc-s7.webp" alt="JBL gaming subcategory walkthrough" loading="lazy" decoding="async"></span>
-          <span class="vct" style="aspect-ratio:322 / 201.25"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v1.webp"><source src="media/jblc-v1.mp4" type="video/mp4"></video></span>
-          <span class="vct" style="aspect-ratio:322 / 264"><img src="media/jblc-s1.webp" alt="JBL storefront" loading="lazy" decoding="async"></span>
-        </div>
-        <div class="vcol">
-          <span class="vct" style="aspect-ratio:322 / 229.87"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v4.webp"><source src="media/jblc-v4.mp4" type="video/mp4"></video></span>
-          <span class="vct grow" style="aspect-ratio:322 / 235.88"><img src="media/jblc-s2.webp" alt="JBL product band" loading="lazy" decoding="async"></span>
-          <span class="vct" style="aspect-ratio:322 / 201.28"><img src="media/jblc-s4.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
-        </div>
-        <div class="vcol">
-          <span class="vct" style="aspect-ratio:322 / 264"><img src="media/jblc-s3.webp" alt="JBL tune series" loading="lazy" decoding="async"></span>
-          <span class="vct" style="aspect-ratio:322 / 201.28"><img src="media/jblc-s5.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
-          <span class="vct" style="aspect-ratio:322 / 201.75"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v2.webp"><source src="media/jblc-v2.mp4" type="video/mp4"></video></span>
-        </div>
-        <div class="vcol">
-          <span class="vct" style="aspect-ratio:315 / 357.94"><img src="media/jblc-s6.webp" alt="JBL campaign still" loading="lazy" decoding="async"></span>
-          <span class="vct" style="aspect-ratio:315 / 332.15"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/jblc-v3.webp"><source src="media/jblc-v3.mp4" type="video/mp4"></video></span>
-        </div>
+    <!-- 474:67482 - the strategy film, moved down here and run full bleed:
+         1445 on a 1440 frame, so it overhangs 5 either side. -->
+    <div class="fdfilm" id="stgStage">
+      <video id="stgVid" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+        <source type="video/mp4" src="media/jbl-strategy.mp4">
+      </video>
+      <canvas id="stgCanvas" aria-label="JBL regional site tiles"></canvas>
+    </div>
       </div>
       <!-- 465:19037 - the avatar has no export yet, so the 148 circle stands
            at Containers on Dark until one lands. -->
+      <!-- 474:67448 - 240 above, 140 below, impact row 80 under the quote. -->
       <figure class="jtm">
-        <span class="jtmav" aria-hidden="true"></span>
-        <figcaption class="jtmcol">
-          <span class="jtmhead">
-            <span class="jtmname">Vanessa Mering</span>
-            <span class="jtmrole">Head of Global Brand<s>@</s>JBL</span>
-          </span>
-          <blockquote class="jtmq">&ldquo;This digital transformation ensures that our global audience can connect with JBL&rsquo;s legacy of sound excellence more seamlessly than ever before&rdquo;</blockquote>
-        </figcaption>
+        <div class="jtmquote">
+          <span class="jtmav"><img src="media/jbl-avatar.webp" alt="" loading="lazy" decoding="async"></span>
+          <figcaption class="jtmcol">
+            <span class="jtmhead">
+              <span class="jtmname">Vanessa Mering</span>
+              <span class="jtmrole">Head of Global Brand<s>@</s>JBL</span>
+            </span>
+            <blockquote class="jtmq">&ldquo;This digital transformation ensures that our global audience can connect with JBL's legacy of sound excellence more seamlessly than ever before&rdquo;</blockquote>
+          </figcaption>
+        </div>
+        <section class="csimp jtmimp" aria-label="Impact at launch">
+          <div class="cirow">
+            <div class="cistat">
+              <p class="cifig"><span class="cipl">+</span><span class="cival"><span class="cisz">24</span><span class="civ">24</span></span><span class="cipct">%</span></p>
+              <p class="cicap">Increase in avg.<br>session time on page</p>
+            </div>
+            <span class="cirule rulev" aria-hidden="true"></span>
+            <div class="cistat">
+              <p class="cifig"><span class="cipl">+</span><span class="cival"><span class="cisz">31</span><span class="civ">31</span></span><span class="cipct">%</span></p>
+              <p class="cicap">Decrease in bounce<br>rate on L1 pages</p>
+            </div>
+            <span class="cirule rulev" aria-hidden="true"></span>
+            <div class="cistat">
+              <p class="cifig"><span class="cipl">+</span><span class="cival"><span class="cisz">100</span><span class="civ">100</span></span><span class="cipct">%</span></p>
+              <p class="cicap">Systemized, better, and<br>cohesive brand</p>
+            </div>
+          </div>
+        </section>
       </figure>
   </section>
   <!-- 464:15803 - Next up. The plate is Volvo's own card clip; the row is a
        button so the whole thing routes. -->
   <section class="nu" aria-label="Next up">
     <div class="nublock">
-      <p class="nut">Next up</p>
+      <!-- 474:67485 - an eyebrow now, not the 40 display line -->
+      <p class="nut"><s>/</s><em>Next up</em></p>
       <button class="nurow" type="button" data-page="volvo"
               aria-label="Read the Volvo case study">
         <span class="numedia">
@@ -8184,8 +8306,10 @@
     ];
     const EASE=.085;           /* the lerp — this is the "smooth" */
 
+    /* the film moved from the white process band to the black final one */
+    const host=stage.closest('.pw,.fd,section') || stage.parentElement;
     const PAPER=getComputedStyle(stage).backgroundColor==='rgba(0, 0, 0, 0)'
-      ? getComputedStyle(stage.closest('.pw')).backgroundColor
+      ? getComputedStyle(host).backgroundColor
       : getComputedStyle(stage).backgroundColor;
     let W=0,H=0,K=1,dpr=1, alive=false, running=false, born=performance.now();
 
