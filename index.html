@@ -970,8 +970,11 @@
   .numedia{flex:none;width:367px;max-width:42%;
            aspect-ratio:367 / 268.128;border-radius:12px;overflow:hidden;
            background:#000;position:relative}
+  /* 1% over, so the resampled edge never lands inside the frame */
   .numedia video,.numedia img{position:absolute;inset:0;
-           width:100%;height:100%;display:block;object-fit:cover}
+           width:100%;height:100%;display:block;object-fit:cover;
+           transform:scale(1.01);
+           transition:transform .6s cubic-bezier(.22,1,.3,1)}
   .nutext{min-width:0;display:flex;flex-direction:column;
           justify-content:center;gap:40px;padding-top:40px}
   /* 464:19032 - 104 Heavy at -2.08, which is -.02em */
@@ -985,8 +988,8 @@
          line-height:1.1;letter-spacing:0;color:var(--ink);
          text-box:trim-both cap alphabetic;
          text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .nurow .numedia{transition:transform .6s cubic-bezier(.22,1,.3,1)}
-  .nurow:hover .numedia{transform:scale(1.015)}
+  /* hover rides the video, not the frame - the frame carries the reveal */
+  .nurow:hover .numedia video{transform:scale(1.03)}
   .nu .tfoot{position:static;padding:0 40px 60px}
   @media (max-width:900px){
     .nurow{flex-direction:column;align-items:flex-start}
@@ -995,6 +998,46 @@
     .nuname{font-size:clamp(56px,11vw,104px)}
     .nu .tfrow{flex-direction:column;align-items:flex-start;gap:24px}
     .nu .tflinks{flex-wrap:wrap;gap:16px 24px}
+  }
+
+  /* -- Next up . the reveal --------------------------------------------
+     The same instrument the testimonial uses: one view-timeline on the
+     section, and each part scrubbed over its own slice of it, so the block
+     assembles as you arrive rather than popping. Same settle easing. */
+  .nu.css-timeline{view-timeline-name:--nuTL;view-timeline-axis:block}
+  @keyframes nuRise{ from{opacity:0;transform:translateY(56px)}
+                       to{opacity:1;transform:none} }
+  @keyframes nuPlate{ from{opacity:0;transform:translateY(88px) scale(.96)}
+                        to{opacity:1;transform:none} }
+  @keyframes nuFootIn{ from{opacity:0;transform:translateY(16px)}
+                         to{opacity:1;transform:none} }
+  .nu.css-timeline .nut,
+  .nu.css-timeline .numedia,
+  .nu.css-timeline .nuname,
+  .nu.css-timeline .nusub,
+  .nu.css-timeline .tfoot{opacity:0}
+  .nu.css-timeline .nut{
+       animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
+       animation-timeline:--nuTL;animation-range:entry 4% entry 54%}
+  .nu.css-timeline .numedia{
+       animation:nuPlate linear(0, .38 25%, .70 50%, .89 75%, 1) both;
+       animation-timeline:--nuTL;animation-range:entry 14% entry 68%}
+  .nu.css-timeline .nuname{
+       animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
+       animation-timeline:--nuTL;animation-range:entry 24% entry 78%}
+  .nu.css-timeline .nusub{
+       animation:nuRise linear(0, .38 25%, .70 50%, .89 75%, 1) both;
+       animation-timeline:--nuTL;animation-range:entry 32% entry 86%}
+  /* last thing in, exactly as the testimonial's footer behaves */
+  .nu.css-timeline .tfoot{
+       animation:nuFootIn linear(0, .38 25%, .70 50%, .89 75%, 1) both;
+       animation-timeline:--nuTL;animation-range:entry 62% entry 98%}
+  @media (prefers-reduced-motion:reduce){
+    .nu.css-timeline .nut,
+    .nu.css-timeline .numedia,
+    .nu.css-timeline .nuname,
+    .nu.css-timeline .nusub,
+    .nu.css-timeline .tfoot{animation:none;transform:none;opacity:1}
   }
 
   /* -- 465:19037 . JBL testimonial --------------------------------------
@@ -2409,6 +2452,10 @@
      contain, not cover: the art is 1179x2477 and the wrap is 417x876, which
      agree to 0.01% — contain guarantees no crop if a future export does not. */
   .card-phone.art{background:none;box-shadow:none;border-radius:0}
+  /* the device art carries its own corners, so the prototype clip-path and
+     white plate above must not apply to it */
+  .card-phone.art > video.phoneart{clip-path:none;background:none;
+                                   object-fit:contain}
   .phoneart{position:absolute;inset:0;width:100%;height:100%;display:block;
             object-fit:contain;object-position:center}
 
@@ -3266,11 +3313,11 @@
          aspect-ratio:1920 / 1080;border-radius:12px;overflow:hidden}
   .pwvid video,.pwvid canvas{position:absolute;inset:0;
          width:100%;height:100%;display:block}
-  /* the decoder, not the picture: it plays, the canvas reads it, nobody
-     sees it. Left at full size and merely transparent because a 1px or
-     off-screen video gets throttled or dropped to a lower decode. */
-  .pwvid video{opacity:0;pointer-events:none}
-  .pwvid canvas{z-index:1}
+  /* The film IS the picture now. It used to feed a canvas that re-cut it
+     into 21 scroll-parallax tiles - which meant resampling a 1920 source up
+     to about 3100 device pixels, and that is what made it soft. One decode,
+     one scale, done by the compositor. */
+  .pwvid video{pointer-events:none}
 
   /* 327:19966 — 663 centred, the one block on the page that is */
   .pwmid{margin:240px auto 0;width:min(663px, var(--cs-col));
@@ -4297,12 +4344,16 @@
       </div>
     </div>
     <div class="card-phone-wrap"><div class="phoneskew"><div class="card-phone art">
-      <!-- VENMO.png, Kris's own device art: the shell, the bezel and the
-           corners are all in the file, so the CSS phone stands down. Lossless
-           WebP — the screen is flat colour and lossy leaves rings around the
-           wordmark. 1179 wide, which is 2.65x the painted 445. -->
-      <img class="phoneart" alt="" decoding="async"
-           src="media/venmo-phone.webp">
+      <!-- Kris's own device art: the shell, the bezel and the corners are all
+           in the file, so the CSS phone stands down. The mockup animation is
+           anamorphic - 1750x1080 stored with a 108:367 pixel aspect, which
+           displays 515x1080, or 0.4768 against the wrap's 0.4760. The still
+           is the poster, so the card is never empty while it decodes. -->
+      <video class="phoneart" muted loop autoplay playsinline
+             preload="metadata" aria-hidden="true"
+             poster="media/venmo-phone.webp">
+        <source src="media/venmo-phone.mp4" type="video/mp4">
+      </video>
     </div></div></div>
   </div>
 </section>
@@ -4909,10 +4960,10 @@
          the canvas blits each tile's source rect to its own scroll-driven
          offset, so the columns travel at different speeds off a single file. -->
     <div class="pwvid" id="stgStage">
-      <video id="stgVid" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+      <video id="stgVid" autoplay muted loop playsinline preload="auto"
+             aria-label="JBL regional site tiles">
         <source type="video/mp4" src="media/jbl-strategy.mp4">
       </video>
-      <canvas id="stgCanvas" aria-label="JBL regional site tiles"></canvas>
     </div>
 
     <div class="pwmid">
@@ -6171,6 +6222,7 @@
     hero.classList.add('css-timeline');
     document.querySelectorAll('.card').forEach(c=>c.classList.add('css-timeline'));
     document.getElementById('testi')?.classList.add('css-timeline');
+    document.querySelectorAll('.nu').forEach(n=>n.classList.add('css-timeline'));
     setRange();
     addEventListener('resize',setRange);
   }else{
