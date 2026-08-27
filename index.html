@@ -1103,8 +1103,7 @@
           aspect-ratio:1445 / 785;overflow:hidden}
   .fdfilm video,.fdfilm canvas{position:absolute;inset:0;
           width:100%;height:100%;display:block}
-  .fdfilm video{opacity:0;pointer-events:none}
-  .fdfilm canvas{z-index:1}
+  .fdfilm video{object-fit:cover}
 
   /* -- 474:66285 . the strategy statics --------------------------------
      1132 wide on its own 154 guides - no longer full-bleed. */
@@ -3273,8 +3272,27 @@
           font-family:var(--font-ui);font-size:14px;font-weight:600;
           line-height:1;letter-spacing:0;text-transform:uppercase;
           color:var(--c-1);white-space:nowrap;
-          transition:background-color .3s ease, color .3s ease}
-  .cslive:hover{background:var(--c-1);color:var(--ink)}
+          box-shadow:0 4px 16px rgba(26,26,26,0);
+          transition:padding-right .42s cubic-bezier(.22,1,.3,1),
+                     box-shadow .42s ease}
+  /* 472:19266 - the Action Button, not an invert. It keeps its fill on hover,
+     takes the 4/16 shadow and OPENS: right padding drops to 16 and a 19-wide
+     slot grows out of nothing with the arrow in it. Same component as the
+     Next-up button, so it behaves the same everywhere. */
+  .csliveai{flex:none;display:block;width:0;height:20px;overflow:hidden;
+          margin-left:0;opacity:0;
+          transition:width .42s cubic-bezier(.22,1,.3,1),
+                     margin-left .42s cubic-bezier(.22,1,.3,1),
+                     opacity .28s ease}
+  .csliveai svg{display:block;width:15px;height:10px;margin:5px 2px;
+          color:currentColor}
+  .cslive:hover,.cslive:focus-visible{
+          padding-right:16px;box-shadow:0 4px 16px rgba(26,26,26,.04)}
+  .cslive:hover .csliveai,.cslive:focus-visible .csliveai{
+          width:19px;margin-left:6px;opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .cslive,.csliveai{transition:none}
+  }
 
   .csread{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:32px}
   /* 474:65894 - 12 inside a block, 32 between them */
@@ -3390,6 +3408,16 @@
      that lands it there once the eyebrow's own descender space is counted. */
   .pwrow{display:flex;align-items:flex-start;margin:24px auto 0;
          width:var(--cs-col);gap:calc(139 / 1130 * 100%)}
+  /* The eyebrow rides WITH the title. It used to be a sibling ABOVE the row,
+     so the title pinned at 80 and the eyebrow scrolled out from over it. Both
+     now live in .pwl, and .pwl is the sticky one: they pin together and
+     release together, exactly as drawn. */
+  .pwl{flex:0 0 calc(438 / 1130 * 100%);min-width:0;
+       position:sticky;top:80px;align-self:flex-start;
+       display:flex;flex-direction:column;align-items:flex-start}
+  .pwrow .pwl .pweb{width:100%;margin:0}
+  .pwrow .pwl .pwt{position:static;flex:none;width:100%;margin-top:24px}
+  .pwrow.pwrow-e{margin-top:0}
   .pwt{margin:0;flex:0 0 calc(438 / 1130 * 100%);
        position:sticky;top:80px;align-self:flex-start;
        font-family:var(--font-display);font-size:40px;font-weight:500;
@@ -3429,9 +3457,15 @@
      was laid out as a shrink-to-fit box parked against the left edge. Its
      text-align:center then centred the text inside a box the width of the
      text, which is no centring at all. stretch gives it the full 663 back. */
+  /* fit-content, not the drawn 494. The drawn measure is a Saans measure and
+     the fallback face sets wider, so a fixed width broke "Dynamic brand
+     storytelling" onto two lines. fit-content shrink-wraps to the single
+     line and only wraps when the line genuinely will not fit. */
   .pwt-c{position:static;flex:none;align-self:center;
-         width:min(494px,100%);text-align:center;max-width:100%}
-  .pwlead{text-align:center;width:min(558px,100%)}
+         width:fit-content;text-align:center;max-width:100%}
+  /* same reason: 558 is the Saans measure and set the lead on three lines in
+     the fallback. 620 holds two in both faces and still sits inside the 663. */
+  .pwlead{text-align:center;width:min(620px,100%);text-wrap:balance}
 
   /* 327:19841 — placeholders, and the ratio is the drawn mock's so the strip
      is the right height before there is anything in it */
@@ -3576,13 +3610,29 @@
      click or Enter jumps to that panel. role+tabindex rather than <button>
      because a button's content model is phrasing content and these hold a
      heading and a paragraph. */
-  .fdi{display:flex;flex-direction:column;gap:8px;padding-right:48px;
+  /* 474:66312 / 66319 / 66326 - the row is 438 wide: a 390 text column and a
+     48 arrow frame beside it. The arrow's own box is 48 x 50.53 and sits
+     35.47 down from the row's top, which is what lines it up with the second
+     line of the description rather than with the middle of the row. */
+  .fdi{display:flex;flex-direction:row;align-items:flex-start;padding-right:0;
        color:#1C1C1C;cursor:pointer;
        -webkit-tap-highlight-color:transparent;
        transition:color .55s cubic-bezier(.33,1,.68,1)}
   /* the dormant two lift halfway on hover — enough to say "this is a thing
      you can press" without competing with the one that is actually current */
+  .fdic{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px}
+  /* Fixed, not a percentage of the column. The heading and the line under it
+     are 22 and 18 at every width, so an arrow that shrank with the column sat
+     at 27 beside 22pt type on an 818 window and at 14 on a phone. The drawn
+     48 / 50.53 box holds everywhere, and 35.474 is the drawn drop that lines
+     the glyph up with the second line of the description. */
+  .fdiar{flex:none;width:48px;height:50.53px;margin-top:35.474px;
+         color:#1C1C1C;
+         transition:color .55s cubic-bezier(.33,1,.68,1)}
+  .fdiar svg{display:block;width:37.895px;height:25.263px;margin:12.632px auto}
+  .fdi.on .fdiar{color:#9F9F9F}
   .fdi:not(.on):hover{color:#5A5A5A}
+  .fdi:not(.on):hover .fdiar{color:#5A5A5A}
   .fdi:focus-visible{outline:var(--stroke) solid var(--c-1);
                      outline-offset:12px;border-radius:2px}
   /* 474:66310 - 22 Medium, and the two dormant rows are #1C1C1C */
@@ -5029,7 +5079,7 @@
           <li>UI/UX</li>
           <li>Content</li>
         </ul>
-        <a class="cslive" href="https://www.jbl.com" target="_blank" rel="noopener">Visit live site</a>
+        <a class="cslive" href="https://www.jbl.com" target="_blank" rel="noopener">Visit live site<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </div>
 
       <div class="csread">
@@ -5080,9 +5130,11 @@
        which is why this is its own section rather than more of .cs — the
        nav's surface sampler reads the change on its own. -->
   <section class="pw">
-    <p class="pweb pweb-a"><b>JBL</b><s>/</s><em>strategy</em></p>
-    <div class="pwrow">
-      <h2 class="pwt">Designing for different audience needs</h2>
+    <div class="pwrow pwrow-e">
+      <div class="pwl">
+        <p class="pweb pweb-a"><b>JBL</b><s>/</s><em>strategy</em></p>
+        <h2 class="pwt">Designing for different audience needs</h2>
+      </div>
       <div class="pwcopy">
         <p>To establish and solidify JBL&rsquo;s standing with audiences across the world, we overhauled the upper-mid funnel experiences to better attract and guide with audiences who possess differing levels of familiarity with the brand and products.</p>
         <p>To support those different needs, we created clearer ways to discover JBL, learn about its products, and engage with the brand through more immersive educational moments.</p>
@@ -5138,9 +5190,11 @@
     </div>
 
     <div class="pwmot">
-      <p class="pweb"><s>/</s><em>Motion</em></p>
-      <div class="pwrow">
-        <h2 class="pwt">Visualizing sounds through motion</h2>
+      <div class="pwrow pwrow-e">
+        <div class="pwl">
+          <p class="pweb"><s>/</s><em>Motion</em></p>
+          <h2 class="pwt">Visualizing sounds through motion</h2>
+        </div>
         <div class="pwcopy">
           <p>We brought Cymatics to life by capturing the natural patterns created as sound frequencies move, then used them both as decorative motion and static elements.</p>
           <p>These visuals became a core part of the website, creating a design language rooted in the relationship between sound and science.</p>
@@ -5199,18 +5253,27 @@
     <div class="fdrow">
       <div class="fdindex" id="fdIndex">
         <div class="fdi on" data-i="0" role="button" tabindex="0">
-          <h3>EVERGREEN</h3>
-          <p>A vibrant everyday expression, built for the broadest audience.</p>
+          <div class="fdic">
+            <h3>EVERGREEN</h3>
+            <p>A vibrant everyday expression, built for the broadest audience.</p>
+          </div>
+          <span class="fdiar" aria-hidden="true"><svg viewBox="0 0 37.895 25.263" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.021 12.632H35.874M25.269 2.026L35.874 12.632L25.269 23.237" stroke="currentColor" stroke-width="4.042" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
         <span class="fdrule ruleh" aria-hidden="true"></span>
         <div class="fdi" data-i="1" role="button" tabindex="0">
-          <h3>GAMING</h3>
-          <p>A more immersive expression, built for the gaming audience.</p>
+          <div class="fdic">
+            <h3>GAMING</h3>
+            <p>A more immersive expression, built for the gaming audience.</p>
+          </div>
+          <span class="fdiar" aria-hidden="true"><svg viewBox="0 0 37.895 25.263" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.021 12.632H35.874M25.269 2.026L35.874 12.632L25.269 23.237" stroke="currentColor" stroke-width="4.042" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
         <span class="fdrule ruleh" aria-hidden="true"></span>
         <div class="fdi" data-i="2" role="button" tabindex="0">
-          <h3>LUXURY</h3>
-          <p>A more refined expression, built for the most premium products.</p>
+          <div class="fdic">
+            <h3>LUXURY</h3>
+            <p>A more refined expression, built for the most premium products.</p>
+          </div>
+          <span class="fdiar" aria-hidden="true"><svg viewBox="0 0 37.895 25.263" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.021 12.632H35.874M25.269 2.026L35.874 12.632L25.269 23.237" stroke="currentColor" stroke-width="4.042" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
       </div>
       <div class="fdpanels" id="fdPanels">
@@ -5234,11 +5297,15 @@
            because 463:12994 is flex-[1_0_0] there. -->
     <!-- 474:67482 - the strategy film, moved down here and run full bleed:
          1445 on a 1440 frame, so it overhangs 5 either side. -->
+    <!-- 474:67482 - the 2.0 film, played straight. The canvas that used to
+         sit here re-cut the picture into 21 tiles at coordinates measured off
+         the OLD file; against the 2.0 file those rects land in the wrong
+         places and the board came out shredded. It is a plate in the frame,
+         so it is a plate here. -->
     <div class="fdfilm" id="stgStage">
       <video id="stgVid" autoplay muted loop playsinline preload="auto" aria-hidden="true">
         <source type="video/mp4" src="media/jbl-strategy.mp4">
       </video>
-      <canvas id="stgCanvas" aria-label="JBL regional site tiles"></canvas>
     </div>
       </div>
       <!-- 465:19037 - the avatar has no export yet, so the 148 circle stands
@@ -5355,7 +5422,7 @@
           <li>UI/UX</li>
           <li>Content</li>
         </ul>
-        <a class="cslive" href="https://www.volvotrucks.us" target="_blank" rel="noopener">Visit live site</a>
+        <a class="cslive" href="https://www.volvotrucks.us" target="_blank" rel="noopener">Visit live site<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </div>
 
       <div class="csread">
@@ -5439,7 +5506,7 @@
           <li>UI/UX</li>
           <li>Content</li>
         </ul>
-        <a class="cslive" href="https://www.nfl.com" target="_blank" rel="noopener">Visit live site</a>
+        <a class="cslive" href="https://www.nfl.com" target="_blank" rel="noopener">Visit live site<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </div>
 
       <div class="csread">
@@ -5517,7 +5584,7 @@
           <li>UI/UX</li>
           <li>Content</li>
         </ul>
-        <a class="cslive" href="https://www.ets.org" target="_blank" rel="noopener">Visit live site</a>
+        <a class="cslive" href="https://www.ets.org" target="_blank" rel="noopener">Visit live site<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </div>
 
       <div class="csread">
@@ -8455,44 +8522,65 @@
     if(nuSec){
       const plate=nuSec.querySelector('.numedia video');
       const sheet=nuSec.previousElementSibling;
-      if(plate && sheet){
-        let armed=true;
+      if(plate){
+        let armed=true, starting=false;
+
+        /* A seek issued before the element has a frame is DROPPED - silently,
+           with no error and no event - which is how this kept opening mid
+           shot no matter how many times currentTime was set to 0. So nothing
+           here calls play() on hope: it waits for real data, issues the seek,
+           waits for `seeked` to confirm it landed, and only then starts. */
+        const rewind=cb=>{
+          if(plate.readyState<2){
+            plate.addEventListener('loadeddata',()=>rewind(cb),{once:true});
+            return;
+          }
+          if(plate.currentTime===0){ cb(); return; }
+          plate.addEventListener('seeked',cb,{once:true});
+          try{ plate.currentTime=0; }catch(e){ cb(); }
+        };
+        const hold=()=>{
+          if(!plate.paused) plate.pause();
+          if(plate.currentTime>0){ try{ plate.currentTime=0; }catch(e){} }
+        };
+
         const nuCheck=()=>{
-          const sr=sheet.getBoundingClientRect(), mr=plate.getBoundingClientRect();
+          const mr=plate.getBoundingClientRect();
           if(!mr.height) return;
-          /* TWO conditions, and the second one alone was the bug. The sheet
-             test only means anything while the block is STICKY - and it is
-             only sticky above 1081 wide and 640 tall. In the flow layout the
-             sheet's bottom IS the block's top, so `sheet is clear of the
-             plate` is true at every scroll position including the top of the
-             page: the clip started immediately, ran while the section was
-             thousands of pixels below, and was a second and a half in by the
-             time you reached it. Measured off Kris's recording - the frame on
-             screen at the reveal matched 1.5-2.0s of the file, twice.
-             So it also has to actually be on screen. */
           const vis=Math.max(0, Math.min(innerHeight, mr.bottom) - Math.max(0, mr.top)) / mr.height;
-          /* hysteresis: starts at 60% on screen, and does not re-arm until it
-             drops under 25% - otherwise the plate scrolling half off while you
-             read the button stopped and restarted it */
-          const show = armed ? (vis >= .6) : (vis >= .25);
-          if(show && sr.bottom <= mr.top + 2){
-            if(armed){
-              armed=false;
-              /* setting currentTime before there is any data is silently
-                 dropped, which is how this kept opening mid-shot. Seek when
-                 it has metadata, and seek AGAIN once it is actually running
-                 in case the first one landed on an empty buffer. */
-              const seek=()=>{ try{ if(plate.currentTime>.05) plate.currentTime=0; }catch(e){} };
-              const go=()=>{ seek(); plate.play().then(seek).catch(()=>{}); };
-              if(plate.readyState>=1) go();
-              else plate.addEventListener('loadedmetadata',go,{once:true});
+          /* The sheet test only means anything while the block is ACTUALLY
+             pinned. Below the curtain breakpoint it sits in normal flow, the
+             sheet's bottom IS the block's top, and the test reads true from
+             the top of the page. That is the whole reason this passed at 1440
+             and failed on an 818-wide window: ask the layout what it is doing
+             rather than assuming the curtain is live. */
+          const pinned=getComputedStyle(nuSec).position==='sticky';
+          const clear=!pinned || !sheet ||
+                      sheet.getBoundingClientRect().bottom <= mr.top + 2;
+          /* hysteresis: opens at 60% on screen, re-arms only under 25% */
+          const show=(armed ? vis>=.6 : vis>=.25) && clear;
+          if(show){
+            if(armed && !starting){
+              armed=false; starting=true;
+              rewind(()=>{
+                starting=false;
+                /* scrolled back off while we were waiting on the seek */
+                if(armed){ hold(); return; }
+                plate.play().catch(()=>{});
+              });
             }
           }else{
-            armed=true;
-            if(!plate.paused) plate.pause();
-            if(plate.currentTime>.05){ try{ plate.currentTime=0; }catch(e){} }
+            armed=true; starting=false; hold();
           }
         };
+        /* belt and braces: if it ever comes up running from anywhere other
+           than the top, put it back. Once only, so this can never loop. */
+        let fixed=false;
+        plate.addEventListener('playing',()=>{
+          if(fixed||plate.currentTime<=.25) return;
+          fixed=true; plate.pause();
+          rewind(()=>plate.play().catch(()=>{}));
+        });
         addEventListener('scroll',nuCheck,{passive:true});
         addEventListener('resize',nuCheck);
         if(document.fonts&&document.fonts.ready) document.fonts.ready.then(nuCheck);
