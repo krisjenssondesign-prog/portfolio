@@ -886,7 +886,16 @@
   .testi{position:relative;z-index:2;background:#fff;
          margin-top:-60svh;height:380svh}
   .testi.css-timeline{view-timeline-name:--testiTL;view-timeline-axis:block}
-  .tstage{position:sticky;top:0;height:100svh;overflow:hidden}
+  /* 506:81763 - one set of numbers for the whole composition, so the band,
+     the card row and the card height cannot drift apart.
+     --tband is the band's cap top; the cap itself is .7273 of the type (Inter
+     Black, measured); the drawn frame then leaves 83 of 824 clear before the
+     cards start, which is 10.073svh. The cards no longer lap the type - in
+     506:81888 they sit clear under it. */
+  .tstage{--kudos:clamp(52.25px, 10.8854vw, 202.5px);
+          --tband:8svh;
+          --ttop:calc(var(--tband) + var(--kudos) * .7273 + 10.073svh);
+          position:sticky;top:0;height:100svh;overflow:hidden}
   /* Everything here is svh, not the storyboard's px. The board is drawn on a
      900-tall frame; on a 633-tall laptop those same px put the title at 60%
      of the screen and shove the card row onto the footer. In svh the whole
@@ -897,10 +906,31 @@
      eighth of the sheet's pace, so the sheet is plainly sliding OFF it rather
      than dragging it along. It also starts below the black edge's own start
      height, so it can never poke out under the sheet on the way in. */
-  .ttitle{position:absolute;left:40px;top:8svh;width:calc(100% - 80px);
-          font-size:var(--hl);font-weight:900;letter-spacing:var(--track);
+  /* 506:81888 - full bleed now, not inside the 40 guides: the band runs off
+     both edges, so left:0 / width:100% and .tstage's own overflow clips it.
+
+     Its own size, not --hl. The drawn cap is 114 on a 1440 frame against the
+     hero's 139.6, so the band is the smaller of the two - 156.75 at 1440 in
+     Inter Black, whose cap is .7273 of the em (measured off the face the
+     browser actually resolved, not assumed). The clamp is --hl's own clamp
+     scaled by the same ratio, so it tracks the headline at every width. */
+  .ttitle{position:absolute;left:0;top:var(--tband);width:100%;
+          font-size:var(--kudos);font-weight:900;letter-spacing:var(--track);
           line-height:normal;color:#000;white-space:nowrap;
           text-box:trim-both cap alphabetic;will-change:transform}
+  /* the drawn gap is 24 either side of the heart, on the 156.75 that puts the
+     cap at the drawn 114. Measured both sides after the fact: 24.0 and 24.0.
+     No tracking compensation - the trailing letter-space is already outside
+     the cap-trimmed box, and taking it off again pulled the left gap to 14.7. */
+  .tkmq{gap:calc(24 / 156.75 * 1em)}
+  /* 513:24048 - 68 x 61.2 on the drawn 156.75, centred on the cap box, which
+     align-items:center against a cap-trimmed word already gives */
+  .tkheart{flex:none;display:block;
+           width:calc(68 / 156.75 * 1em);height:calc(61.2 / 156.75 * 1em);
+           color:#EBEBEB}
+  .tkheart svg{display:block;width:100%;height:100%}
+  /* the loop stops once the row is level - JS sets this, see the testi block */
+  .tkmq.tkstill{animation-play-state:paused}
   /* The row is hung off the TITLE, not off the viewport: cap height is .727em
      of the display size, and the storyboard laps the cards over its bottom
      third (49 of 140). So top = title + .65 × cap = title + .4726em — which
@@ -910,7 +940,7 @@
      track shrinks to its content and a percentage basis on the slots resolves
      against nothing — every card collapses to zero. */
   .ttrack{position:absolute;left:0;width:100%;
-          top:calc(8svh + var(--hl) * .4726);
+          top:var(--ttop);
           display:flex;align-items:flex-start;gap:.5556vw;padding:0 2.7778vw;
           will-change:transform}
   /* A quarter of the row, whatever the row is: at 1440 that resolves to the
@@ -934,7 +964,7 @@
   /* 295 as drawn, but never so tall that the row lands on the footer — 160
      keeps a margin under the cards on short windows. */
   .tcard{position:relative;width:100%;
-         height:min(295px, calc(92svh - var(--hl) * .4726 - 160px));
+         height:min(295px, calc(100svh - var(--ttop) - 160px));
          min-height:210px;
          background:#f5f5f5;overflow:clip;will-change:transform;
          display:flex;flex-direction:column;gap:16px;padding-top:24px}
@@ -4807,7 +4837,12 @@
      its view() timeline can never reach cover 100% and the drift stops half-done. -->
 <section class="testi" id="testi">
   <div class="tstage">
-    <p class="ttitle">TESTIMONIALS</p>
+    <!-- 506:81888 - KUDOS, heart, KUDOS, running. Same loop as the hero:
+         one measured cycle, a duration derived from it so the pace is the
+         same at every width, and enough copies to cover the window with a
+         cycle to spare. The track is built and sized in JS. -->
+    <p class="ttitle" aria-label="Kudos"><span class="mqtrack tkmq" id="tkTrack"
+       aria-hidden="true"></span></p>
     <div class="ttrack" id="ttrack">
       <div class="tslot"><article class="tcard">
         <span class="tav" data-avatar="1"></span>
@@ -8140,6 +8175,73 @@
      short enough that the early digits blur the way a board does, long enough
      that the last one is readable. Runs once, when the number is properly on
      screen rather than merely intersecting by a pixel. */
+  /* -- the KUDOS band, 506:81888 --------------------------------------
+     The hero's marquee, reused: KUDOS_SPEED is the same 46px/s, the cycle is
+     one sequence plus one gap, and the duration is that cycle at that speed
+     so a wide window and a narrow one run at the same pace.
+
+     It STOPS when the cards are level. Not on a scroll number - on the cards
+     themselves: the settle is a transform on .tcard and the slot with the
+     deepest offset is the last one to reach zero, so when ITS translateY is
+     zero the row is aligned and the loop has nothing left to do. That reads
+     the same going back up, so it starts again the moment the row breaks. */
+  (function(){
+    const testi=document.getElementById('testi');
+    const track=document.getElementById('tkTrack');
+    if(!testi||!track) return;
+    const KUDOS_SPEED=46;                  /* px/s - the hero's own pace */
+    /* PLACEHOLDER HEART. Kris's 513:24048 export goes here - this is drawn to
+       the right box (68 x 61.2) so the spacing is already correct, but it is
+       not his vector. Swap the <path> when the SVG lands. */
+    const HEART='<svg viewBox="0 0 68 61.2" fill="none" aria-hidden="true">'
+      +'<path d="M34 61.2C34 61.2 0 41.6 0 19.4 0 8.7 8.2 0 18.4 0c6.8 0 12.7 3.8 '
+      +'15.6 9.4C36.9 3.8 42.8 0 49.6 0 59.8 0 68 8.7 68 19.4c0 22.2-34 41.8-34 41.8Z" '
+      +'fill="currentColor"/></svg>';
+    function seq(){
+      const f=document.createDocumentFragment();
+      const w=document.createElement('span'); w.className='mw'; w.textContent='KUDOS';
+      const h=document.createElement('span'); h.className='tkheart'; h.innerHTML=HEART;
+      f.appendChild(w); f.appendChild(h);
+      return f;
+    }
+    function build(){
+      track.replaceChildren(seq());
+      const gap=parseFloat(getComputedStyle(track).columnGap)||0;
+      const cycle=track.getBoundingClientRect().width + gap;
+      if(!cycle) return;
+      for(let i=1, need=Math.ceil(innerWidth/cycle)+1; i<need; i++)
+        track.appendChild(seq());
+      track.style.setProperty('--mq-cycle', cycle.toFixed(4)+'px');
+      track.style.setProperty('--mq-dur', (cycle/KUDOS_SPEED).toFixed(3)+'s');
+    }
+    build();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(build);
+    addEventListener('resize',build,{passive:true});
+
+    /* nth-child(2) carries the deepest offset (46.78svh), so it settles last */
+    const probe=testi.querySelector('.tslot:nth-child(2) .tcard');
+    if(!probe) return;
+    let still=null;
+    function check(){
+      /* without the scroll timeline the row never moves, so there is nothing
+         to be level WITH - the band simply runs */
+      if(!testi.classList.contains('css-timeline')) return;
+      const t=getComputedStyle(probe).transform;
+      let dy=0;
+      if(t && t!=='none'){
+        const m=t.match(/matrix\(([^)]+)\)/);
+        if(m){ dy=parseFloat(m[1].split(',')[5])||0; }
+        else { const m3=t.match(/matrix3d\(([^)]+)\)/);
+               if(m3) dy=parseFloat(m3[1].split(',')[13])||0; }
+      }
+      const level=Math.abs(dy)<.5;
+      if(level!==still){ still=level; track.classList.toggle('tkstill',level); }
+    }
+    addEventListener('scroll',check,{passive:true});
+    addEventListener('resize',check);
+    check();
+  })();
+
   const MET_DUR=760, MET_TURN=80;
   (function(){
     const hosts=[...document.querySelectorAll('.kpi .fig b, .gstat .fig b')];
