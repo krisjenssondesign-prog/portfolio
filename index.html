@@ -569,6 +569,41 @@
      mark is centred on the drawn plate and still drifts with the picture.
      Sized off HEIGHT, because the layer is 80 wider than the plate and a
      width percentage would resolve against the wrong box. */
+  /* -- the Volvo gate: the card that does not open --------------------
+     Volvo's rail card does not route on click: it drops a curtain over its
+     own picture and asks for the passcode. #000 at 90% with a 10px backdrop
+     blur behind it, and the same pill the NFL storyboard card carries,
+     centred in the plate. The clip pauses under it - nothing plays behind a
+     curtain.
+
+     visibility, not display. The pill measures its own rest width at load and
+     a display:none element measures zero, so the closed gate has to keep its
+     layout - it is merely invisible and untouchable. */
+  .rlock{position:absolute;inset:0;z-index:3;
+         display:flex;align-items:center;justify-content:center;
+         padding:0 5.5%;
+         background:rgba(0,0,0,.9);
+         -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+         opacity:0;visibility:hidden;pointer-events:none;
+         transition:opacity .42s cubic-bezier(.22,1,.3,1),
+                    visibility 0s linear .42s}
+  .rcard.locked .rlock{opacity:1;visibility:visible;pointer-events:auto;
+         transition:opacity .42s cubic-bezier(.22,1,.3,1),visibility 0s}
+  /* stacked, not the storyboard card's row. GET CODE beside the pill pushes
+     the pill half its width off centre, and the pill is the thing that has to
+     sit in the middle of the plate. */
+  .rlock .cta{flex-direction:column;align-items:center;justify-content:center;
+         gap:20px;cursor:default}
+  /* the pill keeps every measurement it has on the storyboard card; the only
+     thing that changes is the fill - 10% white on a 20px backdrop blur */
+  .rlock .card-cta{background:rgba(255,255,255,.1);
+         -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+  .rlock .card-cta:hover{background:rgba(255,255,255,.16);
+         box-shadow:inset 0 0 0 1px #fff}
+  .rlock .cta.open .card-cta{background:rgba(255,255,255,.1);
+         box-shadow:inset 0 0 0 1px var(--c-1)}
+  @media (prefers-reduced-motion:reduce){ .rlock{transition:none} }
+
   .gmedia.fb i{display:flex;align-items:center;justify-content:center}
   .gmedia.fb .fbmark{display:block;height:var(--mk);aspect-ratio:var(--mkr)}
   .gmedia.fb .fbmark svg{display:block;width:100%;height:100%}
@@ -1990,6 +2025,13 @@
                         transform .38s cubic-bezier(.22,1,.3,1),
                         background-color .3s ease, color .3s ease}
     .curchip.live > span{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    /* Volvo is gated, so its chip says so. The lock is the same 16px padlock
+       the NFL pill carries, and it only exists over a card that is locked -
+       every other card's chip is the word on its own, unchanged. */
+    .curchip .chiplock{display:none;flex:none;width:16px;height:16px;
+             margin-right:6px}
+    .curchip .chiplock svg{display:block;width:16px;height:16px}
+    .curchip.locked .chiplock{display:block}
     .curchip.dark > span{background:rgba(26,26,26,.85);color:#FFFFFF}
     /* one pointer at a time — the ring stands down while the chip is up */
     html.chip .cur{opacity:0}
@@ -4455,7 +4497,7 @@
 </style>
 </head>
 <body>
-<div class="curchip" id="curchip" aria-hidden="true"><span>Read more</span></div>
+<div class="curchip" id="curchip" aria-hidden="true"><span><b class="chiplock" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M11.3322 7.08333V5.08333C11.3322 3.24238 9.83981 1.75 7.99886 1.75C6.15791 1.75 4.66553 3.24238 4.66553 5.08333V7.08333M5.86553 13.75H10.1322C11.2523 13.75 11.8124 13.75 12.2402 13.532C12.6165 13.3403 12.9225 13.0343 13.1142 12.658C13.3322 12.2302 13.3322 11.6701 13.3322 10.55V10.2833C13.3322 9.16323 13.3322 8.60318 13.1142 8.17535C12.9225 7.79903 12.6165 7.49307 12.2402 7.30132C11.8124 7.08333 11.2523 7.08333 10.1322 7.08333H5.86553C4.74542 7.08333 4.18537 7.08333 3.75755 7.30132C3.38122 7.49307 3.07526 7.79903 2.88351 8.17535C2.66553 8.60318 2.66553 9.16323 2.66553 10.2833V10.55C2.66553 11.6701 2.66553 12.2302 2.88351 12.658C3.07526 13.0343 3.38122 13.3403 3.75755 13.532C4.18537 13.75 4.74542 13.75 5.86553 13.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></b>Read more</span></div>
 <div class="cur" id="cur" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24"/><text x="24" y="24" text-anchor="middle" dominant-baseline="central">Read more</text></svg></div>
 
 <div class="loader" id="loader">
@@ -4612,7 +4654,25 @@
         </div>
       </article>
       <article class="rcard" data-page="volvo">
-        <div class="gmedia fb volvo" data-mark="9"><i></i></div>
+        <div class="gmedia fb volvo" data-mark="9"><i></i>
+        <div class="rlock" data-gate="volvo">
+          <div class="cta" data-code="NFL" data-page="volvo">
+            <div class="card-cta" role="button" tabindex="-1" aria-expanded="false">
+              <span class="ctagrp">
+                <span class="ctalock" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M11.3322 7.08333V5.08333C11.3322 3.24238 9.83981 1.75 7.99886 1.75C6.15791 1.75 4.66553 3.24238 4.66553 5.08333V7.08333M5.86553 13.75H10.1322C11.2523 13.75 11.8124 13.75 12.2402 13.532C12.6165 13.3403 12.9225 13.0343 13.1142 12.658C13.3322 12.2302 13.3322 11.6701 13.3322 10.55V10.2833C13.3322 9.16323 13.3322 8.60318 13.1142 8.17535C12.9225 7.79903 12.6165 7.49307 12.2402 7.30132C11.8124 7.08333 11.2523 7.08333 10.1322 7.08333H5.86553C4.74542 7.08333 4.18537 7.08333 3.75755 7.30132C3.38122 7.49307 3.07526 7.79903 2.88351 8.17535C2.66553 8.60318 2.66553 9.16323 2.66553 10.2833V10.55C2.66553 11.6701 2.66553 12.2302 2.88351 12.658C3.07526 13.0343 3.38122 13.3403 3.75755 13.532C4.18537 13.75 4.74542 13.75 5.86553 13.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="ctaslot">
+                  <span class="ctalabel">Enter passcode</span>
+                  <input class="ctainput" type="text" placeholder="Enter passcode"
+                         aria-label="Volvo access code" autocomplete="off"
+                         spellcheck="false" tabindex="-1">
+                </span>
+              </span>
+              <button class="ctago" type="button" tabindex="-1"
+                      aria-label="Open the Volvo case study"><svg viewBox="0 0 15 10" width="15" height="10" fill="none" aria-hidden="true"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <button class="ctaget" type="button" tabindex="-1">Get code</button>
+          </div>
+        </div></div>
         <template class="gmedia-clip" data-for="volvo"><i>
           <!-- Volvo_2.0.mp4, 1920x1080. Kris's own H.264 stream COPIED, not
                re-encoded, and CUT AT THE 4.100s KEYFRAME so the copy stays
@@ -6618,7 +6678,11 @@
       c.tabIndex=0;
       c.setAttribute('role','link');
       c.setAttribute('aria-label','Read the '+name.trim()+' case study');
-      const open=e=>{ e.preventDefault(); goTo(key,true); };
+      /* Volvo is behind a passcode. The gate answers for it - if it takes
+         the click, the card does not route. Every other card is unchanged. */
+      const open=e=>{ e.preventDefault();
+        if(typeof window.__cardGate==='function' && window.__cardGate(key,c)) return;
+        goTo(key,true); };
       c.addEventListener('click', open);
       c.addEventListener('keydown', e=>{
         if(e.key==='Enter'||e.key===' '||e.key==='Spacebar') open(e);
@@ -7942,6 +8006,8 @@
        card, the pointer only becomes the button over the picture itself —
        putting a 130-wide pill over the copy would cover the copy. */
     function playCard(card){
+      /* nothing runs behind the curtain */
+      if(card.classList.contains('locked')){ stopCard(); return; }
       if(live===card) return;
       stopCard();
       live=card;
@@ -7971,8 +8037,15 @@
       }
     }
     function showChip(media){
+      const card=media.closest('.rcard');
+      /* the curtain is up: the pointer goes back to being a pointer so the
+         field underneath can actually be clicked */
+      if(card && card.classList.contains('locked')){ hideChip(); return; }
       if(host===media) return;
       host=media;
+      chip.classList.toggle('locked',
+        !!(card && card.dataset.page==='volvo' && !document.documentElement
+             .classList.contains('volvo-open')));
       chip.classList.add('live'); root.classList.add('chip');
       ink();
     }
@@ -7995,6 +8068,71 @@
     },{passive:true});
     document.addEventListener('mouseleave', ()=>{ stopCard(); hideChip(); });
     addEventListener('scroll', ()=>{ if(host) ink(); }, {passive:true});
+    window.__railStop=stopCard;
+    window.__railHideChip=hideChip;
+  })();
+
+  /* -- the Volvo gate -------------------------------------------------
+     The card's click does not route it. It raises the curtain over the
+     picture, pauses the clip and puts the passcode pill in the middle of the
+     plate. The pill itself is the same component the NFL storyboard card
+     uses and is wired by the same handler above - this only decides WHEN it
+     is on screen, and gets out of the way once the code has been accepted.
+
+     One code covers both cards; it lives on data-code in the markup, in the
+     two places, and they are deliberately the same string. */
+  (function(){
+    const card=document.querySelector('.rcard[data-page="volvo"]');
+    const lock=card && card.querySelector('.rlock');
+    if(!card||!lock) return;
+    const root=document.documentElement;
+    const cta=lock.querySelector('.cta');
+    const pill=lock.querySelector('.card-cta');
+    const input=lock.querySelector('.ctainput');
+    const media=card.querySelector('.gmedia');
+    let unlocked=false;
+
+    function pauseClip(){
+      const v=media && media.querySelector('video');
+      if(v){ media.classList.remove('playing'); v.pause();
+             try{ v.currentTime=0; }catch(e){} }
+    }
+    function show(){
+      if(unlocked || card.classList.contains('locked')) return;
+      if(typeof window.__railHideChip==='function') window.__railHideChip();
+      pauseClip();
+      card.classList.add('locked');
+      pill.tabIndex=0;
+      /* the pill opens itself into the field - the curtain exists to ask for
+         the code, so there is no reason to make you click twice */
+      requestAnimationFrame(()=>pill.click());
+    }
+    function hide(){
+      if(!card.classList.contains('locked')) return;
+      card.classList.remove('locked');
+      pill.tabIndex=-1;
+      if(input){ input.value=''; cta.classList.remove('open','filled'); }
+    }
+    function unlock(){ unlocked=true; root.classList.add('volvo-open'); hide(); }
+
+    /* the router asks this before it routes */
+    window.__cardGate=function(key){
+      if(key!=='volvo'||unlocked) return false;
+      show(); return true;
+    };
+    /* the code was accepted somewhere - the card is open from now on */
+    if(typeof window.__goTo==='function'){
+      const go=window.__goTo;
+      window.__goTo=function(k){ if(k==='volvo') unlock(); return go.apply(this,arguments); };
+    }
+    /* clicking the curtain itself, Escape, or leaving the card puts it down */
+    lock.addEventListener('click',e=>{ if(!e.target.closest('.cta')) hide(); });
+    addEventListener('keydown',e=>{ if(e.key==='Escape') hide(); });
+    card.addEventListener('pointerleave',e=>{
+      if(e.pointerType!=='mouse') return;
+      if(input && input.value.trim()) return;   /* mid-typing: leave it up */
+      hide();
+    });
   })();
   /* ── impact metric count-up ─────────────────────────────────────────
      Quick and eased: 760ms on an easeOutQuint, so it covers most of the range
