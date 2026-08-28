@@ -1362,9 +1362,14 @@
          group at 453 against the drawn 450 */
       padding:87px var(--m) 80px;
       box-sizing:border-box}
-  .abbar{position:absolute;left:var(--m);right:var(--m);top:var(--m);
-         height:22px;display:flex;align-items:center;justify-content:space-between}
-  .ab-brand{color:var(--c-1)}
+  /* 513:35252 / 513:35368 - the wordmark's cap sits on 39 and the links' box
+     on 38, so the row hangs from its top rather than centring a 22 */
+  .abbar{position:absolute;left:var(--m);right:var(--m);top:38px;
+         display:flex;align-items:flex-start;justify-content:space-between}
+  /* .brand carries color:#1A1A1A from a later block, and one class cannot
+     out-rank another that comes after it - so this has to be more specific or
+     the wordmark paints Text Dark 1 on Surface Dark and disappears. */
+  .ab .abbar .ab-brand{color:#F8F8F8}
   .abr{display:flex;align-items:center;gap:16px;
        font-family:var(--font-ui);font-size:16px;font-weight:500;
        letter-spacing:-.04em;line-height:1;text-transform:uppercase}
@@ -1372,7 +1377,7 @@
   .abr .sep{color:rgba(255,255,255,.25);letter-spacing:-.06em;text-transform:none}
 
   /* headline block sits on the 40 guide at y180; the row below it at y352 */
-  .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * .1463)}  /* 24 */
+  .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * .1220)}  /* 20 */
   .abline{font-size:var(--abhl);font-weight:900;letter-spacing:var(--track);
           line-height:normal;color:var(--c-1);white-space:nowrap;
           text-box:trim-both cap alphabetic;
@@ -1440,27 +1445,43 @@
      rather than running off the grid. */
   /* 513:35367 - a flat 48 under the headline, and the fact grid is gone: the
      band at the foot of the page carries what it used to say. */
-  .abfoot{margin-top:48px;display:flex;align-items:flex-start}
+  .abfoot{margin-top:40px;display:flex;align-items:flex-start}
   /* 513:24169 - 28 Medium on 1.45 over 668. The opening clause is Text White 1
      and the rest of it drops to 50%, which is the whole of the colour logic. */
-  .abcopy{flex:0 1 700px;max-width:700px;min-width:0;font-family:var(--font-ui);
-          font-size:24px;font-weight:500;line-height:1.45;letter-spacing:0;
-          color:rgba(248,248,248,.5)}
+  .abcopy{flex:0 1 564px;max-width:564px;min-width:0;font-family:var(--font-ui);
+          font-size:22px;font-weight:500;line-height:1.45;letter-spacing:0;
+          color:rgba(248,248,248,.5);
+          text-box:trim-both cap alphabetic;
+          text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .abcopy b{font-weight:500;color:#F8F8F8}
 
   /* 513:35289 - the hairline, 80 off the foot of the section */
-  /* .ruleh sets position:relative and is declared later, so this has to out-
-     specify it or the rule falls back into the flow and cuts the standfirst */
-  .ab .abrule{position:absolute;left:0;right:0;bottom:80px;height:1px;
-          --rule-c:var(--c-4)}
+  /* 513:35289 / 520:35950 / 520:35955 - the rule is BROKEN now: a 24 stub off
+     the left edge, then LOVE FOR sitting in the gap, then the long rule out to
+     the right. Laid out as one row with no height, so the label centres itself
+     on the line rather than being placed against it. */
+  .abrules{position:absolute;left:0;right:0;bottom:80px;height:0;
+          display:flex;align-items:center;z-index:1}
+  .abrules i{flex:none;display:block;width:24px;height:1px;background:var(--c-4)}
+  .abrules u{flex:1 1 auto;display:block;height:1px;background:var(--c-4);
+          margin-right:1px}
+  /* 520:35955 - 16 SemiBold uppercase in Secondary Dark, 15 off the stub and
+     16 before the line picks up again */
+  .ablovefor{flex:none;margin:0 16px 0 15px;
+          font-family:var(--font-ui);font-size:16px;font-weight:600;
+          line-height:1.45;letter-spacing:0;text-transform:uppercase;
+          white-space:nowrap;color:#777777}
   /* 513:35302 - 32 discs and 22 labels on a 48 gap, running off both edges.
      24 of air under it, which is where the drawn band sits on a 900 frame. */
-  .abstrip{position:absolute;left:0;right:0;bottom:24px;height:32px;
+  /* 513:35302 - 24 tall now, on a 43 gap, and the labels are 18. The first
+     four discs are 24 and the last six 20, which is drawn, not a slip. */
+  .abstrip{position:absolute;left:0;right:0;bottom:24px;height:24px;
            overflow:hidden}
-  .abtrack{gap:48px;align-items:center;height:32px;
-           font-family:var(--font-ui);font-size:22px;font-weight:500;
+  .abtrack{gap:43px;align-items:center;height:24px;
+           font-family:var(--font-ui);font-size:18px;font-weight:500;
            line-height:1.45;letter-spacing:0;color:#F8F8F8;white-space:nowrap}
-  .abtrack .abdisc{flex:none;display:block;width:32px;height:32px;
+  .abtrack .abdisc{flex:none;display:block;
+           width:calc(var(--d) * 1px);height:calc(var(--d) * 1px);
            border-radius:999px;background:#FFFFFF}
   .abtrack .ablabel{flex:none;display:block;
            text-box:trim-both cap alphabetic;
@@ -1683,19 +1704,27 @@
            line-height:1.25;letter-spacing:0;color:#777777}
   /* Each stop's copy is held until the STROKE reaches its pill - the class is
      set off the line's own progress, not off the block's position in the
-     window, so the two can never drift apart. Same --rv-* reveal the rest of
-     the site uses: out of transparency, a little defocus, a little lift. */
-  .jbody h3,.jbody p{opacity:var(--rv-o);filter:blur(var(--rv-blur));
-           transform:translateY(var(--rv-y));
-           transition:opacity var(--rv-dur) var(--rv-ease),
-                      filter var(--rv-dur) var(--rv-ease),
-                      transform var(--rv-dur) var(--rv-ease)}
-  /* the line lands on the title first and the copy follows it in */
-  .jbody p{transition-delay:.09s}
-  .jstop.lit .jbody h3,.jstop.lit .jbody p{
-           opacity:1;filter:blur(0);transform:none}
+     window, so the two can never drift apart.
+
+     LINE BY LINE, out of a mask - no fade anywhere in it. Every visual line is
+     put in its own clipped box and rides up out of it, 70ms behind the one
+     above, and the title and the body share one counter so the stagger runs
+     straight down the stop instead of restarting halfway.
+
+     Own class names, not .ln-mask / .ln-in: those carry a rest state of their
+     own that only clears under .lr-go, and a stop is not inside one. */
+  .jbody .jln{display:block;overflow:hidden}
+  /* splitting moves the line box off the heading and onto the mask, and
+     text-box-trim does not follow it - so the mask carries the trim */
+  .jbody h3 > .jln{text-box:trim-both cap alphabetic;
+           text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .jbody .jlni{display:block;will-change:transform;
+           transform:translateY(110%);
+           transition:transform .82s cubic-bezier(.22,1,.3,1)
+                      calc(var(--i, 0) * 70ms)}
+  .jstop.lit .jbody .jlni{transform:none}
   @media (prefers-reduced-motion:reduce){
-    .jbody h3,.jbody p{opacity:1;filter:none;transform:none;transition:none}
+    .jbody .jlni{transform:none;transition:none}
   }
   /* every stop placed off the drawn board: left / top / width as percentages
      of 1130 x 1550 */
@@ -1706,7 +1735,60 @@
   .js5{left:calc(346 / 1130 * 100%); top:calc( 807 / 1550 * 100%); width:calc( 344 / 1130 * 100%)}
   .js6{left:0;                    top:calc(1123 / 1550 * 100%); width:calc( 437 / 1130 * 100%)}
   .js7{left:calc(693 / 1130 * 100%); top:calc(1393 / 1550 * 100%); width:calc( 437 / 1130 * 100%)}
-  .jn .tfoot{position:static;margin-top:80px;padding:0 0 40px}
+  /* 360, not the drawn 80. The line's pace is capped by the scroll that
+     exists BELOW the board - at the drawn gap there was only 1385px of it for
+     3388px of line, so it could not be slowed without failing to finish. This
+     is the cheapest place to buy the room. */
+  /* 519:35776 etc - the polaroids. One component at two scales, nine
+     placements, each with its own tilt. Everything inside is em off the card's
+     own width, so a card scales as one object rather than drifting apart; cqw
+     makes the board the container, which is what lets a percentage width drive
+     a font-size. The angles are solved from the drawn bounding boxes: a
+     rotated box is w*cos + h*sin wide, so the box and the media box together
+     give the angle and the card's true size. */
+  .jnwrap{container-type:inline-size}
+  .jpol{position:absolute;margin:0;z-index:2;pointer-events:none;
+        left:calc(var(--l) * 1%);top:calc(var(--t) * 1%);
+        width:calc(var(--w) * 1cqw);
+        font-size:calc(var(--w) * 1cqw * .070685);
+        opacity:0;
+        transform:rotate(var(--r)) translateY(14px) scale(.94);
+        transition:opacity .7s var(--rv-ease),
+                   transform .9s cubic-bezier(.22,1,.3,1)}
+  .jpol.lit,.jpol.jstill{opacity:1;transform:rotate(var(--r))}
+  .jpol.jstill{transition:none}
+  /* the card's height is the DRAWN height, not the caption's. Letting it size
+     to its own copy made every card a line shorter than the frame and dragged
+     the whole placement up with it, because the position is solved from the
+     drawn box. */
+  .jpolf{display:flex;flex-direction:column;align-items:flex-start;gap:.703em;
+        height:calc(var(--h) * 1em);box-sizing:border-box;
+        padding:.3515em 0 .87875em;border-radius:.52725em;background:#FFFFFF;
+        box-shadow:0 .27017em 1.08058em rgba(26,26,26,.04)}
+  .jpolm{display:block;margin:0 .3515em;width:13.4444em;height:12.302em;
+        border-radius:.52725em;overflow:hidden;background:#E7E7E7}
+  .jpolm img{width:100%;height:100%;display:block;object-fit:cover}
+  .jpol figcaption{flex:1 1 auto;min-height:0;overflow:hidden;
+        margin:0 .703em;width:12.741em;
+        font-family:var(--font-ui);font-size:1em;font-weight:500;
+        line-height:1.25;letter-spacing:0;color:#1A1A1A}
+  /* the icon grid's float, on the card rather than the frame: the reveal owns
+     .jpol's transform and the float owns .jpolf's, one property each on two
+     elements so neither overwrites the other. Gated on .afloat like the icons
+     are, so nine cards are not animating four thousand pixels off screen. */
+  @keyframes jpBob { from{translate:0 0}           to{translate:0 var(--fy)} }
+  @keyframes jpSway{ from{transform:translateX(0)} to{transform:translateX(var(--fx))} }
+  .jpolf{will-change:auto}
+  .jnwrap.afloat .jpolf{will-change:transform,translate;
+        animation:jpBob var(--by) ease-in-out infinite alternate,
+                  jpSway var(--bx) ease-in-out infinite alternate;
+        animation-delay:var(--dy),var(--dx)}
+  @media (prefers-reduced-motion:reduce){
+    .jnwrap.afloat .jpolf{animation:none}
+    .jpol{transition:none}
+  }
+
+  .jn .tfoot{position:static;margin-top:360px;padding:0 0 40px}
 
   /* the board stops being a board on a narrow window - it becomes one column
      with the connector taken out, because a routed line through seven points
@@ -1723,6 +1805,8 @@
            flex-direction:column;gap:24px}
     .jstop .jpill{width:91px}
     .jstop .jbody{padding:0}
+    /* the cards are placed against the board - there is no board here */
+    .jpol{display:none}
   }
 
   /* ── Resume — 132:4568 ───────────────────────────────────────────────
@@ -2946,7 +3030,8 @@
   /* 8, not 4 — 257:9074 puts the button at x 352 against a 344 pill */
   /* Nothing about the bar cross-fades while the page is still booting: the
      first surface reading is a decision, not a change of mind. */
-  html.booting .nav,html.booting .navroll,html.booting .ind{transition:none}
+  html.booting .nav,html.booting .navroll,html.booting .ind,
+  html.booting .seg,html.booting .nrcell,html.booting .nbr{transition:none}
   .navrow{display:flex;align-items:center;gap:8px;pointer-events:auto;
           transform:translateY(var(--ty));
           transition:transform .46s cubic-bezier(.32,.72,0,1);
@@ -4107,7 +4192,12 @@
             --pw:417px;
             top:16px;bottom:auto;
             justify-content:flex-start;
-            padding-left:calc(51.4931% - var(--pw) / 2);
+            /* 520:35898 puts the row in a 517 frame centred on the page - 32
+               of lead-in, the 417 pill, 8, then the 60 button - so the pill
+               lands at 493.5 and its centre on 702, which is 48.75% of 1440.
+               It was sitting on 741.5, off an older frame, and the whole bar
+               read 40 too far right. */
+            padding-left:calc(48.75% - var(--pw) / 2);
             transition:padding-left .46s cubic-bezier(.32,.72,0,1);
             opacity:1;pointer-events:none;transform:none}
     /* 6 more either side of each stop: 18 + 44 = 62, so the collapsed pill
@@ -5037,7 +5127,7 @@
     <!-- 513:35289 / 513:35302 - the rule, and the band under it. Ten stops on
          a 48 gap, running off both edges; the track is built and paced in JS
          off the same cycle the hero marquee uses. -->
-    <div class="abrule ruleh" aria-hidden="true"></div>
+    <div class="abrules" aria-hidden="true"><i></i><span class="ablovefor">Love for</span><u></u></div>
     <div class="abstrip" aria-label="San Francisco, Code, Design, Motion, People, AI used right, Prototyping, Systems, Illustrations, 3D Design">
       <span class="mqtrack abtrack" id="abTrack" aria-hidden="true"></span>
     </div>
@@ -5086,24 +5176,24 @@
            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <ol class="jnlist">
         <li class="jstop js1" data-side="l" data-kind="a">
-          <span class="jpill">Today</span>
+          <span class="jpill">2017</span>
           <div class="jbody">
-            <h3>Redesigning an app that I love</h3>
-            <p>Today I’m helping rethink Venmo, an app I’d already loved and used for years. I still play and coach soccer on the side, and spend the rest of my time in San Francisco with my Aussie girlfriend and our little pup Marlowe aka Goose aka Chubby aka no barking, who is unquestionably in charge.</p>
+            <h3>Trading Iceland for Silicon Valley</h3>
+            <p>I grew up in Iceland, splitting most of my time between school and a soccer field. In 2017, I moved to San Francisco to study interaction design and keep playing the game I’d grown up with.</p>
           </div>
         </li>
         <li class="jstop js2" data-side="l" data-kind="b">
-          <span class="jpill">2025</span>
+          <span class="jpill">2019</span>
           <div class="jbody">
-            <h3>Saying bye to agency life... for now</h3>
-            <p>After years of jumping between clients, industries and problems, I wanted to go deeper. One product, one team, and the chance to live with the decisions long after launch.</p>
+            <h3>Soccer &amp; design, what a combo</h3>
+            <p>Four years at Academy of Art meant design classes by day and goalkeeper gloves by night. I played for the university team for four year, captained for two, and made some of my best mates while doing it.</p>
           </div>
         </li>
         <li class="jstop js3" data-side="r" data-kind="a">
-          <span class="jpill">2023</span>
+          <span class="jpill">2021</span>
           <div class="jbody">
-            <h3>Design at full speed</h3>
-            <p>Code and Theory threw me into ambitious work across brands, products and industries. JBL, NFL, Volvo, Lucid and plenty more taught me how to move fast without letting the craft disappear.</p>
+            <h3>Turns out I really love doing this</h3>
+            <p>I graduated with a BFA in UX/UI Interaction Design and left school knowing I wanted to make digital products for a living. Soccer stayed with me, but design had officially become the main thing.</p>
           </div>
         </li>
         <li class="jstop js4" data-side="r" data-kind="a">
@@ -5114,27 +5204,85 @@
           </div>
         </li>
         <li class="jstop js5" data-side="l" data-kind="b">
-          <span class="jpill">2025</span>
+          <span class="jpill">2023</span>
           <div class="jbody">
-            <h3>Turns out I really love doing this</h3>
-            <p>I graduated with a BFA in UX/UI Interaction Design and left school knowing I wanted to make digital products for a living. Soccer stayed with me, but design had officially become the main thing.</p>
+            <h3>Design at full speed</h3>
+            <p>Code and Theory threw me into ambitious work across brands, products and industries. JBL, NFL, Volvo, Lucid and plenty more taught me how to move fast without letting the craft disappear.</p>
           </div>
         </li>
         <li class="jstop js6" data-side="l" data-kind="a">
-          <span class="jpill">2021</span>
+          <span class="jpill">2025</span>
           <div class="jbody">
-            <h3>Soccer &amp; design, what a combo</h3>
-            <p>Four years at Academy of Art meant design classes by day and goalkeeper gloves by night. I played for the university team for four year, captained for two, and made some of my best mates while doing it.</p>
+            <h3>Saying bye to agency life... for now</h3>
+            <p>After years of jumping between clients, industries and problems, I wanted to go deeper. One product, one team, and the chance to live with the decisions long after launch.</p>
           </div>
         </li>
         <li class="jstop js7" data-side="r" data-kind="a">
-          <span class="jpill">2017</span>
+          <span class="jpill">2026</span>
           <div class="jbody">
-            <h3>Trading Iceland for Silicon Valley</h3>
-            <p>I grew up in Iceland, splitting most of my time between school and a soccer field. In 2017, I moved to San Francisco to study interaction design and keep playing the game I’d grown up with.</p>
+            <h3>Redesigning an app that I love</h3>
+            <p>Today I’m helping rethink Venmo, an app I’d already loved and used for years. I still play and coach soccer on the side, and spend the rest of my time in San Francisco with my Aussie girlfriend and our little pup Marlowe aka Goose aka Chubby aka no barking, who is unquestionably in charge.</p>
           </div>
         </li>
       </ol>
+      <!-- 519:35776 etc - nine polaroids over the board. One component at two
+           scales, each rotated and placed off the drawn 1130 x 1550, so they
+           sit in the same coordinate space as the stops. data-cy is the card's
+           centre on that board: it is what the line is measured against. -->
+        <figure class="jpol p1 jstill" data-cy="94" style="--w:15.0234;--l:56.8875;--t:-0.3877;--h:16.6667;--r:9.80deg;--by:7.40s;--bx:10.30s;--dy:-2.10s;--dx:-4.60s;--fy:-11.5px;--fx:6.2px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-1.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Inside an ice cave. Its cold.</figcaption>
+          </span>
+        </figure>
+        <figure class="jpol p2 jstill" data-cy="140" style="--w:15.0239;--l:68.1097;--t:2.5895;--h:16.6667;--r:5.78deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-2.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>SF hill adjustments.</figcaption>
+          </span>
+        </figure>
+        <figure class="jpol p3" data-cy="634" style="--w:15.0238;--l:8.8287;--t:34.4388;--h:16.6667;--r:5.23deg;--by:6.80s;--bx:10.90s;--dy:-3.40s;--dx:-6.20s;--fy:-12.4px;--fx:4.8px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-3.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Inside an ice cave. Its cold.</figcaption>
+          </span>
+        </figure>
+        <figure class="jpol p4" data-cy="666" style="--w:15.0239;--l:26.3710;--t:36.4913;--h:16.6667;--r:7.01deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-4.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Late nighters at school</figcaption>
+          </span>
+        </figure>
+        <figure class="jpol p5" data-cy="661" style="--w:15.0237;--l:39.1761;--t:36.1695;--h:16.6667;--r:-9.74deg;--by:7.90s;--bx:11.60s;--dy:-1.20s;--dx:-7.80s;--fy:-13.1px;--fx:5.9px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-5.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Mask on.</figcaption>
+          </span>
+        </figure>
+        <figure class="jpol p6" data-cy="1115" style="--w:18.5373;--l:74.9511;--t:64.1981;--h:16.2573;--r:9.80deg;--by:10.20s;--bx:8.80s;--dy:-4.10s;--dx:-3.30s;--fy:12.0px;--fx:-7.3px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-6.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Kris has a rare ability to turn complex product problems</figcaption>
+          </span>
+        </figure>
+        <figure class="jpol p7" data-cy="1229" style="--w:18.5372;--l:53.3165;--t:71.5142;--h:16.2573;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-7.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Kris has a rare ability to turn complex product problems</figcaption>
+          </span>
+        </figure>
+        <figure class="jpol p8" data-cy="1603" style="--w:18.5373;--l:51.5566;--t:95.6778;--h:16.2573;--r:15.00deg;--by:9.80s;--bx:9.20s;--dy:-2.60s;--dx:-5.10s;--fy:13.4px;--fx:-5.1px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-8.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Kris has a rare ability to turn complex product problems</figcaption>
+          </span>
+        </figure>
+        <figure class="jpol p9" data-cy="1630" style="--w:18.5372;--l:29.5997;--t:97.3852;--h:16.2573;--r:6.25deg;--by:8.40s;--bx:11.30s;--dy:-7.20s;--dx:-1.90s;--fy:-11.8px;--fx:7.4px">
+          <span class="jpolf">
+            <span class="jpolm"><img src="media/story-9.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Kris has a rare ability to turn complex product problems</figcaption>
+          </span>
+        </figure>
     </div>
 
     <footer class="tfoot">
@@ -6514,6 +6662,14 @@
       const y = scrollY + (r.height ? r.bottom : 80);
       return (y>=gDark[0] && y<gDark[1]) ? 'dark' : 'light';
     }
+    /* WHICH SKIN, on demand. It used to be read only inside onScroll, and
+       onScroll waits on document.fonts.ready - so landing straight on a dark
+       page showed the LIGHT bar for the first ~480ms before it flipped, and
+       routing from a light page to a dark one left it wrong until you
+       scrolled. It is a synchronous read of what is under the bar; there is
+       no reason to make it wait for anything. */
+    function navSkin(){ root.classList.toggle('nav-dark', navGround()==='dark'); }
+    window.__navSkin=navSkin;
     addEventListener('resize',()=>{ gDark=[0,0]; });
     (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{ gDark=[0,0]; });
 
@@ -6605,7 +6761,7 @@
            The bar is held open while the pointer is on it: collapsing
            under the cursor moves the thing you were about to click. */
         const past = y > innerHeight * .2;
-        root.classList.toggle('nav-dark', navGround() === 'dark');
+        navSkin();
         const tight = hidden;
         root.classList.toggle('nav-tight', tight);
         if(root.classList.contains('past-hero') !== past){
@@ -6819,6 +6975,9 @@
       current=name;
       top0();
       document.documentElement.classList.toggle('on-about', name==='about');
+      /* the surface under the bar just changed - read it now, not on the next
+         scroll, or the bar wears the outgoing page's skin */
+      if(typeof window.__navSkin==='function') window.__navSkin();
       /* the button stops rolling and holds this study's mark */
       if(typeof window.__navLogo==='function') window.__navLogo(to.dataset.logo||null);
       if(typeof window.__navBack==='function') window.__navBack(name);
@@ -6853,6 +7012,9 @@
     });
     const h=location.hash.slice(1);
     if(pages[h]) goTo(h,false);
+    /* the landing page is up now: settle the bar's skin before the first
+       paint rather than after the fonts resolve */
+    if(typeof window.__navSkin==='function') window.__navSkin();
 
     /* the case-study cards in the panel are the way in */
     document.querySelectorAll('.nprow[data-page]').forEach(c=>{
@@ -8412,12 +8574,15 @@
     const track=document.getElementById('abTrack');
     if(!track) return;
     const SPEED=46;
-    const STOPS=['San Francisco','Code','Design','Motion','People',
-                 'AI used right','Prototyping','Systems','Illustrations','3D Design'];
+    /* the disc is 24 on the first four and 20 on the rest - drawn that way */
+    const STOPS=[['San Francisco',24],['Code',24],['Design',24],['Motion',24],
+                 ['People',20],['AI used right',20],['Prototyping',20],
+                 ['Systems',20],['Illustrations',20],['3D Design',20]];
     function seq(){
       const f=document.createDocumentFragment();
-      STOPS.forEach(t=>{
+      STOPS.forEach(([t,dia])=>{
         const d=document.createElement('span'); d.className='abdisc';
+        d.style.setProperty('--d',dia);
         const l=document.createElement('span'); l.className='ablabel'; l.textContent=t;
         f.appendChild(d); f.appendChild(l);
       });
@@ -8491,7 +8656,8 @@
     function draw(){
       /* below the breakpoint there is no line to build - tick still has to run
          so the copy is not left holding for a stroke that never arrives */
-      if(getComputedStyle(svg).display==='none'){ tick(); return; }
+      if(getComputedStyle(svg).display==='none'){ split(); tick(); return; }
+      split();
       const wb=wrap.getBoundingClientRect();
       if(!wb.width||!wb.height) return;
       if(Math.abs(wb.width-lastW)<1 && Math.abs(wb.height-lastH)<1) return;
@@ -8534,6 +8700,20 @@
         }
         mark[i]=at;
       }
+
+      /* The polaroids are not on the line, so "the line hits it" is read
+         vertically: the length at which the tip first gets down to the card's
+         own centre on the board. Anything the line has already passed is part
+         of the story it has told. The two at the top of the board carry
+         .jstill in the markup and never wait for it. */
+      pol=[...wrap.querySelectorAll('.jpol:not(.jstill)')].map(el=>{
+        const cy=parseFloat(el.dataset.cy||0)/1550*wb.height;
+        let at=len;
+        for(let L=0;L<=len;L+=3){
+          if(path.getPointAtLength(L).y>=cy){ at=L; break; }
+        }
+        return {el, at};
+      });
       tick();
     }
 
@@ -8555,8 +8735,65 @@
        lower-middle of the window rather than down at the edge, which is what
        was reading as early. The three horizontal sweeps come for free out of
        the same budget. */
+    /* Each visual line into its own clipped box. Re-run on a width change
+       because that is when the breaks move; the raw text is kept on the node
+       so the split is always taken from the original, never from a split. */
+    let splitW=0;
+    function split(){
+      const w=wrap.getBoundingClientRect().width;
+      if(!w || Math.abs(w-splitW)<1) return;
+      splitW=w;
+      wrap.querySelectorAll('.jstop').forEach(stop=>{
+        let n=0;
+        stop.querySelectorAll('.jbody h3, .jbody p').forEach(el=>{
+          if(!el.dataset.raw) el.dataset.raw=el.textContent;
+          const words=el.dataset.raw.trim().split(/\s+/);
+          el.textContent='';
+          const sp=words.map((t,i)=>{
+            const x=document.createElement('span');
+            x.textContent=t+(i<words.length-1?' ':'');
+            el.appendChild(x); return x;
+          });
+          const rows=[]; let top=null;
+          sp.forEach(x=>{
+            const t=Math.round(x.getBoundingClientRect().top);
+            if(top===null||Math.abs(t-top)>2){ rows.push([]); top=t; }
+            rows[rows.length-1].push(x);
+          });
+          el.textContent='';
+          const cs=getComputedStyle(el);
+          /* VENTED BOTH SIDES, and on every line - not just the trimmed ones.
+             The mask is the thing that clips, and a cap-trimmed mask is exactly
+             one cap tall: every ascender, every accent and every descender
+             paints outside it and gets shaved. Padding plus an equal negative
+             margin grows the box the clip is taken from without moving the line
+             in the flow, so the layout is identical and nothing is cut.
+
+             The rest position is 110% of the mask's own height, so a taller
+             mask still holds the line completely out of sight before it rises.
+
+             .42em is measured off the worst case rather than picked: Inter's
+             ascender sits .078em over its cap and its descender .215em under
+             the baseline, and the faces this may fall back to are wider still. */
+          const pad=Math.round(parseFloat(cs.fontSize)*.42);
+          rows.forEach(g=>{
+            const m=document.createElement('span'); m.className='jln';
+            const i2=document.createElement('span'); i2.className='jlni';
+            i2.style.setProperty('--i', n++);
+            g.forEach(x=>i2.appendChild(x));
+            m.appendChild(i2); el.appendChild(m);
+            m.style.paddingTop=pad+'px';    m.style.marginTop='-'+pad+'px';
+            m.style.paddingBottom=pad+'px'; m.style.marginBottom='-'+pad+'px';
+          });
+        });
+      });
+    }
+
     const READ=.62;
-    let len=0, firstY=0, lastY=0, mark=[], queued=false;
+    /* the tip would track the scroll 1:1 at 1.0 - this is the slowdown, and
+       360 of air under the board is what pays for it */
+    const SLOW=1.12;
+    let len=0, firstY=0, lastY=0, mark=[], pol=[], queued=false;
     function tick(){
       queued=false;
       const stops=[...wrap.querySelectorAll('.jstop')];
@@ -8565,6 +8802,7 @@
       if(STILL.matches || getComputedStyle(svg).display==='none'){
         if(len) path.style.strokeDashoffset='0';
         stops.forEach(el=>el.classList.add('lit'));
+        wrap.querySelectorAll('.jpol').forEach(el=>el.classList.add('lit'));
         return;
       }
       if(!len) return;
@@ -8575,7 +8813,7 @@
          line that cannot finish is worse than a fast one */
       const doc=r.top+scrollY;
       const maxScroll=Math.max(0,(document.documentElement.scrollHeight||0)-innerHeight);
-      let travel=lastY-firstY;
+      let travel=(lastY-firstY)*SLOW;
       travel=Math.max(1, Math.min(travel, (a-doc+maxScroll)*.94));
       const p=Math.min(1, Math.max(0, (a-r.top)/travel));
       const drawn=len*p;
@@ -8583,11 +8821,35 @@
       /* and the copy, stop by stop, on the stroke's own arrival. The first
          stop's mark is zero - the line STARTS on it - so it takes the floor
          instead, or it would be lit from the top of the page. */
-      for(let i=0;i<stops.length;i++)
-        stops[i].classList.toggle('lit', drawn > 0 && drawn >= (mark[i]||0) - .5);
+      for(let i=0;i<stops.length;i++){
+        const on = drawn > 0 && drawn >= (mark[i]||0) - .5;
+        if(!on && stops[i].classList.contains('lit'))
+          stops[i].querySelectorAll('.jln').forEach(m=>m.style.overflow='');
+        stops[i].classList.toggle('lit', on);
+      }
+      for(let i=0;i<pol.length;i++)
+        pol[i].el.classList.toggle('lit', drawn > 0 && drawn >= pol[i].at - .5);
     }
     const STILL=matchMedia('(prefers-reduced-motion: reduce)');
     const onScroll=()=>{ if(!queued){ queued=true; requestAnimationFrame(tick); } };
+
+    /* THE MASK IS ONLY FOR THE WAY UP. Its box is one cap tall, so anything
+       that paints outside a cap - every ascender, accent and descender - is
+       shaved for as long as the clip is on. Once the line has landed there is
+       nothing left to hide, so the clip comes off and the title is whole.
+       Delegated, and put back the moment a stop goes dark again. */
+    wrap.addEventListener('transitionend',e=>{
+      if(e.propertyName!=='transform'||!e.target.classList.contains('jlni')) return;
+      const stop=e.target.closest('.jstop');
+      if(stop&&stop.classList.contains('lit')) e.target.parentElement.style.overflow='visible';
+    });
+
+    /* the float costs nine running animations, so it only runs while the board
+       is actually in the window - the same gate the icon grid uses */
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(es=>wrap.classList.toggle('afloat',es[0].isIntersecting),
+        {rootMargin:'100px 0px'}).observe(wrap);
+    } else wrap.classList.add('afloat');
 
     if('ResizeObserver' in window) new ResizeObserver(draw).observe(wrap);
     addEventListener('resize',draw,{passive:true});
