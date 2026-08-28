@@ -3392,21 +3392,25 @@
     .ic *,.nrdot{animation:none !important;transition:none !important} }
   .nrwin{transition:opacity .18s ease, transform .46s cubic-bezier(.32,.72,0,1)}
 
-  html.nav-open .navroll{width:var(--np-pill,344px);
-            background:rgba(255,255,255,.15);box-shadow:none}
+  /* it does not widen any more - it travels. See the morph in the panel
+     block: one 60 button, one journey. */
+  html.nav-open .navroll{box-shadow:none}
   /* the marks leave first, the label arrives after the box has most of its
      width — otherwise the two cross in the middle and both are legible at
      once, which reads as a glitch rather than a change */
   html.nav-open .nrwin{opacity:0;transform:scale(.72)}
-  html.nav-open .nrback{opacity:1;transition:opacity .28s ease .18s}
+  /* the old GO BACK TO label is gone: while the sheet is up this button is
+     the cross, and nothing else. */
+  html.nav-open .nrback{opacity:0;pointer-events:none}
   /* The clip is applied ONLY while the panel is open. This pill carries the
      glass rim as an inset box-shadow, and a border-radius plus overflow:hidden
      on that same box crops the rim — the bug already documented on the roll.
      At rest there is nothing to clip, so there is nothing to lose; by the time
      the labels would spill, the pill is on its way to opacity 0 anyway. */
-  html.nav-open .nav{width:0;padding-left:0;padding-right:0;
-                     opacity:0;pointer-events:none;overflow:hidden}
-  html.nav-open .navrow{gap:0;transform:none}
+  /* it FADES, it does not collapse: zeroing its padding took 8 off the row
+     and the button's resting place moved with it mid-flight. */
+  html.nav-open .nav{opacity:0;pointer-events:none}
+  html.nav-open .navrow{transform:none}
 
   /* The window has a definite height — the button's — which is the whole
      reason the track can be 500% and each cell 20% of it. Percentage heights
@@ -4144,116 +4148,341 @@
      No longer a card floating over the page. The drawn frame is the whole
      1440 x 900 window: 40 all round, a 22 header, then four rows of 179
      starting at 76, and the bar keeps its own 24 at the foot. */
+  /* ══ 216:7368 - the case-study menu ═══════════════════════════════
+     Surface Dark, a head on 81, then five 161.4 rows. Every value below is
+     read off the Project Row component set (541:39589-541:39837), the Input
+     Field set (541:39572-541:39575) and the Logo Bank set. */
   .navpanel{position:fixed;inset:0;z-index:60;
-            background:#000;
-            display:flex;flex-direction:column;align-items:center;
-            padding:40px 40px 0;
+            background:var(--w-sur);
+            display:flex;flex-direction:column;align-items:stretch;
+            padding:21px 40px 0;
             opacity:0;pointer-events:none;
             /* visibility, not just opacity. A full-screen fixed sheet holding
-               96px type is one compositing bug away from painting over the
-               page, and opacity:0 alone leaves it in the paint tree. It is
-               delayed off so the fade still plays on the way out. */
+               88px type is one compositing bug away from painting over the
+               page, and opacity:0 alone leaves it in the paint tree. */
             visibility:hidden;
             transition:opacity .30s ease, visibility 0s linear .30s}
   html.nav-open .navpanel{opacity:1;pointer-events:auto;visibility:visible;
-            transition:opacity .38s ease .04s, visibility 0s}
+            transition:opacity .34s ease, visibility 0s}
+  /* the three-stop pill belongs to the page, not to the sheet. The round
+     button does NOT go with it — it travels, see the morph at the foot. */
+  html.nav-open .nav-wrap .nav{opacity:0;pointer-events:none;
+            transition:opacity .2s ease}
 
-  /* 380:46405 — bottom-aligned, so the 22 mark and the 16 link share a
-     baseline rather than a centre. */
-  .nphead{width:100%;display:flex;align-items:flex-end;justify-content:space-between}
-  .npmark{margin:0;font-family:var(--font-display);font-size:22px;font-weight:800;
-          line-height:1;letter-spacing:-.04em;text-transform:uppercase;
-          color:var(--c-1)}
+  /* 547:41551 - the head is 60 tall inside an 81 frame: 21 down, and the
+     wordmark line centres on it, which puts its cap on 44. */
+  .nphead{width:100%;height:60px;flex:none;
+          display:flex;align-items:center;justify-content:space-between}
+  /* 547:41552 - one line, 20 Bold, 8 apart. The wordmark steps back to
+     #9CA1A4 and the section it is showing takes Text White 1. */
+  .npmark{margin:0;display:flex;align-items:center;gap:8px;
+          font-family:var(--font-ui);font-size:20px;font-weight:700;
+          line-height:1.45;letter-spacing:-.02em;text-transform:uppercase;
+          color:#9CA1A4;white-space:nowrap}
+  .npmark i,.npmark b{font-style:normal;font-weight:700;color:#F8F8F8}
+  .npmark span,.npmark i,.npmark b{display:block;
+          text-box:trim-both cap alphabetic;
+          text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* 547:41558 - Linkedin / Get in touch, 16 apart, and 32 clear of the round
+     button. The button itself is not here: the bar's own travels into it. */
+  .nphr{display:flex;align-items:center;gap:32px}
+  .nplinks{display:flex;align-items:center;gap:16px;
+          font-family:var(--font-ui);font-size:16px;font-weight:500;
+          line-height:1;letter-spacing:0;text-transform:uppercase;
+          white-space:nowrap}
+  .nplinks a{color:#F8F8F8;text-decoration:none;transition:opacity .25s ease}
+  .nplinks a:hover{opacity:.7}
+  .nplinks i{font-style:normal;color:#9CA1A4;letter-spacing:-.06em}
+  .nplinks a{display:block;
+          text-box:trim-both cap alphabetic;
+          text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* the slot the travelling button lands in — it holds the 60 open so the
+     links sit where 547:41557 draws them */
+  .npslot{flex:none;width:60px;height:60px}
 
-  /* CLOSE moved into the header — it used to be a 157x64 pill of its own
-     under the card, and the card is gone. */
-  .navclose{border:0;padding:0;background:none;cursor:pointer;
-            font-family:var(--font-ui);font-size:16px;font-weight:500;
-            line-height:1;letter-spacing:-.04em;text-transform:uppercase;
-            color:var(--c-1);opacity:.75;
-            transition:opacity .25s ease}
-  .navclose:hover{opacity:1}
-  .navclose:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:4px}
-
-  /* The drawn block of rows is 668 tall and the bar wants 116 under it. On a
-     688 window that does not fit, and the answer is NOT a second layout: the
-     block takes a scale and keeps every proportion the drawing has. --np-k is
-     1 at 900 and only ever comes down. */
-  /* ── the rows land the way every page lands ─────────────────────────
-     Same keyframe, same spring, same 0 → .30 ladder the case-study intro
-     runs — the panel is a view arriving, so it should arrive like one. The
-     animation is declared only under .nav-open, which is what makes it
-     REPLAY: the class going away takes the animation with it, so the next
-     open starts it from the top without a reflow poke. */
+  /* ── the rows arrive the way 547:41526-547:43639 draw it ───────────
+     Four frames of one row wiping in from the LEFT: the mask is 28 wide,
+     then 336, then 783, then the full 1440. So it is a clip, not a fade —
+     each row uncovers left to right, one after another. */
+  @keyframes npWipe{ from{clip-path:inset(0 100% 0 0)}
+                     to  {clip-path:inset(0 -2px 0 0)} }
   .nphead,.nprow{opacity:0}
-  html.nav-open .nphead,
-  html.nav-open .nprow{
-        animation:landIn var(--land-dur) var(--land-spring) both}
-  html.nav-open .nphead             {animation-delay:0s}
-  html.nav-open .nprow:nth-child(1) {animation-delay:.06s}
-  html.nav-open .nprow:nth-child(2) {animation-delay:.14s}
-  html.nav-open .nprow:nth-child(3) {animation-delay:.22s}
-  html.nav-open .nprow:nth-child(4) {animation-delay:.30s}
+  html.nav-open .nphead{opacity:1;transition:opacity .3s ease}
+  html.nav-open .nprow{opacity:1;animation:npWipe .62s cubic-bezier(.22,1,.3,1) both}
+  html.nav-open .nprow:nth-child(1){animation-delay:.06s}
+  html.nav-open .nprow:nth-child(2){animation-delay:.13s}
+  html.nav-open .nprow:nth-child(3){animation-delay:.20s}
+  html.nav-open .nprow:nth-child(4){animation-delay:.27s}
+  html.nav-open .nprow:nth-child(5){animation-delay:.34s}
   @media (prefers-reduced-motion:reduce){
-    .nphead,.nprow{opacity:1;animation:none} }
+    .nphead,.nprow{opacity:1}
+    html.nav-open .nprow{animation:none} }
 
-  .npfit{width:100%;flex:1 1 auto;min-height:0;padding-top:14px}
-  /* The width is divided by the same factor it is about to be scaled by, so
-     the block still spans the full 1360 column and only its HEIGHT gives —
-     scaling a 100%-wide block would have pulled the rows in off the margins
-     while the header above them stayed put. */
-  .nplist{width:calc(100% / var(--np-k,1));
-          transform:scale(var(--np-k,1));transform-origin:top left}
+  /* 547:41565 - the list starts on 129 and is 807 tall against a 900 frame,
+     so it runs past the foot by design. It scrolls rather than scaling: the
+     type is the point of this sheet and shrinking it to fit would be the one
+     thing that spoils it. */
+  .npfit{width:100%;flex:1 1 auto;min-height:0;margin-top:48px;
+         overflow-y:auto;overflow-x:clip;scrollbar-width:none}
+  .npfit::-webkit-scrollbar{display:none}
+  .nplist{position:relative;width:100%;padding-bottom:40px}
 
-  /* ── one row — 380:46490 ──────────────────────────────────────────── */
-  .nprow{--rule-c:var(--c-rule);
-         display:block;width:100%;padding:40px 0 0;border:0;background:none;
-         text-align:left;color:inherit;cursor:pointer;
+  /* ── one row — 541:39589 ───────────────────────────────────────────
+     161.4: 28 of air, 104 of content, 28 of air, then the hairline. It
+     straddles the boundary rather than adding to it, so the pitch is exact. */
+  .nprow{position:relative;display:block;width:100%;padding:28px 0 29.4px;border:0;
+         background:none;text-align:left;color:inherit;cursor:pointer;
          font:inherit;text-decoration:none}
+  .nprow::after{content:'';position:absolute;left:0;right:0;bottom:-.7px;
+         height:1.4px;background:#1E1E1E;pointer-events:none;
+         transition:background-color .42s cubic-bezier(.4,0,.2,1)}
+  .nprow:hover::after,.nprow:focus-visible::after,
+  .nprow.asking::after{background:#9CA1A4}
   .nprow:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:4px}
-  .nprowin{display:flex;align-items:flex-end;justify-content:space-between;width:100%}
-  .npside{display:flex;align-items:center;gap:40px}
+  .nprowin{display:flex;align-items:flex-end;justify-content:space-between;
+           width:100%;height:104px}
+  /* the pair sits in a 96 band 8 clear of the content's foot - 547:42883 is
+     104 tall with 8 of padding under it, and both children are 96. */
+  .npside{display:flex;align-items:flex-end;gap:32px;height:100%;
+          padding-bottom:8px;box-sizing:border-box}
 
-  /* 91 square. The two things that move on hover are the tile's fill and the
-     wordmark's colour — nothing scales, nothing lifts. Long and eased so the
-     colour arrives rather than snaps. */
-  .nptile{position:relative;flex:none;width:91px;height:91px;
-          background:rgba(255,255,255,.15);
-          transition:background-color .45s cubic-bezier(.4,0,.2,1)}
-  .nprow:hover .nptile,.nprow:focus-visible .nptile{background:var(--brand)}
-  /* Each mark sits at its own drawn rectangle inside the tile, as a percentage
-     of the 91 — they are not a shared box and never were. */
-  .tmk{position:absolute;opacity:.5;
-       transition:opacity .45s ease, filter .45s ease}
+  /* 96 square on a 13.09 radius, 8 clear of the content's foot. */
+  .nptile{position:relative;flex:none;width:96px;height:96px;
+          border-radius:13.09px;overflow:hidden;
+          background:#1C1C1C;
+          transition:background-color .42s cubic-bezier(.4,0,.2,1)}
+  .nprow:hover .nptile,.nprow:focus-visible .nptile,
+  .nprow.asking .nptile{background:var(--brand)}
+  /* Two marks, one on top of the other: the flat #9CA1A4 silhouette while the
+     row is asleep, the brand's own artwork once it is awake. Cross-fading two
+     copies beats recolouring one, because these marks carry luminance masks
+     and repainting mask geometry breaks them. */
+  .tmk{position:absolute;left:50%;top:50%;translate:-50% -50%;
+       width:var(--mw);height:var(--mh);
+       transition:opacity .42s ease}
   .tmk svg{display:block;width:100%;height:100%;overflow:visible}
-  .nprow:hover .tmk,.nprow:focus-visible .tmk{opacity:1}
-  /* VOLVO and ETS are drawn on light tiles, so their marks go to ink. The
-     marks carry luminance masks and recolouring mask geometry breaks them —
-     brightness(0) takes the paint to black and leaves the alpha alone. */
-  .nprow[data-ink]:hover .tmk,.nprow[data-ink]:focus-visible .tmk{filter:brightness(0)}
+  .tmk.tmd svg *{fill:#9CA1A4}
+  .tmk.tml svg *{fill:var(--mk,#F8F8F8)}
+  .tmk.tml{opacity:0}
+  .nprow:hover .tmk.tmd,.nprow:focus-visible .tmk.tmd,
+  .nprow.asking .tmk.tmd{opacity:0}
+  .nprow:hover .tmk.tml,.nprow:focus-visible .tmk.tml,
+  .nprow.asking .tmk.tml{opacity:1}
 
-  .npname{display:block;margin:0;font-family:var(--font-display);font-size:96px;font-weight:900;
+  /* 547:42886 - 88 Heavy, cap-trimmed, 8 clear of the content's foot */
+  .npname{display:block;margin:0 0 8px;font-family:var(--font-display);
+          font-size:88px;font-weight:900;
           line-height:normal;letter-spacing:normal;white-space:nowrap;
-          color:var(--c-4);
+          color:#9CA1A4;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic;
-          transition:color .45s cubic-bezier(.4,0,.2,1)}
-  .nprow:hover .npname,.nprow:focus-visible .npname{color:var(--c-1)}
+          transition:color .42s cubic-bezier(.4,0,.2,1)}
+  .nprow:hover .npname,.nprow:focus-visible .npname,
+  .nprow.asking .npname{color:#F8F8F8}
 
-  .npend{display:flex;align-items:flex-end;gap:76px;padding-right:4px}
-  .npmeta{display:flex;align-items:center;gap:28px;padding-bottom:8px;
-          font-family:var(--font-ui);font-size:24px;font-weight:500;
-          line-height:1;white-space:nowrap}
-  .npmeta em{font-style:normal;color:var(--c-2);
-             letter-spacing:-.04em;text-transform:uppercase}
-  .npmeta s{text-decoration:none;color:var(--c-3);letter-spacing:-.06em}
-  .nparrow{flex:none;width:64px;height:64px;color:var(--c-1)}
-  .nparrow svg{display:block;width:100%;height:100%}
+  /* 547:42887 - the right group is 56 tall, 56 apart, 4 clear of the edge */
+  .npend{display:flex;align-items:center;justify-content:flex-end;
+         gap:56px;padding-right:4px;height:56px}
+  /* 547:42888 - 22 Medium on a 28 gap, the platforms on a 12 gap with 4 dots */
+  .npmeta{display:flex;align-items:center;gap:28px;
+          font-family:var(--font-ui);font-size:22px;font-weight:500;
+          line-height:1;white-space:nowrap;
+          transition:opacity .3s ease}
+  .npmeta em,.npmeta s,.npmeta u{transition:color .42s cubic-bezier(.4,0,.2,1)}
+  .npmeta em{font-style:normal;color:#9CA1A4;text-transform:uppercase;
+          display:flex;align-items:center;gap:12px}
+  .npmeta em i{font-style:normal;flex:none;width:4px;height:4px;
+          border-radius:999px;background:#71747B;
+          transition:background-color .42s cubic-bezier(.4,0,.2,1)}
+  .npmeta s{text-decoration:none;color:#71747B;font-size:16px;
+          letter-spacing:-.06em}
+  .nprow:hover .npmeta em,.nprow:focus-visible .npmeta em,
+  .nprow.asking .npmeta em{color:#F8F8F8}
+  .nprow:hover .npmeta s,.nprow:focus-visible .npmeta s,
+  .nprow.asking .npmeta s{color:#9CA1A4}
+  .nprow:hover .npmeta em i,.nprow:focus-visible .npmeta em i{background:#9CA1A4}
+  .nprow.asking .npmeta{opacity:0;pointer-events:none}
 
-  /* height 0: the drawn vector sits ON the 179 line rather than adding to it,
-     so the pitch stays exactly 179 and the stroke straddles the boundary. */
-  .nprule{display:block;margin-top:48px;height:0}
-  .nprow:last-child .nprule{display:none}
+  /* 541:39589 - the pill is 56 tall on a 999 radius, 20/26/20/24 asleep and
+     20/24 awake, because the arrow arrives on the right when it wakes. */
+  .npbtn{flex:none;display:flex;align-items:center;gap:10px;height:56px;
+         padding:0 26px 0 24px;border-radius:999px;box-sizing:border-box;
+         background:#1C1C1C;color:#F8F8F8;
+         font-family:var(--font-ui);font-size:16px;font-weight:600;
+         line-height:1;text-transform:none;white-space:nowrap;
+         transition:background-color .42s cubic-bezier(.4,0,.2,1),
+                    color .42s cubic-bezier(.4,0,.2,1),
+                    padding-right .42s cubic-bezier(.4,0,.2,1)}
+  .npbtn b{font-weight:600;display:block;
+         text-box:trim-both cap alphabetic;
+         text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .npbtn .npi{flex:none;display:block;width:20px;height:20px}
+  .npbtn .npi svg{display:block;width:100%;height:100%}
+  .npbtn .npi svg *{stroke:currentColor}
+  .npbtn .npi.npilock{color:#9CA1A4;transition:color .42s cubic-bezier(.4,0,.2,1)}
+  /* the arrow is not there at all until the row wakes: it opens from zero
+     width so the pill grows into it rather than jumping */
+  .npbtn .npi.npiarr{width:0;opacity:0;margin-left:-10px;
+         transition:width .42s cubic-bezier(.4,0,.2,1),
+                    opacity .3s ease, margin-left .42s cubic-bezier(.4,0,.2,1)}
+  .nprow:hover .npbtn,.nprow:focus-visible .npbtn{
+         background:#E7E7E7;color:#1A1A1A;padding-right:24px}
+  .nprow:hover .npbtn .npi.npilock,
+  .nprow:focus-visible .npbtn .npi.npilock{color:#1A1A1A}
+  .nprow:hover .npbtn .npi.npiarr,.nprow:focus-visible .npbtn .npi.npiarr{
+         width:20px;opacity:1;margin-left:0}
+
+  /* 547:41566 - Venmo is not a link. Same 56 box and the same type, no pill
+     and no arrow: a star and a word that light with the rest of the row. */
+  .nprow[data-soon]{cursor:default}
+  .nprow[data-soon] .npbtn{background:none;gap:6px;padding:0 26px 0 24px;
+         color:#9CA1A4}
+  .nprow[data-soon]:hover .npbtn{background:none;color:#F8F8F8;
+         padding-right:26px}
+  .nprow[data-soon] .npi svg *{stroke:none;fill:currentColor}
+
+  /* ── the passcode, inline in the row — 541:39572-541:39575 ─────────
+     The meta goes to nothing and the field takes the space it leaves. 141 of
+     "Need code?", then a 274 pill on a 1 hairline, then — once you have typed
+     anything — a 56 round submit 12 to its right. */
+  .nppass{display:none;align-items:center;gap:12px;height:56px}
+  .nprow.asking .nppass{display:flex}
+  .nprow.asking .npbtn{display:none}
+  .npneed{flex:none;display:flex;align-items:center;height:56px;
+         padding:0 20px 0 24px;border-radius:999px;
+         font-family:var(--font-ui);font-size:16px;font-weight:500;
+         line-height:1;color:#9CA1A4;white-space:nowrap}
+  .npfield{flex:none;position:relative;display:flex;align-items:center;
+         justify-content:space-between;gap:24px;
+         width:274px;height:56px;box-sizing:border-box;
+         padding:0 20px 0 24px;border-radius:999px;
+         border:1px solid #71747B;
+         transition:border-color .3s ease}
+  .nprow.asking .npfield{border-color:#E7E7E7}
+  .npfield.filled{border-color:#F8F8F8}
+  .npfield.err{border-color:#F17474}
+  .npfl{display:flex;align-items:center;gap:10px;min-width:0}
+  .npfl .npi{flex:none;width:20px;height:20px;color:#F8F8F8}
+  .npfl .npi svg{display:block;width:100%;height:100%}
+  .npfl .npi svg *{stroke:currentColor;fill:none}
+  .npfield.err .npfl .npi{color:#F17474}
+  .npin{flex:1 1 auto;min-width:0;border:0;background:none;outline:none;
+        font-family:var(--font-ui);font-size:16px;font-weight:400;
+        line-height:1;letter-spacing:.24em;color:#F8F8F8;padding:0}
+  .npin::placeholder{color:#9CA1A4;letter-spacing:0;opacity:1}
+  .npfield.err .npin{display:none}
+  .nperr{display:none;font-family:var(--font-ui);font-size:16px;
+        font-weight:400;line-height:1;color:#F17474;white-space:nowrap}
+  .npfield.err .nperr{display:block}
+  .npclr{flex:none;width:20px;height:20px;border:0;padding:0;background:none;
+        cursor:pointer;color:#9CA1A4;opacity:0;pointer-events:none;
+        transition:opacity .25s ease}
+  .npfield.filled .npclr,.npfield.err .npclr{opacity:1;pointer-events:auto}
+  .npfield.err .npclr{color:#F8F8F8}
+  .npclr svg{display:block;width:100%;height:100%}
+  .npclr svg *{stroke:currentColor}
+  /* 541:39575 - the 56 round submit, only once something has been typed */
+  .npgo{flex:none;width:0;height:56px;border:0;padding:0;border-radius:999px;
+        background:#F6F6F6;color:#1A1A1A;cursor:pointer;overflow:hidden;
+        display:grid;place-items:center;opacity:0;margin-left:-12px;
+        transition:width .38s cubic-bezier(.22,1,.3,1), opacity .26s ease,
+                   margin-left .38s cubic-bezier(.22,1,.3,1)}
+  .nppass.ready .npgo{width:56px;opacity:1;margin-left:0}
+  /* 547:41613 draws no submit beside the error - the field is the message
+     until you touch it again */
+  .nppass:has(.npfield.err) .npgo{width:0;opacity:0;margin-left:-12px}
+  .npgo span{display:block;width:20px;height:20px}
+  .npgo svg{display:block;width:100%;height:100%}
+  .npgo svg *{stroke:currentColor}
+
+  /* ── the light TRAVELS ─────────────────────────────────────────────
+     Everything above changes on the same 420ms curve, and if they all started
+     together the row would flip at once. Each part carries the delay its own
+     left edge implies — x / 1360 of a 260ms sweep — so the light runs from
+     the tile, through the wordmark, across the meta and out through the pill.
+     The delays live under :hover only, so coming off the row every part has a
+     delay of 0 again: the light does not crawl away, it drops. */
+  .nprow:hover .npname,.nprow:focus-visible .npname{transition-delay:24ms}
+  .nprow:hover .npmeta em,.nprow:focus-visible .npmeta em,
+  .nprow:hover .npmeta em i,.nprow:focus-visible .npmeta em i{transition-delay:140ms}
+  .nprow:hover .npmeta s,.nprow:focus-visible .npmeta s{transition-delay:170ms}
+  .nprow:hover .npbtn,.nprow:focus-visible .npbtn,
+  .nprow:hover .npbtn .npi,.nprow:focus-visible .npbtn .npi{transition-delay:230ms}
+  .nprow:hover::after,.nprow:focus-visible::after{transition-delay:60ms}
+  @media (prefers-reduced-motion:reduce){
+    .nprow:hover *,.nprow:focus-visible *{transition-delay:0s !important}
+    .nprow:hover::after,.nprow:focus-visible::after{transition-delay:0s} }
+
+  /* ── narrower than the drawing ─────────────────────────────────────
+     216:7368 is drawn at 1440 and every number in it is fixed, so under about
+     1180 the 88 wordmark and the meta run into each other. The row keeps its
+     shape and gives up the things that are not load-bearing: the meta first,
+     then some of the type. Nothing reflows into a second line — the row is
+     one line by design and it stays one. */
+  @media (max-width:1180px){
+    .npname{font-size:clamp(44px,7.6vw,88px)}
+    .npmeta{display:none}
+    .nptile{width:clamp(56px,6.6vw,96px);height:clamp(56px,6.6vw,96px);
+            border-radius:calc(clamp(56px,6.6vw,96px) * .1364)}
+    .npside{gap:24px}
+    .nprow{padding:20px 0 21.4px}
+    .npbtn{height:48px;padding:0 20px;font-size:15px}
+    .nppass{height:48px}
+    .npneed{height:48px;padding:0 12px 0 16px}
+    .npfield{height:48px;width:236px;gap:12px;padding:0 16px 0 18px}
+    .npgo{height:48px}
+    .nppass.ready .npgo{width:48px}
+    .npfit{margin-top:32px}
+  }
+  @media (max-width:720px){
+    .npname{font-size:clamp(34px,9vw,56px)}
+    .npbtn b,.npneed{display:none}
+    .npbtn{padding:0 14px;gap:0}
+    .npfield{width:180px}
+  }
+
+  /* 521:38480 - a 40 row, 28 off the foot of the sheet, on no rule. The
+     footer component is written for the light sections, so on this sheet it
+     takes the dark surface's own values. */
+  .npfoot{position:absolute;left:40px;right:40px;bottom:28px;width:auto;
+          padding:0;height:40px}
+  .npfoot .tfrow{width:100%;height:40px;align-items:center}
+  .npfoot .tflinks,.npfoot .tflinks span,.npfoot .tfby{color:#9CA1A4}
+  .npfoot .tfsl{color:#515151}
+  .npfoot .tfic{background:#1C1C1C;color:#9CA1A4}
+  .npfoot .tfic:hover{background:#262626;color:#F8F8F8}
+
+  /* ── the button TRAVELS — the menu becomes the X ───────────────────
+     Not two controls swapping. It is one 60 round button: the bar's own, the
+     one you press to open the sheet. On open it flies to the head's right
+     corner along the delta JS measured between the two boxes, the bank of
+     marks spins down and out, and the cross draws itself in behind. Press it
+     again and the whole thing runs backwards. One object, one journey — which
+     is why it reads as a morph rather than a swap. */
+  html.nav-open .nav-wrap{opacity:1;pointer-events:auto}
+  /* While the sheet is up the button leaves the bar's flow entirely and is
+     pinned to the head's slot. It gets there by a FLIP: JS notes where it
+     stood, pins it, then puts the difference back as a transform and takes it
+     away again - so the pin is instant and the journey is animated, and the
+     bar collapsing behind it cannot drag the start point around. */
+  html.nav-open .nav-wrap .navroll{
+            transform:translate(var(--rollx,0px), var(--rolly,0px));
+            background:rgba(0,0,0,.8);z-index:70}
+  .nav-wrap .navroll{transition:transform .58s cubic-bezier(.22,1,.3,1),
+            background-color .42s ease}
+  .navx{position:absolute;left:50%;top:50%;width:28px;height:28px;
+        margin:-14px 0 0 -14px;color:#71747B;pointer-events:none;z-index:2;
+        opacity:0;transform:rotate(-90deg) scale(.6);
+        transition:opacity .26s ease, transform .5s cubic-bezier(.22,1,.3,1)}
+  .navx svg{display:block;width:100%;height:100%}
+  .navx svg *{stroke:currentColor}
+  html.nav-open .navx{opacity:1;transform:none;transition-delay:.16s}
+  html.nav-open .navroll .nrwin{opacity:0;transform:rotate(30deg) scale(.5)}
+  .navroll .nrwin{transition:opacity .24s ease,
+            transform .46s cubic-bezier(.22,1,.3,1)}
+  html.nav-open .navroll:hover .navx{color:#F8F8F8}
+  @media (prefers-reduced-motion:reduce){
+    .nav-wrap .navroll,.navx,.navroll .nrwin{transition:none} }
 
   @media (prefers-reduced-motion:reduce){
     .navrow,.nav,.seg,.seglw,.navroll,.nrwin,.nrback,
@@ -4460,7 +4689,8 @@
       /* 472:19387 — Ink at 5% on the light ground, 472:19312 — Text White 1
          at 5% on the dark one. Not white at 9%. */
       .nav-wrap .ind{background:rgba(26,26,26,.1);background-image:none}
-      html.nav-dark .nav-wrap .ind{background:rgba(249,249,249,.05)}
+      /* 10 on both surfaces now, not 5 on the dark one - asked for. */
+      html.nav-dark .nav-wrap .ind{background:rgba(249,249,249,.1)}
     /* Get in touch — 60 square, and the mark sits in it at Ink 3 */
     .nav-wrap .navroll{overflow:hidden}
           .nav-wrap .navroll{
@@ -6271,6 +6501,7 @@
     <button class="navroll glass" id="navDots" aria-label="Case studies and contact"
             aria-expanded="false" aria-controls="navPanel">
       <span class="nrglow" aria-hidden="true"></span>
+      <span class="navx" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M21 7 7 21M7 7l14 14" stroke-width="2" stroke-linecap="round"/></svg></span>
       <span class="nrdot" aria-hidden="true"></span>
       <span class="nrback" aria-hidden="true">
         <span class="nbl">Go back to<i>/</i></span>
@@ -6297,66 +6528,67 @@
   <div class="navpanel" id="navPanel" role="dialog" aria-modal="true"
        aria-label="Case studies">
     <div class="nphead">
-      <p class="npmark">Case studies</p>
-      <button class="navclose" id="navClose" type="button">Close</button>
+      <p class="npmark"><span>Kris Jensson</span><i aria-hidden="true">/</i><b>Case studies</b></p>
+      <div class="nphr">
+        <nav class="nplinks">
+          <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
+          <i aria-hidden="true">/</i>
+          <a href="mailto:kris.jensson@gmail.com">Get in touch</a>
+        </nav>
+        <span class="npslot" aria-hidden="true"></span>
+      </div>
     </div>
     <div class="npfit"><div class="nplist" id="npList">
-      <button class="nprow" type="button" data-page="nfl"
-              style="--brand:#004fff" aria-label="NFL case study">
+      <div class="nprow" role="link" tabindex="0" data-page="venmo" data-soon style="--brand:#0066FF;--mk:#F8F8F8"
+              aria-label="Venmo case study">
         <span class="nprowin">
           <span class="npside">
-            <span class="nptile"><span class="tmk" style="left:26.3736%;top:20.8502%;width:46.1538%;height:58.2996%"><svg viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3419)"> <mask id="np_mask0_97_3419" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="37" height="48"> <path d="M36.3558 0H0V48H36.3558V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3419)"> <path d="M36.2736 4.38746C36.2838 6.3873 36.262 8.38854 36.2724 10.3888C36.3194 19.4745 36.361 28.5654 36.3552 37.6564C36.1092 40.7102 32.9746 41.6814 30.4712 42.3358C26.5046 43.3726 21.3296 43.9174 18.6401 47.366C18.5625 47.4656 18.2325 48.0006 18.1581 48.0002C15.6629 43.6614 10.2345 43.2596 5.88408 42.0566C2.99886 41.2588 0.211968 40.0436 0 36.6198C0.00159525 25.9 0.0556342 15.1841 0.0817564 4.46722C0.417756 4.69094 0.719456 4.96274 1.05685 5.18588C5.25814 7.9642 10.6744 6.55938 14.5231 3.86182C15.9732 2.84544 17.3332 1.56207 18.198 0.00191837C18.2524 -0.00964718 18.2656 0.0334246 18.2911 0.0683206C18.6337 0.536726 18.8981 1.07153 19.278 1.5529C22.2964 5.3787 27.631 7.19588 32.415 6.32828C33.8278 6.07204 35.3304 5.50852 36.2736 4.38746ZM21.765 5.90274C19.0849 5.85448 16.3603 6.71652 14.781 8.98296C13.3137 11.0887 13.2029 13.8124 13.6065 16.2744C13.6806 16.7269 13.7981 17.1708 13.8733 17.6226C13.9762 17.6336 13.9369 17.6226 13.954 17.5644C14.1122 17.0272 14.2035 16.407 14.3544 15.8517C14.6964 14.5942 15.1291 13.3631 15.6673 12.1774C15.6771 12.1256 15.6613 12.0979 15.6272 12.061C15.567 11.9956 15.0641 11.8042 15.0316 11.7593L15.2338 11.2875C15.976 11.461 16.7856 11.67 17.3013 12.2586L17.0235 12.7814L16.2099 12.4454C15.4007 13.5821 14.978 15.02 14.6825 16.3789C14.643 16.5604 14.379 17.77 14.4308 17.8218C17.7025 17.6226 21.2596 15.8577 22.4836 12.6602C23.118 11.0027 23.0588 9.26912 22.6308 7.56778C22.5128 7.09838 22.3398 6.64414 22.2032 6.18092C21.564 6.45868 20.9354 6.81622 20.4292 7.29838C20.404 7.32232 20.3654 7.33468 20.3306 7.33786C20.2782 7.41184 20.8042 7.84634 20.8878 7.91514C20.7686 7.9977 20.6012 8.30398 20.4508 8.23538C20.3762 8.2015 20.0998 7.90178 19.9849 7.82222C19.6148 7.56618 19.2532 7.47266 18.8159 7.39708C18.9314 7.33528 19.2116 7.08122 19.3186 7.06906C19.4582 7.05312 19.7262 7.14364 19.8728 7.14164C20.0968 7.13886 20.3414 6.73766 20.5566 6.62618L21.765 5.90274ZM3.32988 9.56982H1.55616L2.9869 10.6731L2.49318 12.4006L3.9606 11.3693L5.46192 12.4002L4.90938 10.6701L6.33912 9.56982H4.5654L3.9281 7.85532L3.32988 9.56982ZM9.6676 9.56982H7.89388L9.32442 10.6723L8.8309 12.4008L10.2983 11.3695L11.8 12.4L11.2471 10.6703L12.6768 9.57002H10.9031L10.3049 7.85552L9.6676 9.56982ZM25.492 9.56982H23.7184L25.148 10.6743L24.6554 12.4006L26.1298 11.3768L27.6242 12.4002L27.0716 10.6701L28.5012 9.56982H26.7076L26.0902 7.85532L25.492 9.56982ZM31.8296 9.56982H30.0558L31.4866 10.6731L30.9928 12.4006L32.4602 11.3693L33.9616 12.4002L33.409 10.6701L34.8388 9.56982H33.065L32.4278 7.85532L31.8296 9.56982ZM6.33932 15.151H4.5656C4.2992 14.6499 4.22042 13.9972 3.9915 13.4927C3.97018 13.4459 4.01046 13.4207 3.90836 13.4367L3.38592 15.1468L1.55656 15.1911L2.99388 16.2547L2.47344 18.021L3.96778 16.9564L5.46252 17.9808L4.90738 16.232L6.33932 15.151ZM12.677 15.151H10.9033L10.2461 13.4369L9.72582 15.1494L7.89388 15.1915L9.3314 16.2551L8.81116 18.0216L10.3059 16.9554L11.8 17.9816L11.2391 16.2539L12.677 15.151ZM28.5012 15.151H26.7276C26.4614 14.6497 26.3822 13.9976 26.1534 13.4927C26.1322 13.4459 26.1724 13.4207 26.0704 13.4367L25.5478 15.1468L23.7186 15.1911C23.8712 15.3831 25.1098 16.1406 25.1482 16.2541C25.2106 16.4382 24.6632 17.7295 24.6356 18.021L26.13 16.9564L27.6246 17.981L27.0802 16.286L28.5012 15.151ZM34.839 15.151H33.0652C32.7988 14.6499 32.7202 13.9972 32.4912 13.4927C32.4698 13.4459 32.5102 13.4207 32.408 13.4367L31.8856 15.1468L30.056 15.1911L31.4936 16.2547L30.9732 18.021L32.4674 16.9564L33.9622 17.9808L33.407 16.232L34.839 15.151ZM34.7196 19.4962H1.63593C1.61499 24.2894 1.62556 29.0756 1.59804 33.8694C1.59485 34.4352 1.52605 35.0102 1.55457 35.5834C1.7103 38.6956 3.77356 39.786 6.48208 40.5418C10.2602 41.596 14.7668 41.7314 17.5206 44.8896L18.1972 45.8072C19.7902 43.3208 22.7834 42.4092 25.5114 41.7602C27.8956 41.193 32.212 40.6996 33.8834 38.8516C34.9416 37.6816 34.8114 36.2582 34.801 34.7828C34.7806 31.935 34.7312 29.063 34.7176 26.2152C34.707 23.9756 34.7296 21.7354 34.7196 19.4962Z" fill="white"/> <path d="M14.2288 23.2217L13.3915 23.9389C13.373 27.1023 13.3804 30.2655 13.3536 33.4287C13.3528 33.5323 13.3112 33.6303 13.3102 33.7441C13.2934 35.7723 13.3584 37.8049 13.2517 39.8259L10.758 39.0411L7.4921 29.5805C7.4227 29.5711 7.45462 29.6711 7.45262 29.7193C7.37984 31.6161 7.5601 33.5199 7.4933 35.4195L8.44088 36.4649L8.48874 38.5497L3.58794 37.3519L3.60448 35.5979L4.91776 35.0859L4.9441 35.0231L4.86334 23.9061L3.6326 23.3547L3.58594 21.0487L7.3938 21.0479L10.6417 31.1345C10.7111 31.1439 10.6792 31.0439 10.6812 30.9957C10.7719 28.6371 10.615 26.2559 10.6417 23.8991C10.6278 23.8095 10.5263 23.7739 10.4541 23.7279C10.1717 23.5489 9.86104 23.3973 9.56532 23.2415V21.0491H14.2288V23.2217Z" fill="white"/> <path d="M23.557 21.1294L23.5126 25.311L21.67 25.3488L20.9604 23.766L19.0128 23.6808V28.4048C19.0128 28.5186 19.3183 28.4252 19.3899 28.423C19.7728 28.411 20.158 28.4412 20.5408 28.4182L21.1536 27.4674L22.5606 27.5076L22.5184 31.8512L21.2446 31.8734C21.086 31.7226 20.6076 30.9362 20.4278 30.9362H18.973V38.8894L20.0092 40.0056V42.0588L15.2315 40.2792L15.1918 38.5774L16.3037 38.0054C16.2932 36.7584 16.3121 35.5106 16.3037 34.2634C16.2836 31.183 16.2908 28.0548 16.1809 24.9782C16.1739 24.7806 16.2248 24.039 16.1424 23.9404L15.1055 23.2542L15.0664 21.1294H23.557Z" fill="white"/> <path d="M24.3947 21.0918L29.3773 21.0518L29.4105 23.0984L28.4371 23.8792L28.3785 24.02L28.3409 35.722L30.3693 35.0804L30.6521 31.935L32.6855 31.9748L32.7467 37.1988L24.4743 39.5494L24.4031 37.6642L25.3913 36.4592C25.3001 35.1128 25.3743 33.7458 25.3527 32.392C25.1479 29.7282 25.4557 26.872 25.2711 24.2218C25.2615 24.0858 25.2205 23.9408 25.2115 23.8028L24.3945 23.3044L24.3947 21.0918Z" fill="white"/> <path d="M18.581 10.6047C18.2727 10.3878 18.0045 10.1291 17.6773 9.93471C17.3395 9.73391 16.9704 9.59293 16.6055 9.45057L16.7905 8.97119C17.5383 9.19553 18.4396 9.41507 18.9353 10.0594L18.581 10.6047Z" fill="white"/> <path d="M17.9013 7.77637C18.4195 7.91755 18.9857 8.08227 19.4529 8.35087C19.5932 8.43163 19.9657 8.67889 20.0328 8.81089C20.0574 8.85935 19.7653 9.29107 19.7127 9.33175C19.6692 9.36543 19.6646 9.36803 19.6104 9.35287C19.548 9.33553 19.016 8.87111 18.8662 8.77779C18.5053 8.55287 18.1113 8.40411 17.7148 8.25355L17.9013 7.77637Z" fill="white"/> <path d="M18.0448 10.9753C18.0682 11.0028 18.0825 11.0325 18.0873 11.0686L17.7184 11.6411C17.1581 11.0844 16.4785 10.7412 15.7461 10.4656L15.9648 10.0455L16.036 10.0132C16.5501 10.1884 17.0821 10.33 17.5511 10.6128C17.671 10.685 17.9635 10.8792 18.0448 10.9753Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3419"> <rect width="38" height="48" fill="white"/> </clipPath> </defs> </svg></span></span>
+            <span class="nptile" style="--mw:75%;--mh:14.35%"><span class="tmk tmd" aria-hidden="true"><svg viewBox="0 52.5 128 24.5" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M21.0216 52.5791C21.8856 54.0058 22.275 55.4738 22.275 57.3297C22.275 63.2484 17.2232 70.9363 13.1234 76.3348H3.74447L0 53.8751L8.19947 53.0964L10.1861 69.0789C12.042 66.0564 14.3313 61.3058 14.3313 58.0658C14.3313 56.2923 14.0272 55.0858 13.5526 54.0911L21.0216 52.5791ZM31.6511 62.4696C33.1603 62.4696 36.9587 61.779 36.9587 59.6204C36.9587 58.583 36.2255 58.0658 35.3615 58.0658C33.8495 58.0658 31.8657 59.879 31.6497 62.471L31.6511 62.4696ZM31.4777 66.7328C31.4777 69.3688 32.9443 70.4034 34.8883 70.4034C37.0198 70.4034 39.0306 69.8861 41.6667 68.5475L40.6748 75.2833C38.8189 76.1899 35.9285 76.7953 33.1191 76.7953C26.0138 76.7953 23.4488 72.4753 23.4488 67.0781C23.4488 60.0808 27.594 52.6502 36.1416 52.6502C40.8311 52.6502 43.4785 55.2862 43.4785 58.9596C43.4785 64.8783 35.8816 66.6902 31.4777 66.7328ZM67.1462 57.8512C67.1462 58.7152 67.0154 59.9828 66.8847 60.7871L64.422 76.3334H56.4357L58.6809 62.0803L58.8543 60.483C58.8543 59.4456 58.2063 59.187 57.4276 59.187C56.3931 59.187 55.3557 59.6616 54.6651 60.0084L52.1185 76.3505H44.0896L47.7587 53.0694H54.7219L54.81 54.9281C56.4499 53.8481 58.6085 52.6828 61.6737 52.6828C65.7322 52.6828 67.1589 54.7576 67.1589 57.8697L67.1462 57.8512ZM90.8493 55.2137C93.123 53.5738 95.2972 52.6658 98.2729 52.6658C102.373 52.6658 103.815 54.7405 103.815 57.8526C103.815 58.7166 103.684 59.9842 103.554 60.7885L101.095 76.3348H93.079L95.3526 61.779L95.4834 60.6137C95.4834 59.4456 94.8354 59.187 94.0566 59.187C93.0647 59.187 92.0728 59.619 91.3367 60.0084L88.7788 76.3505H80.7925L83.0662 61.7946L83.2083 60.6294C83.2083 59.4613 82.5603 59.2026 81.7844 59.2026C80.7471 59.2026 79.7125 59.6773 79.0219 60.024L76.474 76.3661H68.445L72.1113 53.085H78.975L79.191 55.029C80.7883 53.8637 82.9454 52.6985 85.8373 52.6985C88.3412 52.697 89.9811 53.7785 90.8024 55.2464L90.8493 55.2137ZM119.691 61.995C119.691 60.095 119.216 58.7976 117.792 58.7976C114.641 58.7976 113.994 64.3682 113.994 67.2188C113.994 69.3816 114.599 70.7188 116.022 70.7188C119 70.7188 119.691 64.8442 119.691 61.995ZM105.878 66.8763C105.878 59.5337 109.762 52.6658 118.699 52.6658C125.435 52.6658 127.893 56.6405 127.893 62.1272C127.893 69.3845 124.051 76.899 114.899 76.899C108.121 76.899 105.876 72.4511 105.876 66.8777L105.878 66.8763Z" fill="#F8F8F8"/></svg></span><span class="tmk tml" aria-hidden="true"><svg viewBox="0 52.5 128 24.5" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M21.0216 52.5791C21.8856 54.0058 22.275 55.4738 22.275 57.3297C22.275 63.2484 17.2232 70.9363 13.1234 76.3348H3.74447L0 53.8751L8.19947 53.0964L10.1861 69.0789C12.042 66.0564 14.3313 61.3058 14.3313 58.0658C14.3313 56.2923 14.0272 55.0858 13.5526 54.0911L21.0216 52.5791ZM31.6511 62.4696C33.1603 62.4696 36.9587 61.779 36.9587 59.6204C36.9587 58.583 36.2255 58.0658 35.3615 58.0658C33.8495 58.0658 31.8657 59.879 31.6497 62.471L31.6511 62.4696ZM31.4777 66.7328C31.4777 69.3688 32.9443 70.4034 34.8883 70.4034C37.0198 70.4034 39.0306 69.8861 41.6667 68.5475L40.6748 75.2833C38.8189 76.1899 35.9285 76.7953 33.1191 76.7953C26.0138 76.7953 23.4488 72.4753 23.4488 67.0781C23.4488 60.0808 27.594 52.6502 36.1416 52.6502C40.8311 52.6502 43.4785 55.2862 43.4785 58.9596C43.4785 64.8783 35.8816 66.6902 31.4777 66.7328ZM67.1462 57.8512C67.1462 58.7152 67.0154 59.9828 66.8847 60.7871L64.422 76.3334H56.4357L58.6809 62.0803L58.8543 60.483C58.8543 59.4456 58.2063 59.187 57.4276 59.187C56.3931 59.187 55.3557 59.6616 54.6651 60.0084L52.1185 76.3505H44.0896L47.7587 53.0694H54.7219L54.81 54.9281C56.4499 53.8481 58.6085 52.6828 61.6737 52.6828C65.7322 52.6828 67.1589 54.7576 67.1589 57.8697L67.1462 57.8512ZM90.8493 55.2137C93.123 53.5738 95.2972 52.6658 98.2729 52.6658C102.373 52.6658 103.815 54.7405 103.815 57.8526C103.815 58.7166 103.684 59.9842 103.554 60.7885L101.095 76.3348H93.079L95.3526 61.779L95.4834 60.6137C95.4834 59.4456 94.8354 59.187 94.0566 59.187C93.0647 59.187 92.0728 59.619 91.3367 60.0084L88.7788 76.3505H80.7925L83.0662 61.7946L83.2083 60.6294C83.2083 59.4613 82.5603 59.2026 81.7844 59.2026C80.7471 59.2026 79.7125 59.6773 79.0219 60.024L76.474 76.3661H68.445L72.1113 53.085H78.975L79.191 55.029C80.7883 53.8637 82.9454 52.6985 85.8373 52.6985C88.3412 52.697 89.9811 53.7785 90.8024 55.2464L90.8493 55.2137ZM119.691 61.995C119.691 60.095 119.216 58.7976 117.792 58.7976C114.641 58.7976 113.994 64.3682 113.994 67.2188C113.994 69.3816 114.599 70.7188 116.022 70.7188C119 70.7188 119.691 64.8442 119.691 61.995ZM105.878 66.8763C105.878 59.5337 109.762 52.6658 118.699 52.6658C125.435 52.6658 127.893 56.6405 127.893 62.1272C127.893 69.3845 124.051 76.899 114.899 76.899C108.121 76.899 105.876 72.4511 105.876 66.8777L105.878 66.8763Z" fill="#F8F8F8"/></svg></span></span>
+            <span class="npname">Venmo</span>
+          </span>
+          <span class="npend"><span class="npmeta"><em>iOS<i aria-hidden="true"></i>Android</em><s>/</s><em>Design Lead</em><s>/</s><em>2026</em></span><span class="npbtn"><span class="npi"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M8.1 5.6 9.4 2l1.3 3.6 3.6 1.3-3.6 1.3L9.4 12 8.1 8.2 4.5 6.9l3.6-1.3Z"/><path d="M15.4 12.6l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9Z"/></svg></span><b>Coming soon</b></span></span>
+        </span>
+      </div>
+      <div class="nprow" role="link" tabindex="0" data-page="nfl" data-lock style="--brand:#FFFFFF;--mk:#1A1A1A"
+              aria-label="NFL case study">
+        <span class="nprowin">
+          <span class="npside">
+            <span class="nptile" style="--mw:39.6%;--mh:50%"><span class="tmk tmd" aria-hidden="true"><svg viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3419)"> <mask id="np_mask0_97_3419" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="37" height="48"> <path d="M36.3558 0H0V48H36.3558V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3419)"> <path d="M36.2736 4.38746C36.2838 6.3873 36.262 8.38854 36.2724 10.3888C36.3194 19.4745 36.361 28.5654 36.3552 37.6564C36.1092 40.7102 32.9746 41.6814 30.4712 42.3358C26.5046 43.3726 21.3296 43.9174 18.6401 47.366C18.5625 47.4656 18.2325 48.0006 18.1581 48.0002C15.6629 43.6614 10.2345 43.2596 5.88408 42.0566C2.99886 41.2588 0.211968 40.0436 0 36.6198C0.00159525 25.9 0.0556342 15.1841 0.0817564 4.46722C0.417756 4.69094 0.719456 4.96274 1.05685 5.18588C5.25814 7.9642 10.6744 6.55938 14.5231 3.86182C15.9732 2.84544 17.3332 1.56207 18.198 0.00191837C18.2524 -0.00964718 18.2656 0.0334246 18.2911 0.0683206C18.6337 0.536726 18.8981 1.07153 19.278 1.5529C22.2964 5.3787 27.631 7.19588 32.415 6.32828C33.8278 6.07204 35.3304 5.50852 36.2736 4.38746ZM21.765 5.90274C19.0849 5.85448 16.3603 6.71652 14.781 8.98296C13.3137 11.0887 13.2029 13.8124 13.6065 16.2744C13.6806 16.7269 13.7981 17.1708 13.8733 17.6226C13.9762 17.6336 13.9369 17.6226 13.954 17.5644C14.1122 17.0272 14.2035 16.407 14.3544 15.8517C14.6964 14.5942 15.1291 13.3631 15.6673 12.1774C15.6771 12.1256 15.6613 12.0979 15.6272 12.061C15.567 11.9956 15.0641 11.8042 15.0316 11.7593L15.2338 11.2875C15.976 11.461 16.7856 11.67 17.3013 12.2586L17.0235 12.7814L16.2099 12.4454C15.4007 13.5821 14.978 15.02 14.6825 16.3789C14.643 16.5604 14.379 17.77 14.4308 17.8218C17.7025 17.6226 21.2596 15.8577 22.4836 12.6602C23.118 11.0027 23.0588 9.26912 22.6308 7.56778C22.5128 7.09838 22.3398 6.64414 22.2032 6.18092C21.564 6.45868 20.9354 6.81622 20.4292 7.29838C20.404 7.32232 20.3654 7.33468 20.3306 7.33786C20.2782 7.41184 20.8042 7.84634 20.8878 7.91514C20.7686 7.9977 20.6012 8.30398 20.4508 8.23538C20.3762 8.2015 20.0998 7.90178 19.9849 7.82222C19.6148 7.56618 19.2532 7.47266 18.8159 7.39708C18.9314 7.33528 19.2116 7.08122 19.3186 7.06906C19.4582 7.05312 19.7262 7.14364 19.8728 7.14164C20.0968 7.13886 20.3414 6.73766 20.5566 6.62618L21.765 5.90274ZM3.32988 9.56982H1.55616L2.9869 10.6731L2.49318 12.4006L3.9606 11.3693L5.46192 12.4002L4.90938 10.6701L6.33912 9.56982H4.5654L3.9281 7.85532L3.32988 9.56982ZM9.6676 9.56982H7.89388L9.32442 10.6723L8.8309 12.4008L10.2983 11.3695L11.8 12.4L11.2471 10.6703L12.6768 9.57002H10.9031L10.3049 7.85552L9.6676 9.56982ZM25.492 9.56982H23.7184L25.148 10.6743L24.6554 12.4006L26.1298 11.3768L27.6242 12.4002L27.0716 10.6701L28.5012 9.56982H26.7076L26.0902 7.85532L25.492 9.56982ZM31.8296 9.56982H30.0558L31.4866 10.6731L30.9928 12.4006L32.4602 11.3693L33.9616 12.4002L33.409 10.6701L34.8388 9.56982H33.065L32.4278 7.85532L31.8296 9.56982ZM6.33932 15.151H4.5656C4.2992 14.6499 4.22042 13.9972 3.9915 13.4927C3.97018 13.4459 4.01046 13.4207 3.90836 13.4367L3.38592 15.1468L1.55656 15.1911L2.99388 16.2547L2.47344 18.021L3.96778 16.9564L5.46252 17.9808L4.90738 16.232L6.33932 15.151ZM12.677 15.151H10.9033L10.2461 13.4369L9.72582 15.1494L7.89388 15.1915L9.3314 16.2551L8.81116 18.0216L10.3059 16.9554L11.8 17.9816L11.2391 16.2539L12.677 15.151ZM28.5012 15.151H26.7276C26.4614 14.6497 26.3822 13.9976 26.1534 13.4927C26.1322 13.4459 26.1724 13.4207 26.0704 13.4367L25.5478 15.1468L23.7186 15.1911C23.8712 15.3831 25.1098 16.1406 25.1482 16.2541C25.2106 16.4382 24.6632 17.7295 24.6356 18.021L26.13 16.9564L27.6246 17.981L27.0802 16.286L28.5012 15.151ZM34.839 15.151H33.0652C32.7988 14.6499 32.7202 13.9972 32.4912 13.4927C32.4698 13.4459 32.5102 13.4207 32.408 13.4367L31.8856 15.1468L30.056 15.1911L31.4936 16.2547L30.9732 18.021L32.4674 16.9564L33.9622 17.9808L33.407 16.232L34.839 15.151ZM34.7196 19.4962H1.63593C1.61499 24.2894 1.62556 29.0756 1.59804 33.8694C1.59485 34.4352 1.52605 35.0102 1.55457 35.5834C1.7103 38.6956 3.77356 39.786 6.48208 40.5418C10.2602 41.596 14.7668 41.7314 17.5206 44.8896L18.1972 45.8072C19.7902 43.3208 22.7834 42.4092 25.5114 41.7602C27.8956 41.193 32.212 40.6996 33.8834 38.8516C34.9416 37.6816 34.8114 36.2582 34.801 34.7828C34.7806 31.935 34.7312 29.063 34.7176 26.2152C34.707 23.9756 34.7296 21.7354 34.7196 19.4962Z" fill="white"/> <path d="M14.2288 23.2217L13.3915 23.9389C13.373 27.1023 13.3804 30.2655 13.3536 33.4287C13.3528 33.5323 13.3112 33.6303 13.3102 33.7441C13.2934 35.7723 13.3584 37.8049 13.2517 39.8259L10.758 39.0411L7.4921 29.5805C7.4227 29.5711 7.45462 29.6711 7.45262 29.7193C7.37984 31.6161 7.5601 33.5199 7.4933 35.4195L8.44088 36.4649L8.48874 38.5497L3.58794 37.3519L3.60448 35.5979L4.91776 35.0859L4.9441 35.0231L4.86334 23.9061L3.6326 23.3547L3.58594 21.0487L7.3938 21.0479L10.6417 31.1345C10.7111 31.1439 10.6792 31.0439 10.6812 30.9957C10.7719 28.6371 10.615 26.2559 10.6417 23.8991C10.6278 23.8095 10.5263 23.7739 10.4541 23.7279C10.1717 23.5489 9.86104 23.3973 9.56532 23.2415V21.0491H14.2288V23.2217Z" fill="white"/> <path d="M23.557 21.1294L23.5126 25.311L21.67 25.3488L20.9604 23.766L19.0128 23.6808V28.4048C19.0128 28.5186 19.3183 28.4252 19.3899 28.423C19.7728 28.411 20.158 28.4412 20.5408 28.4182L21.1536 27.4674L22.5606 27.5076L22.5184 31.8512L21.2446 31.8734C21.086 31.7226 20.6076 30.9362 20.4278 30.9362H18.973V38.8894L20.0092 40.0056V42.0588L15.2315 40.2792L15.1918 38.5774L16.3037 38.0054C16.2932 36.7584 16.3121 35.5106 16.3037 34.2634C16.2836 31.183 16.2908 28.0548 16.1809 24.9782C16.1739 24.7806 16.2248 24.039 16.1424 23.9404L15.1055 23.2542L15.0664 21.1294H23.557Z" fill="white"/> <path d="M24.3947 21.0918L29.3773 21.0518L29.4105 23.0984L28.4371 23.8792L28.3785 24.02L28.3409 35.722L30.3693 35.0804L30.6521 31.935L32.6855 31.9748L32.7467 37.1988L24.4743 39.5494L24.4031 37.6642L25.3913 36.4592C25.3001 35.1128 25.3743 33.7458 25.3527 32.392C25.1479 29.7282 25.4557 26.872 25.2711 24.2218C25.2615 24.0858 25.2205 23.9408 25.2115 23.8028L24.3945 23.3044L24.3947 21.0918Z" fill="white"/> <path d="M18.581 10.6047C18.2727 10.3878 18.0045 10.1291 17.6773 9.93471C17.3395 9.73391 16.9704 9.59293 16.6055 9.45057L16.7905 8.97119C17.5383 9.19553 18.4396 9.41507 18.9353 10.0594L18.581 10.6047Z" fill="white"/> <path d="M17.9013 7.77637C18.4195 7.91755 18.9857 8.08227 19.4529 8.35087C19.5932 8.43163 19.9657 8.67889 20.0328 8.81089C20.0574 8.85935 19.7653 9.29107 19.7127 9.33175C19.6692 9.36543 19.6646 9.36803 19.6104 9.35287C19.548 9.33553 19.016 8.87111 18.8662 8.77779C18.5053 8.55287 18.1113 8.40411 17.7148 8.25355L17.9013 7.77637Z" fill="white"/> <path d="M18.0448 10.9753C18.0682 11.0028 18.0825 11.0325 18.0873 11.0686L17.7184 11.6411C17.1581 11.0844 16.4785 10.7412 15.7461 10.4656L15.9648 10.0455L16.036 10.0132C16.5501 10.1884 17.0821 10.33 17.5511 10.6128C17.671 10.685 17.9635 10.8792 18.0448 10.9753Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3419"> <rect width="38" height="48" fill="white"/> </clipPath> </defs> </svg></span><span class="tmk tml" aria-hidden="true"><svg viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3419)"> <mask id="np_mask0_97_3419" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="37" height="48"> <path d="M36.3558 0H0V48H36.3558V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3419)"> <path d="M36.2736 4.38746C36.2838 6.3873 36.262 8.38854 36.2724 10.3888C36.3194 19.4745 36.361 28.5654 36.3552 37.6564C36.1092 40.7102 32.9746 41.6814 30.4712 42.3358C26.5046 43.3726 21.3296 43.9174 18.6401 47.366C18.5625 47.4656 18.2325 48.0006 18.1581 48.0002C15.6629 43.6614 10.2345 43.2596 5.88408 42.0566C2.99886 41.2588 0.211968 40.0436 0 36.6198C0.00159525 25.9 0.0556342 15.1841 0.0817564 4.46722C0.417756 4.69094 0.719456 4.96274 1.05685 5.18588C5.25814 7.9642 10.6744 6.55938 14.5231 3.86182C15.9732 2.84544 17.3332 1.56207 18.198 0.00191837C18.2524 -0.00964718 18.2656 0.0334246 18.2911 0.0683206C18.6337 0.536726 18.8981 1.07153 19.278 1.5529C22.2964 5.3787 27.631 7.19588 32.415 6.32828C33.8278 6.07204 35.3304 5.50852 36.2736 4.38746ZM21.765 5.90274C19.0849 5.85448 16.3603 6.71652 14.781 8.98296C13.3137 11.0887 13.2029 13.8124 13.6065 16.2744C13.6806 16.7269 13.7981 17.1708 13.8733 17.6226C13.9762 17.6336 13.9369 17.6226 13.954 17.5644C14.1122 17.0272 14.2035 16.407 14.3544 15.8517C14.6964 14.5942 15.1291 13.3631 15.6673 12.1774C15.6771 12.1256 15.6613 12.0979 15.6272 12.061C15.567 11.9956 15.0641 11.8042 15.0316 11.7593L15.2338 11.2875C15.976 11.461 16.7856 11.67 17.3013 12.2586L17.0235 12.7814L16.2099 12.4454C15.4007 13.5821 14.978 15.02 14.6825 16.3789C14.643 16.5604 14.379 17.77 14.4308 17.8218C17.7025 17.6226 21.2596 15.8577 22.4836 12.6602C23.118 11.0027 23.0588 9.26912 22.6308 7.56778C22.5128 7.09838 22.3398 6.64414 22.2032 6.18092C21.564 6.45868 20.9354 6.81622 20.4292 7.29838C20.404 7.32232 20.3654 7.33468 20.3306 7.33786C20.2782 7.41184 20.8042 7.84634 20.8878 7.91514C20.7686 7.9977 20.6012 8.30398 20.4508 8.23538C20.3762 8.2015 20.0998 7.90178 19.9849 7.82222C19.6148 7.56618 19.2532 7.47266 18.8159 7.39708C18.9314 7.33528 19.2116 7.08122 19.3186 7.06906C19.4582 7.05312 19.7262 7.14364 19.8728 7.14164C20.0968 7.13886 20.3414 6.73766 20.5566 6.62618L21.765 5.90274ZM3.32988 9.56982H1.55616L2.9869 10.6731L2.49318 12.4006L3.9606 11.3693L5.46192 12.4002L4.90938 10.6701L6.33912 9.56982H4.5654L3.9281 7.85532L3.32988 9.56982ZM9.6676 9.56982H7.89388L9.32442 10.6723L8.8309 12.4008L10.2983 11.3695L11.8 12.4L11.2471 10.6703L12.6768 9.57002H10.9031L10.3049 7.85552L9.6676 9.56982ZM25.492 9.56982H23.7184L25.148 10.6743L24.6554 12.4006L26.1298 11.3768L27.6242 12.4002L27.0716 10.6701L28.5012 9.56982H26.7076L26.0902 7.85532L25.492 9.56982ZM31.8296 9.56982H30.0558L31.4866 10.6731L30.9928 12.4006L32.4602 11.3693L33.9616 12.4002L33.409 10.6701L34.8388 9.56982H33.065L32.4278 7.85532L31.8296 9.56982ZM6.33932 15.151H4.5656C4.2992 14.6499 4.22042 13.9972 3.9915 13.4927C3.97018 13.4459 4.01046 13.4207 3.90836 13.4367L3.38592 15.1468L1.55656 15.1911L2.99388 16.2547L2.47344 18.021L3.96778 16.9564L5.46252 17.9808L4.90738 16.232L6.33932 15.151ZM12.677 15.151H10.9033L10.2461 13.4369L9.72582 15.1494L7.89388 15.1915L9.3314 16.2551L8.81116 18.0216L10.3059 16.9554L11.8 17.9816L11.2391 16.2539L12.677 15.151ZM28.5012 15.151H26.7276C26.4614 14.6497 26.3822 13.9976 26.1534 13.4927C26.1322 13.4459 26.1724 13.4207 26.0704 13.4367L25.5478 15.1468L23.7186 15.1911C23.8712 15.3831 25.1098 16.1406 25.1482 16.2541C25.2106 16.4382 24.6632 17.7295 24.6356 18.021L26.13 16.9564L27.6246 17.981L27.0802 16.286L28.5012 15.151ZM34.839 15.151H33.0652C32.7988 14.6499 32.7202 13.9972 32.4912 13.4927C32.4698 13.4459 32.5102 13.4207 32.408 13.4367L31.8856 15.1468L30.056 15.1911L31.4936 16.2547L30.9732 18.021L32.4674 16.9564L33.9622 17.9808L33.407 16.232L34.839 15.151ZM34.7196 19.4962H1.63593C1.61499 24.2894 1.62556 29.0756 1.59804 33.8694C1.59485 34.4352 1.52605 35.0102 1.55457 35.5834C1.7103 38.6956 3.77356 39.786 6.48208 40.5418C10.2602 41.596 14.7668 41.7314 17.5206 44.8896L18.1972 45.8072C19.7902 43.3208 22.7834 42.4092 25.5114 41.7602C27.8956 41.193 32.212 40.6996 33.8834 38.8516C34.9416 37.6816 34.8114 36.2582 34.801 34.7828C34.7806 31.935 34.7312 29.063 34.7176 26.2152C34.707 23.9756 34.7296 21.7354 34.7196 19.4962Z" fill="white"/> <path d="M14.2288 23.2217L13.3915 23.9389C13.373 27.1023 13.3804 30.2655 13.3536 33.4287C13.3528 33.5323 13.3112 33.6303 13.3102 33.7441C13.2934 35.7723 13.3584 37.8049 13.2517 39.8259L10.758 39.0411L7.4921 29.5805C7.4227 29.5711 7.45462 29.6711 7.45262 29.7193C7.37984 31.6161 7.5601 33.5199 7.4933 35.4195L8.44088 36.4649L8.48874 38.5497L3.58794 37.3519L3.60448 35.5979L4.91776 35.0859L4.9441 35.0231L4.86334 23.9061L3.6326 23.3547L3.58594 21.0487L7.3938 21.0479L10.6417 31.1345C10.7111 31.1439 10.6792 31.0439 10.6812 30.9957C10.7719 28.6371 10.615 26.2559 10.6417 23.8991C10.6278 23.8095 10.5263 23.7739 10.4541 23.7279C10.1717 23.5489 9.86104 23.3973 9.56532 23.2415V21.0491H14.2288V23.2217Z" fill="white"/> <path d="M23.557 21.1294L23.5126 25.311L21.67 25.3488L20.9604 23.766L19.0128 23.6808V28.4048C19.0128 28.5186 19.3183 28.4252 19.3899 28.423C19.7728 28.411 20.158 28.4412 20.5408 28.4182L21.1536 27.4674L22.5606 27.5076L22.5184 31.8512L21.2446 31.8734C21.086 31.7226 20.6076 30.9362 20.4278 30.9362H18.973V38.8894L20.0092 40.0056V42.0588L15.2315 40.2792L15.1918 38.5774L16.3037 38.0054C16.2932 36.7584 16.3121 35.5106 16.3037 34.2634C16.2836 31.183 16.2908 28.0548 16.1809 24.9782C16.1739 24.7806 16.2248 24.039 16.1424 23.9404L15.1055 23.2542L15.0664 21.1294H23.557Z" fill="white"/> <path d="M24.3947 21.0918L29.3773 21.0518L29.4105 23.0984L28.4371 23.8792L28.3785 24.02L28.3409 35.722L30.3693 35.0804L30.6521 31.935L32.6855 31.9748L32.7467 37.1988L24.4743 39.5494L24.4031 37.6642L25.3913 36.4592C25.3001 35.1128 25.3743 33.7458 25.3527 32.392C25.1479 29.7282 25.4557 26.872 25.2711 24.2218C25.2615 24.0858 25.2205 23.9408 25.2115 23.8028L24.3945 23.3044L24.3947 21.0918Z" fill="white"/> <path d="M18.581 10.6047C18.2727 10.3878 18.0045 10.1291 17.6773 9.93471C17.3395 9.73391 16.9704 9.59293 16.6055 9.45057L16.7905 8.97119C17.5383 9.19553 18.4396 9.41507 18.9353 10.0594L18.581 10.6047Z" fill="white"/> <path d="M17.9013 7.77637C18.4195 7.91755 18.9857 8.08227 19.4529 8.35087C19.5932 8.43163 19.9657 8.67889 20.0328 8.81089C20.0574 8.85935 19.7653 9.29107 19.7127 9.33175C19.6692 9.36543 19.6646 9.36803 19.6104 9.35287C19.548 9.33553 19.016 8.87111 18.8662 8.77779C18.5053 8.55287 18.1113 8.40411 17.7148 8.25355L17.9013 7.77637Z" fill="white"/> <path d="M18.0448 10.9753C18.0682 11.0028 18.0825 11.0325 18.0873 11.0686L17.7184 11.6411C17.1581 11.0844 16.4785 10.7412 15.7461 10.4656L15.9648 10.0455L16.036 10.0132C16.5501 10.1884 17.0821 10.33 17.5511 10.6128C17.671 10.685 17.9635 10.8792 18.0448 10.9753Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3419"> <rect width="38" height="48" fill="white"/> </clipPath> </defs> </svg></span></span>
             <span class="npname">NFL</span>
           </span>
-          <span class="npend">
-            <span class="npmeta"><em>Web Design</em><s>/</s><em>Design Lead</em><s>/</s><em>2024</em></span>
-            <span class="nparrow"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6.667 20h26.666M33.333 20l-10-10M33.333 20l-10 10" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </span>
+          <span class="npend"><span class="npmeta"><em>Web<i aria-hidden="true"></i>iOS</em><s>/</s><em>Design Lead</em><s>/</s><em>2024 – 2025</em></span><span class="npbtn"><span class="npi npilock"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M14.6 8.7V6.6a4.6 4.6 0 1 0-9.2 0v2.1M7.3 17.2h5.4c1.5 0 2.3 0 2.9-.3.5-.3.9-.7 1.2-1.2.3-.6.3-1.3.3-2.9v-.5c0-1.5 0-2.3-.3-2.9a2.7 2.7 0 0 0-1.2-1.2c-.6-.3-1.4-.3-2.9-.3H7.3c-1.5 0-2.3 0-2.9.3-.5.3-.9.7-1.2 1.2-.3.6-.3 1.4-.3 2.9v.5c0 1.6 0 2.3.3 2.9.3.5.7.9 1.2 1.2.6.3 1.4.3 2.9.3Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>View work</b><span class="npi npiarr"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3.3 10h13.4m0 0-4.2-4.2M16.7 10l-4.2 4.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="nppass"><span class="npneed">Need code?</span><span class="npfield"><span class="npfl"><span class="npi"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M14.6 8.7V6.6a4.6 4.6 0 1 0-9.2 0v2.1M7.3 17.2h5.4c1.5 0 2.3 0 2.9-.3.5-.3.9-.7 1.2-1.2.3-.6.3-1.3.3-2.9v-.5c0-1.5 0-2.3-.3-2.9a2.7 2.7 0 0 0-1.2-1.2c-.6-.3-1.4-.3-2.9-.3H7.3c-1.5 0-2.3 0-2.9.3-.5.3-.9.7-1.2 1.2-.3.6-.3 1.4-.3 2.9v.5c0 1.6 0 2.3.3 2.9.3.5.7.9 1.2 1.2.6.3 1.4.3 2.9.3Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="npi npialert" hidden><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M10 6.7v3.4M10 13.3h.01M18.3 10a8.3 8.3 0 1 1-16.6 0 8.3 8.3 0 0 1 16.6 0Z" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input class="npin" type="password" autocomplete="off" spellcheck="false" placeholder="Enter passcode" aria-label="Passcode for NFL"><span class="nperr">Incorrect Passcode</span></span><button class="npclr" type="button" aria-label="Clear"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M15 5 5 15M5 5l10 10" stroke-width="1.4" stroke-linecap="round"/></svg></button></span><button class="npgo" type="button" aria-label="Unlock"><span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3.3 10h13.4m0 0-4.2-4.2M16.7 10l-4.2 4.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button></span></span>
         </span>
-        <span class="nprule ruleh" aria-hidden="true"></span>
-      </button>
-      <button class="nprow" type="button" data-page="jbl"
-              style="--brand:#ff3700" aria-label="JBL case study">
+      </div>
+      <div class="nprow" role="link" tabindex="0" data-page="volvo" data-lock style="--brand:#FFFFFF;--mk:#1A1A1A"
+              aria-label="Volvo case study">
         <span class="nprowin">
           <span class="npside">
-            <span class="nptile"><span class="tmk" style="left:24.4461%;top:36.3533%;width:49.1803%;height:27.2933%"><svg viewBox="0.2 0 43.3 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3388)"> <mask id="np_mask0_97_3388" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="44" height="24"> <path d="M43.4569 0H0.210938V24H43.4569V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3388)"> <path d="M17.1836 0.000928822L25.1596 0C27.1666 0.141367 28.6323 1.70068 28.7155 3.70321C28.7786 5.22444 28.6812 6.8012 28.6958 8.32577C28.6016 9.244 28.0342 10.043 27.2983 10.5668C27.1203 10.6935 26.9244 10.7896 26.7464 10.9151C27.768 11.2783 28.5524 12.2299 28.8496 13.2586C28.9513 13.6104 28.9989 13.973 29.0127 14.3392C29.0791 16.119 28.9605 17.9396 29.0127 19.7237C28.928 21.8947 27.3454 23.4798 25.16 23.5013H17.2479L17.1838 23.4725L17.1836 0.000928822ZM20.9715 9.91313H23.469C24.0138 9.91313 24.6618 9.30381 24.7353 8.76604C24.776 7.0113 24.7746 5.24171 24.7359 3.48642C24.6136 2.7311 24.0056 2.12812 23.244 2.0265C23.0253 1.99734 22.8418 2.02409 22.6341 2.02501C22.08 2.02744 21.5254 2.02168 20.9715 2.02427V9.91313ZM20.9715 21.3473L23.4697 21.348C24.2415 21.3019 24.823 20.7971 24.9088 20.0209C24.8916 17.8512 24.9394 15.6768 24.8842 13.5098C24.836 12.8308 24.0398 12.0292 23.3575 12.0292H20.9715V21.3473Z" fill="white"/> <path d="M35.864 0.0381076V20.1129C35.864 20.2166 35.9678 20.5077 36.0152 20.6115C36.7458 22.2134 39.5428 21.8959 39.6889 20.057C39.7783 18.9303 39.6261 17.6881 39.6883 16.5481C39.6916 16.4881 39.7096 16.4325 39.7078 16.3725H43.4586V23.4818H31.9648V0.0195312L35.864 0.0381076Z" fill="white"/> <path d="M9.97521 0.0381076L13.8748 0.0195312L13.8755 19.6312C13.7426 21.9481 11.8394 23.8514 9.5212 23.984C8.17756 23.8992 6.67381 24.1764 5.37941 23.7794C3.55056 23.2188 2.24297 21.5414 2.12109 19.6303V16.3729H6.13174L6.15069 20.5213C6.35857 22.4842 9.4402 22.6473 9.92505 20.7681C9.93675 20.7226 9.97558 20.5738 9.97558 20.5401L9.97521 0.0381076Z" fill="white"/> <path d="M7.61977 0.00146484L3.90634 8.42848L0.210938 0.00146484H7.61977Z" fill="white"/> <path d="M3.69871 9.15751C5.59852 9.00128 6.89998 11.0086 5.9524 12.6727C5.06686 14.2278 2.78605 14.2291 1.88639 12.6845C0.986737 11.1398 1.99879 9.29738 3.69871 9.15751Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3388"> <rect width="44.4" height="24" fill="white"/> </clipPath> </defs> </svg></span></span>
+            <span class="nptile" style="--mw:43.75%;--mh:43.75%"><span class="tmk tmd" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.0508 21.5197H22.8988V19.9037H22.3708C22.3708 20.5277 21.9228 20.9757 21.2188 20.9757H20.4828V18.5597H21.2828V18.0157H18.0508V18.5597H18.8668V20.9757H18.0508V21.5197Z" fill="white"/><path d="M25.2347 21.5197H27.1227L28.7387 18.5597H29.5387V18.0157H27.1227V18.5597H27.8267L26.6427 20.7197L25.4747 18.5597H26.3227V18.0157H22.8027V18.5597H23.6027L25.2347 21.5197Z" fill="white"/><path d="M8.38486 18.0157H4.88086V18.5597H5.68086L7.31286 21.5197H9.20086L10.8009 18.5597H11.6009V18.0157H9.18486V18.5597H9.88886L8.72086 20.7197L7.53686 18.5597H8.38486V18.0157Z" fill="white"/><path d="M12.0781 19.7762C12.0781 20.8002 12.9101 21.6322 14.5741 21.6322C16.2381 21.6322 17.0541 20.8162 17.0541 19.7762C17.0541 18.7522 16.1901 17.9522 14.5581 17.9522C12.9421 17.9362 12.0781 18.7522 12.0781 19.7762ZM15.4221 19.7762C15.4061 20.4162 15.1501 21.0722 14.5421 21.0562C13.9501 21.0402 13.6941 20.3842 13.6941 19.7442C13.7101 19.0722 14.0301 18.4802 14.5901 18.4962C15.1501 18.4962 15.4381 19.1042 15.4221 19.7762Z" fill="white"/><path d="M30 19.7762C30 20.8002 30.832 21.6322 32.496 21.6322C34.16 21.6322 34.976 20.8162 34.976 19.7762C34.976 18.7522 34.112 17.9522 32.48 17.9522C30.864 17.9362 30 18.7522 30 19.7762ZM32.512 18.4962C33.072 18.5122 33.36 19.1042 33.344 19.7762C33.328 20.4162 33.072 21.0722 32.464 21.0562C31.872 21.0402 31.616 20.3842 31.616 19.7442C31.632 19.0722 31.952 18.4802 32.512 18.4962Z" fill="white"/><path d="M36.464 8.64L34.432 10.672C36.176 13.36 37.184 16.56 37.184 20C37.184 29.488 29.488 37.184 20 37.184C10.512 37.184 2.816 29.488 2.816 20C2.816 10.512 10.512 2.816 20 2.816C23.456 2.816 26.656 3.84 29.344 5.584L31.376 3.552C28.16 1.312 24.224 0 20 0C8.96 0 0 8.96 0 20C0 31.04 8.96 40 20 40C31.04 40 40 31.04 40 20C40 15.776 38.688 11.856 36.464 8.64Z" fill="white"/><path d="M30.0664 0.783997V1.344C31.2824 2 32.4184 2.784 33.4744 3.648L30.6264 6.496C31.6984 7.344 32.6744 8.304 33.5224 9.376L36.3704 6.528C37.2504 7.584 38.0184 8.736 38.6744 9.92H39.2184V0.783997H30.0664Z" fill="white"/></svg></span><span class="tmk tml" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.0508 21.5197H22.8988V19.9037H22.3708C22.3708 20.5277 21.9228 20.9757 21.2188 20.9757H20.4828V18.5597H21.2828V18.0157H18.0508V18.5597H18.8668V20.9757H18.0508V21.5197Z" fill="white"/><path d="M25.2347 21.5197H27.1227L28.7387 18.5597H29.5387V18.0157H27.1227V18.5597H27.8267L26.6427 20.7197L25.4747 18.5597H26.3227V18.0157H22.8027V18.5597H23.6027L25.2347 21.5197Z" fill="white"/><path d="M8.38486 18.0157H4.88086V18.5597H5.68086L7.31286 21.5197H9.20086L10.8009 18.5597H11.6009V18.0157H9.18486V18.5597H9.88886L8.72086 20.7197L7.53686 18.5597H8.38486V18.0157Z" fill="white"/><path d="M12.0781 19.7762C12.0781 20.8002 12.9101 21.6322 14.5741 21.6322C16.2381 21.6322 17.0541 20.8162 17.0541 19.7762C17.0541 18.7522 16.1901 17.9522 14.5581 17.9522C12.9421 17.9362 12.0781 18.7522 12.0781 19.7762ZM15.4221 19.7762C15.4061 20.4162 15.1501 21.0722 14.5421 21.0562C13.9501 21.0402 13.6941 20.3842 13.6941 19.7442C13.7101 19.0722 14.0301 18.4802 14.5901 18.4962C15.1501 18.4962 15.4381 19.1042 15.4221 19.7762Z" fill="white"/><path d="M30 19.7762C30 20.8002 30.832 21.6322 32.496 21.6322C34.16 21.6322 34.976 20.8162 34.976 19.7762C34.976 18.7522 34.112 17.9522 32.48 17.9522C30.864 17.9362 30 18.7522 30 19.7762ZM32.512 18.4962C33.072 18.5122 33.36 19.1042 33.344 19.7762C33.328 20.4162 33.072 21.0722 32.464 21.0562C31.872 21.0402 31.616 20.3842 31.616 19.7442C31.632 19.0722 31.952 18.4802 32.512 18.4962Z" fill="white"/><path d="M36.464 8.64L34.432 10.672C36.176 13.36 37.184 16.56 37.184 20C37.184 29.488 29.488 37.184 20 37.184C10.512 37.184 2.816 29.488 2.816 20C2.816 10.512 10.512 2.816 20 2.816C23.456 2.816 26.656 3.84 29.344 5.584L31.376 3.552C28.16 1.312 24.224 0 20 0C8.96 0 0 8.96 0 20C0 31.04 8.96 40 20 40C31.04 40 40 31.04 40 20C40 15.776 38.688 11.856 36.464 8.64Z" fill="white"/><path d="M30.0664 0.783997V1.344C31.2824 2 32.4184 2.784 33.4744 3.648L30.6264 6.496C31.6984 7.344 32.6744 8.304 33.5224 9.376L36.3704 6.528C37.2504 7.584 38.0184 8.736 38.6744 9.92H39.2184V0.783997H30.0664Z" fill="white"/></svg></span></span>
+            <span class="npname">Volvo</span>
+          </span>
+          <span class="npend"><span class="npmeta"><em>Web</em><s>/</s><em>Design Lead</em><s>/</s><em>2023</em></span><span class="npbtn"><span class="npi npilock"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M14.6 8.7V6.6a4.6 4.6 0 1 0-9.2 0v2.1M7.3 17.2h5.4c1.5 0 2.3 0 2.9-.3.5-.3.9-.7 1.2-1.2.3-.6.3-1.3.3-2.9v-.5c0-1.5 0-2.3-.3-2.9a2.7 2.7 0 0 0-1.2-1.2c-.6-.3-1.4-.3-2.9-.3H7.3c-1.5 0-2.3 0-2.9.3-.5.3-.9.7-1.2 1.2-.3.6-.3 1.4-.3 2.9v.5c0 1.6 0 2.3.3 2.9.3.5.7.9 1.2 1.2.6.3 1.4.3 2.9.3Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>View work</b><span class="npi npiarr"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3.3 10h13.4m0 0-4.2-4.2M16.7 10l-4.2 4.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="nppass"><span class="npneed">Need code?</span><span class="npfield"><span class="npfl"><span class="npi"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M14.6 8.7V6.6a4.6 4.6 0 1 0-9.2 0v2.1M7.3 17.2h5.4c1.5 0 2.3 0 2.9-.3.5-.3.9-.7 1.2-1.2.3-.6.3-1.3.3-2.9v-.5c0-1.5 0-2.3-.3-2.9a2.7 2.7 0 0 0-1.2-1.2c-.6-.3-1.4-.3-2.9-.3H7.3c-1.5 0-2.3 0-2.9.3-.5.3-.9.7-1.2 1.2-.3.6-.3 1.4-.3 2.9v.5c0 1.6 0 2.3.3 2.9.3.5.7.9 1.2 1.2.6.3 1.4.3 2.9.3Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="npi npialert" hidden><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M10 6.7v3.4M10 13.3h.01M18.3 10a8.3 8.3 0 1 1-16.6 0 8.3 8.3 0 0 1 16.6 0Z" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input class="npin" type="password" autocomplete="off" spellcheck="false" placeholder="Enter passcode" aria-label="Passcode for Volvo"><span class="nperr">Incorrect Passcode</span></span><button class="npclr" type="button" aria-label="Clear"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M15 5 5 15M5 5l10 10" stroke-width="1.4" stroke-linecap="round"/></svg></button></span><button class="npgo" type="button" aria-label="Unlock"><span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3.3 10h13.4m0 0-4.2-4.2M16.7 10l-4.2 4.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button></span></span>
+        </span>
+      </div>
+      <div class="nprow" role="link" tabindex="0" data-page="jbl"None style="--brand:#FF3300;--mk:#F8F8F8"
+              aria-label="JBL case study">
+        <span class="nprowin">
+          <span class="npside">
+            <span class="nptile" style="--mw:47.9%;--mh:25.9%"><span class="tmk tmd" aria-hidden="true"><svg viewBox="0.2 0 43.3 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3388)"> <mask id="np_mask0_97_3388" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="44" height="24"> <path d="M43.4569 0H0.210938V24H43.4569V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3388)"> <path d="M17.1836 0.000928822L25.1596 0C27.1666 0.141367 28.6323 1.70068 28.7155 3.70321C28.7786 5.22444 28.6812 6.8012 28.6958 8.32577C28.6016 9.244 28.0342 10.043 27.2983 10.5668C27.1203 10.6935 26.9244 10.7896 26.7464 10.9151C27.768 11.2783 28.5524 12.2299 28.8496 13.2586C28.9513 13.6104 28.9989 13.973 29.0127 14.3392C29.0791 16.119 28.9605 17.9396 29.0127 19.7237C28.928 21.8947 27.3454 23.4798 25.16 23.5013H17.2479L17.1838 23.4725L17.1836 0.000928822ZM20.9715 9.91313H23.469C24.0138 9.91313 24.6618 9.30381 24.7353 8.76604C24.776 7.0113 24.7746 5.24171 24.7359 3.48642C24.6136 2.7311 24.0056 2.12812 23.244 2.0265C23.0253 1.99734 22.8418 2.02409 22.6341 2.02501C22.08 2.02744 21.5254 2.02168 20.9715 2.02427V9.91313ZM20.9715 21.3473L23.4697 21.348C24.2415 21.3019 24.823 20.7971 24.9088 20.0209C24.8916 17.8512 24.9394 15.6768 24.8842 13.5098C24.836 12.8308 24.0398 12.0292 23.3575 12.0292H20.9715V21.3473Z" fill="white"/> <path d="M35.864 0.0381076V20.1129C35.864 20.2166 35.9678 20.5077 36.0152 20.6115C36.7458 22.2134 39.5428 21.8959 39.6889 20.057C39.7783 18.9303 39.6261 17.6881 39.6883 16.5481C39.6916 16.4881 39.7096 16.4325 39.7078 16.3725H43.4586V23.4818H31.9648V0.0195312L35.864 0.0381076Z" fill="white"/> <path d="M9.97521 0.0381076L13.8748 0.0195312L13.8755 19.6312C13.7426 21.9481 11.8394 23.8514 9.5212 23.984C8.17756 23.8992 6.67381 24.1764 5.37941 23.7794C3.55056 23.2188 2.24297 21.5414 2.12109 19.6303V16.3729H6.13174L6.15069 20.5213C6.35857 22.4842 9.4402 22.6473 9.92505 20.7681C9.93675 20.7226 9.97558 20.5738 9.97558 20.5401L9.97521 0.0381076Z" fill="white"/> <path d="M7.61977 0.00146484L3.90634 8.42848L0.210938 0.00146484H7.61977Z" fill="white"/> <path d="M3.69871 9.15751C5.59852 9.00128 6.89998 11.0086 5.9524 12.6727C5.06686 14.2278 2.78605 14.2291 1.88639 12.6845C0.986737 11.1398 1.99879 9.29738 3.69871 9.15751Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3388"> <rect width="44.4" height="24" fill="white"/> </clipPath> </defs> </svg></span><span class="tmk tml" aria-hidden="true"><svg viewBox="0.2 0 43.3 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3388)"> <mask id="np_mask0_97_3388" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="44" height="24"> <path d="M43.4569 0H0.210938V24H43.4569V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3388)"> <path d="M17.1836 0.000928822L25.1596 0C27.1666 0.141367 28.6323 1.70068 28.7155 3.70321C28.7786 5.22444 28.6812 6.8012 28.6958 8.32577C28.6016 9.244 28.0342 10.043 27.2983 10.5668C27.1203 10.6935 26.9244 10.7896 26.7464 10.9151C27.768 11.2783 28.5524 12.2299 28.8496 13.2586C28.9513 13.6104 28.9989 13.973 29.0127 14.3392C29.0791 16.119 28.9605 17.9396 29.0127 19.7237C28.928 21.8947 27.3454 23.4798 25.16 23.5013H17.2479L17.1838 23.4725L17.1836 0.000928822ZM20.9715 9.91313H23.469C24.0138 9.91313 24.6618 9.30381 24.7353 8.76604C24.776 7.0113 24.7746 5.24171 24.7359 3.48642C24.6136 2.7311 24.0056 2.12812 23.244 2.0265C23.0253 1.99734 22.8418 2.02409 22.6341 2.02501C22.08 2.02744 21.5254 2.02168 20.9715 2.02427V9.91313ZM20.9715 21.3473L23.4697 21.348C24.2415 21.3019 24.823 20.7971 24.9088 20.0209C24.8916 17.8512 24.9394 15.6768 24.8842 13.5098C24.836 12.8308 24.0398 12.0292 23.3575 12.0292H20.9715V21.3473Z" fill="white"/> <path d="M35.864 0.0381076V20.1129C35.864 20.2166 35.9678 20.5077 36.0152 20.6115C36.7458 22.2134 39.5428 21.8959 39.6889 20.057C39.7783 18.9303 39.6261 17.6881 39.6883 16.5481C39.6916 16.4881 39.7096 16.4325 39.7078 16.3725H43.4586V23.4818H31.9648V0.0195312L35.864 0.0381076Z" fill="white"/> <path d="M9.97521 0.0381076L13.8748 0.0195312L13.8755 19.6312C13.7426 21.9481 11.8394 23.8514 9.5212 23.984C8.17756 23.8992 6.67381 24.1764 5.37941 23.7794C3.55056 23.2188 2.24297 21.5414 2.12109 19.6303V16.3729H6.13174L6.15069 20.5213C6.35857 22.4842 9.4402 22.6473 9.92505 20.7681C9.93675 20.7226 9.97558 20.5738 9.97558 20.5401L9.97521 0.0381076Z" fill="white"/> <path d="M7.61977 0.00146484L3.90634 8.42848L0.210938 0.00146484H7.61977Z" fill="white"/> <path d="M3.69871 9.15751C5.59852 9.00128 6.89998 11.0086 5.9524 12.6727C5.06686 14.2278 2.78605 14.2291 1.88639 12.6845C0.986737 11.1398 1.99879 9.29738 3.69871 9.15751Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3388"> <rect width="44.4" height="24" fill="white"/> </clipPath> </defs> </svg></span></span>
             <span class="npname">JBL</span>
           </span>
-          <span class="npend">
-            <span class="npmeta"><em>Web Design</em><s>/</s><em>Design Lead</em><s>/</s><em>2024</em></span>
-            <span class="nparrow"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6.667 20h26.666M33.333 20l-10-10M33.333 20l-10 10" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </span>
+          <span class="npend"><span class="npmeta"><em>Web</em><s>/</s><em>Design Lead</em><s>/</s><em>2023</em></span><span class="npbtn"><b>View work</b><span class="npi npiarr"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3.3 10h13.4m0 0-4.2-4.2M16.7 10l-4.2 4.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
         </span>
-        <span class="nprule ruleh" aria-hidden="true"></span>
-      </button>
-      <button class="nprow" type="button" data-page="volvo" data-ink
-              style="--brand:#ffffff" aria-label="VOLVO case study">
+      </div>
+      <div class="nprow" role="link" tabindex="0" data-page="ets"None style="--brand:#103D4B;--mk:#4DD3FE"
+              aria-label="ETS case study">
         <span class="nprowin">
           <span class="npside">
-            <span class="nptile"><span class="tmk" style="left:7.5770%;top:45.3154%;width:83.6318%;height:9.3691%"><svg viewBox="0 0 134 15" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M122.882 0.00879749C128.574 -0.181387 135.489 2.70398 133.563 9.44463C132.159 14.3677 125.892 15.2806 121.45 14.8405C110.249 13.7292 110.569 0.419052 122.879 0.00879749H122.882ZM122.863 2.44044C119.008 3.22291 119.052 13.0282 123.87 12.6886C128.279 12.3789 128.541 1.28846 122.863 2.44044Z" fill="white"/> <path d="M41.8734 0.00661447C46.8182 -0.131948 52.8253 1.88944 52.7039 7.68189C52.5025 17.3025 33.4739 17.2101 32.2901 8.7415C31.4651 2.84851 36.6499 0.153328 41.8734 0.00661447ZM44.5887 11.798C46.832 9.57288 46.6057 2.48172 42.6157 2.35674C37.2625 2.19101 37.9275 13.8031 43.1041 12.6511C43.4242 12.5805 44.3513 12.0317 44.5914 11.7953L44.5887 11.798Z" fill="white"/> <path d="M26.352 0.0410208C28.1069 0.114378 28.1952 0.356186 27.5523 2.17651L24.3376 2.27161L17.8917 14.1255L9.90339 14.0006L3.54303 2.25802L0.256621 2.09501L0 0.0410208H14.6246L14.3653 2.09501C13.9044 2.41289 12.4006 2.12489 11.7218 2.21184C11.3383 2.26074 11.2417 2.06512 11.3189 2.61122L15.8664 10.6288L20.4138 2.61122C20.6649 1.78257 18.496 2.48896 17.9193 2.09229L17.6599 0.0383043C20.5463 0.125246 23.4656 -0.0812404 26.352 0.0383043V0.0410208Z" fill="white"/> <path d="M108.366 0.289442C108.485 0.275857 108.747 -0.0827751 109.054 0.017751V2.46298L105.61 2.73466L99.1199 14.2761L91.3907 14.2815L84.9114 2.72923L81.457 2.46298V0.286726L95.8056 0.0150337V2.46298L92.4974 2.5961C92.9994 3.19382 96.987 11.2305 97.4586 10.8827C98.237 8.07338 100.966 5.20162 101.873 2.59067C102.116 1.88971 101.564 2.38146 101.396 2.39233C100.635 2.44395 99.8785 2.51188 99.1145 2.46298V0.289442C102.047 0.0449199 105.491 0.618189 108.358 0.289442H108.366Z" fill="white"/> <path d="M70.5498 0L70.2901 2.05399L67.2386 2.17353V11.6827H71.7914C71.9133 11.6827 73.6539 10.6177 73.8664 10.3895C74.5344 9.65593 74.9541 8.33278 74.9785 7.34922C75.7235 7.34922 76.665 7.09654 77.1723 7.7432V13.7204L76.7587 14.128H57.4429C56.7916 13.6307 57.0346 12.7016 57.0453 11.9707L60.6162 11.6827V2.17353L57.2882 2.05399L57.0293 0H70.5498Z" fill="white"/> </svg></span></span>
-            <span class="npname">VOLVO</span>
-          </span>
-          <span class="npend">
-            <span class="npmeta"><em>Web Design</em><s>/</s><em>Design Lead</em><s>/</s><em>2024</em></span>
-            <span class="nparrow"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6.667 20h26.666M33.333 20l-10-10M33.333 20l-10 10" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </span>
-        </span>
-        <span class="nprule ruleh" aria-hidden="true"></span>
-      </button>
-      <button class="nprow" type="button" data-page="ets" data-ink
-              style="--brand:#f2e9d8" aria-label="ETS case study">
-        <span class="nprowin">
-          <span class="npside">
-            <span class="nptile"><span class="tmk" style="left:27.3584%;top:28.4536%;width:44.0702%;height:44.0847%"><svg viewBox="0.3 0 17.6 17.6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.25717 -0.000488281C8.38418 0.077827 8.51751 0.157352 8.64966 0.226898C9.09052 0.458821 9.82923 0.736099 10.2024 1.00219C10.2529 1.03817 10.3436 1.13342 10.3436 1.19359V5.89463L14.4238 1.85731C14.5396 1.82345 14.6968 1.8313 14.7435 1.96405C14.8735 2.62202 15.317 3.40245 15.4159 4.04259C15.425 4.10034 15.431 4.15748 15.4229 4.21614L3.87031 15.7932C3.72426 15.8769 3.59212 15.8446 3.52469 15.6904C3.37289 15.0436 2.97679 14.3043 2.85825 13.6663C2.84284 13.5834 2.82983 13.5039 2.85825 13.4211L6.20102 10.0369H0.470994C0.440454 10.0369 0.346113 9.93377 0.304688 9.91592V9.70427L1.40835 7.64841H6.23126L2.19303 3.599C2.10835 3.49498 2.12499 3.3701 2.19514 3.26456L4.32507 2.55278L4.53705 2.55549L7.92486 5.89463V0.196056C7.92486 0.132557 8.02344 0.0360992 8.07605 -0.000488281H8.25717Z" fill="white"/><path d="M12.0617 10.0369L16.0531 14.0425C16.154 14.1737 16.1532 14.3935 15.979 14.4521C15.3234 14.6187 14.6688 14.9263 14.0203 15.0935C13.9147 15.1208 13.8216 15.1712 13.7169 15.1089L10.3382 11.7601V17.4586C10.3382 17.6135 10.1108 17.7109 9.97443 17.6408C9.42471 17.2657 8.57201 17.0305 8.0492 16.6634C7.93642 16.5842 7.93067 16.538 7.91797 16.4016L7.93914 13.3669C9.79512 11.436 11.7176 9.53978 13.6323 7.66172L17.7325 7.64691C17.9163 7.63753 17.9977 7.78418 17.9438 7.9514C17.639 8.51079 17.3947 9.10678 17.0863 9.66375C17.0433 9.74116 16.8976 10.0366 16.8242 10.0366L12.0617 10.0369Z" fill="white"/></svg></span></span>
+            <span class="nptile" style="--mw:45.5%;--mh:45.5%"><span class="tmk tmd" aria-hidden="true"><svg viewBox="24 24 40.0663 40.0663" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M42.0607 23.9996C42.3491 24.1775 42.652 24.3581 42.9521 24.516C43.9533 25.0427 45.631 25.6725 46.4784 26.2768C46.5931 26.3585 46.7991 26.5748 46.7991 26.7115V37.3879L56.0657 28.2188C56.3286 28.1419 56.6857 28.1598 56.7916 28.4612C57.0869 29.9555 58.0942 31.728 58.3187 33.1818C58.3393 33.3129 58.353 33.4427 58.3346 33.5759L32.0978 59.8683C31.7661 60.0584 31.466 59.985 31.3129 59.6349C30.9681 58.166 30.0685 56.4869 29.7993 55.038C29.7643 54.8498 29.7348 54.6692 29.7993 54.481L37.391 46.7953H24.3777C24.3083 46.7953 24.0941 46.5611 24 46.5206V46.0399L26.5065 41.3709H37.4597L28.2886 32.1743C28.0963 31.9381 28.134 31.6545 28.2934 31.4148L33.1306 29.7983L33.612 29.8044L41.306 37.3879V24.446C41.306 24.3018 41.5299 24.0827 41.6494 23.9996H42.0607Z" fill="white"/><path d="M50.7077 46.7951L59.7724 55.8922C60.0016 56.1901 59.9997 56.6893 59.6042 56.8225C58.1152 57.2009 56.6285 57.8994 55.1557 58.279C54.9159 58.341 54.7044 58.4555 54.4668 58.314L46.7934 50.7087V63.6505C46.7934 64.0022 46.277 64.2235 45.9673 64.0642C44.7188 63.2124 42.7822 62.6782 41.5949 61.8445C41.3388 61.6646 41.3257 61.5597 41.2969 61.25L41.3449 54.3579C45.56 49.9726 49.9262 45.6662 54.2745 41.4009L63.5865 41.3673C64.004 41.346 64.1887 41.6791 64.0663 42.0588C63.3741 43.3292 62.8193 44.6828 62.1188 45.9477C62.0212 46.1235 61.6902 46.7944 61.5236 46.7944L50.7077 46.7951Z" fill="white"/></svg></span><span class="tmk tml" aria-hidden="true"><svg viewBox="24 24 40.0663 40.0663" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M42.0607 23.9996C42.3491 24.1775 42.652 24.3581 42.9521 24.516C43.9533 25.0427 45.631 25.6725 46.4784 26.2768C46.5931 26.3585 46.7991 26.5748 46.7991 26.7115V37.3879L56.0657 28.2188C56.3286 28.1419 56.6857 28.1598 56.7916 28.4612C57.0869 29.9555 58.0942 31.728 58.3187 33.1818C58.3393 33.3129 58.353 33.4427 58.3346 33.5759L32.0978 59.8683C31.7661 60.0584 31.466 59.985 31.3129 59.6349C30.9681 58.166 30.0685 56.4869 29.7993 55.038C29.7643 54.8498 29.7348 54.6692 29.7993 54.481L37.391 46.7953H24.3777C24.3083 46.7953 24.0941 46.5611 24 46.5206V46.0399L26.5065 41.3709H37.4597L28.2886 32.1743C28.0963 31.9381 28.134 31.6545 28.2934 31.4148L33.1306 29.7983L33.612 29.8044L41.306 37.3879V24.446C41.306 24.3018 41.5299 24.0827 41.6494 23.9996H42.0607Z" fill="white"/><path d="M50.7077 46.7951L59.7724 55.8922C60.0016 56.1901 59.9997 56.6893 59.6042 56.8225C58.1152 57.2009 56.6285 57.8994 55.1557 58.279C54.9159 58.341 54.7044 58.4555 54.4668 58.314L46.7934 50.7087V63.6505C46.7934 64.0022 46.277 64.2235 45.9673 64.0642C44.7188 63.2124 42.7822 62.6782 41.5949 61.8445C41.3388 61.6646 41.3257 61.5597 41.2969 61.25L41.3449 54.3579C45.56 49.9726 49.9262 45.6662 54.2745 41.4009L63.5865 41.3673C64.004 41.346 64.1887 41.6791 64.0663 42.0588C63.3741 43.3292 62.8193 44.6828 62.1188 45.9477C62.0212 46.1235 61.6902 46.7944 61.5236 46.7944L50.7077 46.7951Z" fill="white"/></svg></span></span>
             <span class="npname">ETS</span>
           </span>
-          <span class="npend">
-            <span class="npmeta"><em>Web Design</em><s>/</s><em>Design Lead</em><s>/</s><em>2024</em></span>
-            <span class="nparrow"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6.667 20h26.666M33.333 20l-10-10M33.333 20l-10 10" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </span>
+          <span class="npend"><span class="npmeta"><em>Web</em><s>/</s><em>Design Lead</em><s>/</s><em>2024</em></span><span class="npbtn"><b>View work</b><span class="npi npiarr"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3.3 10h13.4m0 0-4.2-4.2M16.7 10l-4.2 4.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
         </span>
-        <span class="nprule ruleh" aria-hidden="true"></span>
-      </button>
+      </div>
     </div></div>
   </div>
 </div>
@@ -6510,8 +6742,12 @@
       dots.setAttribute('aria-expanded',v?'true':'false');
       /* focus goes to CLOSE, not into the panel: it is the only control that
          has to be reachable to get back out */
-      if(v){ if(viaKey) setTimeout(()=>shut&&shut.focus({preventScroll:true}),300); }
-      else if(viaKey) dots.focus({preventScroll:true});
+      /* the button is the only control that has to be reachable to get back
+         out, and it is the same button either way now */
+      if(!v){
+        document.querySelectorAll('.nprow.asking').forEach(r=>window.__npReset&&window.__npReset(r));
+        if(viaKey) dots.focus({preventScroll:true});
+      }
     }
     window.__navOpen=open;
 
@@ -6532,8 +6768,36 @@
       }
     };
 
-    dots.addEventListener('click',()=>open(!isOpen()));
-    shut&&shut.addEventListener('click',()=>open(false));
+    /* ── the button's journey ─────────────────────────────────────────
+       The bar's round button IS the sheet's X. It does not get swapped for
+       one: it flies. Before the sheet opens we measure where the button
+       stands and where the head's slot wants it — the sheet is
+       visibility:hidden rather than display:none, so the slot already has a
+       box to measure — and hand the difference to CSS as two numbers. One
+       transform carries it, the bank of marks spins down and out, and the
+       cross draws itself in behind. Pressing it again runs the whole thing
+       backwards, because taking the class off takes the transform with it.
+
+       The pill beside it only fades on the way out. It used to collapse to
+       nothing, which moved the button's own resting place by 425 mid-flight
+       and made the journey start from somewhere that no longer existed. */
+    const slot=document.querySelector('.npslot');
+    function aim(){
+      if(!slot||root.classList.contains('nav-open')) return;
+      const r=dots.getBoundingClientRect(), t=slot.getBoundingClientRect();
+      root.style.setProperty('--rollx',(t.left-r.left).toFixed(2)+'px');
+      root.style.setProperty('--rolly',(t.top -r.top ).toFixed(2)+'px');
+    }
+    window.__navAim=aim;
+    addEventListener('resize',()=>{
+      /* re-aim from rest: while it is parked at the corner there is nothing
+         to measure, so the numbers are refreshed on the way back */
+      if(!root.classList.contains('nav-open')) aim();
+    },{passive:true});
+
+    dots.addEventListener('click',()=>{ if(!isOpen()) aim(); open(!isOpen()); });
+    /* the sheet has no close button of its own any more: the bar's round
+       button flew up here and IS the X */
     scrim&&scrim.addEventListener('click',()=>open(false));
     addEventListener('keydown',e=>{ if(e.key==='Escape'&&isOpen()) open(false); });
   })();
@@ -6548,12 +6812,10 @@
     const root=document.documentElement;
     const list=document.getElementById('npList');
     const back=document.getElementById('navBack');
-    const BLOCK=668, TOP=76, FOOT=116;
-    function fit(){
-      if(!list) return;
-      const k=Math.max(.4, Math.min(1,(innerHeight-TOP-FOOT)/BLOCK));
-      root.style.setProperty('--np-k', k.toFixed(4));
-    }
+    /* 547:41565 - nothing is scaled any more: the list is 807 tall against a
+       900 frame in the drawing too, so it is meant to run past the foot. It
+       scrolls. */
+    function fit(){}
     /* the roll's label is the page you are standing on — closing the panel is
        what takes you back to it */
     const NAMES={work:'Home', about:'Story', resume:'Growth',
@@ -7224,9 +7486,96 @@
        paint rather than after the fonts resolve */
     if(typeof window.__navSkin==='function') window.__navSkin();
 
+    /* ── the passcode, inline in the row — 541:39572-541:39575 ────────
+       Pressing VIEW WORK on a locked row does not route: it turns the row's
+       right-hand side into the field. The meta drops out, "Need code?" and
+       the 274 pill take its place, and the round submit only exists once
+       something has been typed. Right code routes; wrong code paints the
+       field red and says so until you touch it again. */
+    const CODE='casestudy2krisj#';
+    const opened=new Set();
+    window.__npUnlocked=k=>opened.has(k);
+    function reset(row){
+      row.classList.remove('asking');
+      const f=row.querySelector('.npfield'), i=row.querySelector('.npin'),
+            w=row.querySelector('.nppass');
+      if(i) i.value='';
+      if(f) f.classList.remove('filled','err');
+      if(w) w.classList.remove('ready');
+      const al=row.querySelector('.npialert'), lk=row.querySelector('.npfl .npi:not(.npialert)');
+      if(al) al.hidden=true; if(lk) lk.hidden=false;
+    }
+    window.__npReset=reset;
+    function ask(row){
+      document.querySelectorAll('.nprow.asking').forEach(r=>{ if(r!==row) reset(r); });
+      row.classList.add('asking');
+      const i=row.querySelector('.npin');
+      if(i) setTimeout(()=>i.focus({preventScroll:true}),120);
+    }
+    function clearErr(row){
+      const f=row.querySelector('.npfield');
+      if(!f||!f.classList.contains('err')) return;
+      f.classList.remove('err');
+      const al=row.querySelector('.npialert'), lk=row.querySelector('.npfl .npi:not(.npialert)');
+      if(al) al.hidden=true; if(lk) lk.hidden=false;
+      const i=row.querySelector('.npin'); if(i){ i.value=''; }
+      row.querySelector('.nppass').classList.remove('ready');
+      f.classList.remove('filled');
+    }
+    function submit(row){
+      const i=row.querySelector('.npin'), f=row.querySelector('.npfield');
+      if(!i||!f) return;
+      if(i.value===CODE){
+        opened.add(row.dataset.page);
+        reset(row);
+        if(typeof window.__navOpen==='function') window.__navOpen(false);
+        if(typeof window.__goTo==='function') window.__goTo(row.dataset.page);
+        return;
+      }
+      f.classList.add('err');
+      const al=row.querySelector('.npialert'), lk=row.querySelector('.npfl .npi:not(.npialert)');
+      if(al) al.hidden=false; if(lk) lk.hidden=true;
+    }
+    document.querySelectorAll('.nprow[data-lock]').forEach(row=>{
+      const i=row.querySelector('.npin'), f=row.querySelector('.npfield'),
+            w=row.querySelector('.nppass');
+      i&&i.addEventListener('input',()=>{
+        clearErr(row);
+        const on=!!i.value.length;
+        f.classList.toggle('filled',on);
+        w.classList.toggle('ready',on);
+      });
+      i&&i.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){ e.preventDefault(); submit(row); }
+        if(e.key==='Escape'){ e.preventDefault(); reset(row); }
+        e.stopPropagation();
+      });
+      row.querySelector('.npgo').addEventListener('click',e=>{
+        e.preventDefault(); e.stopPropagation(); submit(row); });
+      row.querySelector('.npclr').addEventListener('click',e=>{
+        e.preventDefault(); e.stopPropagation(); reset(row); ask(row); });
+      row.querySelector('.nppass').addEventListener('click',e=>e.stopPropagation());
+    });
+
     /* the case-study cards in the panel are the way in */
     document.querySelectorAll('.nprow[data-page]').forEach(c=>{
+      /* role=link on a div, so the keyboard has to be wired by hand - a
+         <button> cannot be used here because the row holds buttons of its
+         own and the parser would hoist them straight back out of it */
+      c.addEventListener('keydown',e=>{
+        if(e.key!=='Enter'&&e.key!==' ') return;
+        if(e.target!==c) return;
+        e.preventDefault(); c.click();
+      });
       c.addEventListener('click',()=>{
+        /* Venmo is not shipped. It hovers like the rest - that is the whole
+           point of leaving it in the list - but it does not go anywhere. */
+        if(c.hasAttribute('data-soon')) return;
+        /* a locked study asks first, in the row itself */
+        if(c.hasAttribute('data-lock') && !opened.has(c.dataset.page)){
+          if(!c.classList.contains('asking')) ask(c);
+          return;
+        }
         if(typeof window.__navOpen==='function') window.__navOpen(false);
         goTo(c.dataset.page,true);
       });
