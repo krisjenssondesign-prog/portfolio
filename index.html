@@ -20,7 +20,7 @@
      section's body copy is drawn Light 300 and was resolving DOWN to
      Regular, which is why black-ground body looked identical to the
      white-ground body it was meant to contrast with. */
-  @font-face{font-family:'Inter';font-style:normal;font-weight:300;font-display:block;src:url(fonts/Inter-ExtraLight.woff) format('woff')}
+  @font-face{font-family:'Saans';font-style:normal;font-weight:300;font-display:block;src:url(fonts/Inter-ExtraLight.woff) format('woff')}
 
   :root{
     --font-display:'Inter',-apple-system,'Helvetica Neue',sans-serif;  /* headline · KRIS */
@@ -29,6 +29,13 @@
     --ink:#1A1A1A;
     /* the named styles in 97:3173 */
     --c-1:#fff; --c-2:#bfbfbf; --c-3:#808080; --c-4:#404040;
+    /* ══ 521:37680 - THE BAR'S INK ═════════════════════════════════
+       Every page's wordmark and its right-hand links are the same two
+       colours, and which one they take is a property of the SURFACE the
+       section declares - never of whatever happens to be painted under
+       them. One token, set once per section, inherited by every bar.
+       The separator is Secondary Light on both. */
+    --bar-ink:#1A1A1A; --bar-sep:#9F9F9F;
     /* 2:100 — the work section's own ramp. Named for Kris's styles:
        Text White 1 / Secondary Light / Surface Dark / Containers on Dark /
        Secondary Light on Container. Scoped to the work section only — the
@@ -309,8 +316,15 @@
           design, and the page was scrolling sideways to reach them. `clip`
           cuts them without making this a scroll container — which is what
           hidden would do, and a scroll container is what froze the view()
-          timelines on the cards once before. */
-       overflow:clip;overflow-clip-margin:2em}
+          timelines on the cards once before.
+
+          INLINE AXIS ONLY. Clipping both axes cut the band's own box, and
+          that box is exactly one cap tall — so every round letter's overshoot
+          (the G, the S, the O) was shaved flat, top and bottom. The vent that
+          was meant to cover it was an overflow-clip-margin, which Safari does
+          not honour, so it never applied anywhere it mattered. The block axis
+          is simply not clipped now. */
+       overflow-x:clip;overflow-y:visible}
   .hs-m{display:none}
 
   /* ── the sub-headline — 415:54846 ────────────────────────────────────
@@ -346,12 +360,15 @@
   .ln.mq{display:block;position:relative;
          width:100vw;margin-left:calc(-1 * var(--m));
          text-box:normal;text-box-trim:none;text-box-edge:auto}
+  /* NO css animation here. The travel is one measured cycle, and a keyframe
+     that reads it through var() is a keyframe Safari refuses to hand to the
+     compositor — it ran the whole band on the main thread, which is what made
+     it stall for the best part of a second and then jump. The same two frames
+     are handed to Element.animate() as a plain px value instead, from JS,
+     where the cycle is measured anyway. */
   .mqtrack{display:flex;align-items:center;width:max-content;
            gap:.232558em;                                      /* 40 @172 */
-           will-change:transform;
-           animation:mqRun var(--mq-dur, 70s) linear infinite}
-  @keyframes mqRun{ from{transform:translate3d(0,0,0)}
-                    to  {transform:translate3d(calc(-1 * var(--mq-cycle, 0px)),0,0)} }
+           will-change:transform}
   /* each item carries the cap trim, so every box in the row is the same 124
      tall and the 32 to the line below is the drawn 32 */
   .mqtrack .mw,.mqtrack .ms{display:block;white-space:pre;
@@ -1149,16 +1166,16 @@
      link at 16 Medium in caps, and there is no rule under them any more.
      Both are cap-trimmed, so their boxes ARE their cap heights (14 and 12)
      and the drawn 41 / 40 tops are what the margins set. */
-  .cs .cstop{height:auto;align-items:flex-start;margin-top:41px}
+  .cs .cstop{height:60px;align-items:center;margin-top:16px}
   .cs .cstop .brand{font-family:var(--font-ui);font-size:20px;font-weight:700;
-        line-height:1.45;letter-spacing:-.02em;color:var(--c-1);
-        text-transform:none;
+        line-height:1.45;letter-spacing:-.02em;color:var(--bar-ink);
+        text-transform:uppercase;
         text-box:trim-both cap alphabetic;
         text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .cs .cstop .rzlinks{gap:16px;font-size:16px;font-weight:500;
         line-height:1;letter-spacing:0;text-transform:uppercase;
-        margin-top:-1px;color:var(--c-1)}
-  .cs .cstop .rzlinks a{color:var(--c-1);
+        margin-top:-1px;color:var(--bar-ink)}
+  .cs .cstop .rzlinks a{color:var(--bar-ink);
         text-box:trim-both cap alphabetic;
         text-box-trim:trim-both;text-box-edge:cap alphabetic;
         transition:color .25s ease}
@@ -1344,13 +1361,16 @@
      matters: the headline never comes closer than 64 to the top bar. It is set
      from JS because it depends on how many lines the standfirst takes, and CSS
      cannot see that. Whichever term runs out first wins. */
-  /* 513:24087 - 164 on the 1440 frame, not the old 214. The row is
-     6 + THE 306 + 20 + 148 + 20 + PULSE 478 + 12 + 40 = 1030, which is 6.28
-     units of type, so the measure term keeps it inside the guides on a narrow
-     window while 11.389vw holds the drawn size everywhere else. */
+  /* 513:24087 - 140 on the 1440 frame. The row measures
+     6 + THE 267 + 20 + ME 140 + 20 + PULSE 420 + 12 + DOT 40 = 925, which is
+     6.6071 units of type, so the measure term keeps it inside the guides on a
+     narrow window while 9.7222vw holds the drawn size everywhere else.
+     Tracking has opened to -2.8 on 140, which is -.02em - half what it was,
+     and the words are 587 / 267 / 420 at that setting. */
   .ab{--abcap:999px;
+      --abtrack:-.02em;
       --abhl:clamp(40px,
-                   min(11.389vw, calc((100vw - 80px) / 6.28), var(--abcap)),
+                   min(9.7222vw, calc((100vw - 80px) / 6.6071), var(--abcap)),
                    320px);
       /* Surface Dark, 513:24080. --w-sur is already #101010 in the tokens -
          this was painting raw #000 and ignoring it. */
@@ -1358,40 +1378,42 @@
       display:flex;flex-direction:column;justify-content:center;
       /* the group is centred in the band the bar and the nav leave it, not in
          the window — that is what keeps the air even top and bottom */
-      /* 87 for the nav and 80 for the rule: on a 900 window that centres the
-         group at 453 against the drawn 450 */
-      padding:87px var(--m) 80px;
+      /* 81 top and bottom - the band at the foot is 80 plus its own hairline,
+         and matching it above centres the group at 450 on a 900 window, which
+         is exactly where 513:35367 is drawn. It still clears the 76 nav. */
+      padding:81px var(--m) 81px;
       box-sizing:border-box}
   /* 513:35252 / 513:35368 - the wordmark's cap sits on 39 and the links' box
      on 38, so the row hangs from its top rather than centring a 22 */
-  .abbar{position:absolute;left:var(--m);right:var(--m);top:38px;
-         display:flex;align-items:flex-start;justify-content:space-between}
+  .abbar{position:absolute;left:var(--m);right:var(--m);top:16px;height:60px;
+         display:flex;align-items:center;justify-content:space-between}
   /* .brand carries color:#1A1A1A from a later block, and one class cannot
      out-rank another that comes after it - so this has to be more specific or
      the wordmark paints Text Dark 1 on Surface Dark and disappears. */
-  .ab .abbar .ab-brand{color:#F8F8F8}
+  /* nothing to override any more - the wordmark takes --bar-ink, and the
+     section declares which one that is. */
   .abr{display:flex;align-items:center;gap:16px;
        font-family:var(--font-ui);font-size:16px;font-weight:500;
        letter-spacing:-.04em;line-height:1;text-transform:uppercase}
-  .abr .ablink{color:var(--c-1)}
-  .abr .sep{color:rgba(255,255,255,.25);letter-spacing:-.06em;text-transform:none}
+  .abr .ablink{color:var(--bar-ink)}
+  .abr .sep{color:var(--bar-sep);letter-spacing:-.06em;text-transform:none}
 
   /* headline block sits on the 40 guide at y180; the row below it at y352 */
-  .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * .1220)}  /* 20 */
-  .abline{font-size:var(--abhl);font-weight:900;letter-spacing:var(--track);
+  .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * .085714)} /* 12 */
+  .abline{font-size:var(--abhl);font-weight:900;letter-spacing:var(--abtrack);
           line-height:normal;color:var(--c-1);white-space:nowrap;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* the row is centred on the portrait, not on the type: the caps and the
      circle share a middle, which is what makes the face read as a word */
-  .abbot{display:flex;align-items:center;gap:calc(var(--abhl) * .1220);       /* 20 */
-         padding-left:calc(var(--abhl) * .0366)}                              /*  6 */
+  .abbot{display:flex;align-items:center;gap:calc(var(--abhl) * .142857);     /* 20 */
+         padding-left:calc(var(--abhl) * .042857)}                            /*  6 */
   /* position:relative so the flap rack (.fx / .ch) can lay itself over the
      word — same rack the hero headline uses, so About gets the board for free */
   /* CSS lets the negative tracking run on past the last glyph; Figma stops it
      at the last one. Give that back, or the full stop crowds the E and the
      portrait crowds the THE. */
-  .abline{position:relative;margin-inline-end:calc(-1 * var(--track))}
+  .abline{position:relative;margin-inline-end:calc(-1 * var(--abtrack))}
   .abword{display:block}
   /* ── optical spacing ────────────────────────────────────────────────
      One tracking value cannot make the gaps look equal, because the gap you
@@ -1415,14 +1437,19 @@
   .ki{margin-right:.0156em}   /* I|S  +3.0      */
   .kl{margin-right:.0139em}   /* L|S  +2.7      */
   .kt{margin-right:.0183em}   /* T|H  +3.5      */
-  .abpul{display:flex;align-items:flex-end;gap:calc(var(--abhl) * .0732)}     /* 12 */
-  /* 165 on a 192 headline — the circle scales with the type, not the window */
+  /* 513:24158 - the F now carries its own tracking in the drawing: -1.28
+     against the line's -2.8, so F|T is opened by 1.52 at 140. That pair was
+     the one left alone up there because the crossbars interlock - this is the
+     drawing asking for it, so it is taken from the drawing. */
+  .kf{margin-right:.010857em} /* F|T  +1.52 @140 */
+  .abpul{display:flex;align-items:flex-end;gap:calc(var(--abhl) * .085714)}   /* 12 */
+  /* 140 on a 140 headline - the circle is exactly one type size now */
   /* The portrait is a flap card like every letter beside it: a blank disc on
      one face, the photograph on the other, turning on the same axis. The
      source lives here once, as a custom property, so both faces can wear it
      without the file carrying the image twice. */
   .abav{--abav:url(media/abav.webp);
-        flex:none;width:calc(var(--abhl) * .9024);height:calc(var(--abhl) * .9024);
+        flex:none;width:var(--abhl);height:var(--abhl);
         border-radius:999px;display:block;perspective:var(--flip-persp)}
   .abavcard{position:relative;display:block;width:100%;height:100%;
             transform-style:preserve-3d;will-change:transform}
@@ -1433,7 +1460,7 @@
   .abavb{transform:rotateY(180deg)}
   /* the full stop is a drawn circle, so it can carry the pulse */
   .abdot{flex:none;display:block;
-         width:calc(var(--abhl) * .2439);height:calc(var(--abhl) * .2439);      /* 40 */
+         width:calc(var(--abhl) * .285714);height:calc(var(--abhl) * .285714);  /* 40 */
          border-radius:999px;background:var(--pulse);
          will-change:transform,opacity}
 
@@ -1446,40 +1473,50 @@
   /* 513:35367 - a flat 48 under the headline, and the fact grid is gone: the
      band at the foot of the page carries what it used to say. */
   .abfoot{margin-top:40px;display:flex;align-items:flex-start}
-  /* 513:24169 - 28 Medium on 1.45 over 668. The opening clause is Text White 1
-     and the rest of it drops to 50%, which is the whole of the colour logic. */
-  .abcopy{flex:0 1 564px;max-width:564px;min-width:0;font-family:var(--font-ui);
-          font-size:22px;font-weight:500;line-height:1.45;letter-spacing:0;
-          color:rgba(248,248,248,.5);
+  /* 513:24169 - 20 Medium on 1.25 over 551, three lines. The colour alternates
+     rather than splitting once: three clauses are Text White 1 and the two
+     that join them are Secondary Light, so the sentence reads as its own
+     emphasis. Same weight throughout - it is colour doing the work. */
+  .abcopy{flex:0 1 551px;max-width:551px;min-width:0;font-family:var(--font-ui);
+          font-size:20px;font-weight:500;line-height:1.25;letter-spacing:0;
+          color:#9F9F9F;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .abcopy b{font-weight:500;color:#F8F8F8}
 
-  /* 513:35289 - the hairline, 80 off the foot of the section */
-  /* 513:35289 / 520:35950 / 520:35955 - the rule is BROKEN now: a 24 stub off
-     the left edge, then LOVE FOR sitting in the gap, then the long rule out to
-     the right. Laid out as one row with no height, so the label centres itself
-     on the line rather than being placed against it. */
-  .abrules{position:absolute;left:0;right:0;bottom:80px;height:0;
-          display:flex;align-items:center;z-index:1}
-  .abrules i{flex:none;display:block;width:24px;height:1px;background:var(--c-4)}
-  .abrules u{flex:1 1 auto;display:block;height:1px;background:var(--c-4);
-          margin-right:1px}
-  /* 520:35955 - 16 SemiBold uppercase in Secondary Dark, 15 off the stub and
-     16 before the line picks up again */
-  .ablovefor{flex:none;margin:0 16px 0 15px;
-          font-family:var(--font-ui);font-size:16px;font-weight:600;
-          line-height:1.45;letter-spacing:0;text-transform:uppercase;
-          white-space:nowrap;color:#777777}
-  /* 513:35302 - 32 discs and 22 labels on a 48 gap, running off both edges.
-     24 of air under it, which is where the drawn band sits on a 900 frame. */
-  /* 513:35302 - 24 tall now, on a 43 gap, and the labels are 18. The first
-     four discs are 24 and the last six 20, which is drawn, not a slip. */
-  .abstrip{position:absolute;left:0;right:0;bottom:24px;height:24px;
-           overflow:hidden}
-  .abtrack{gap:43px;align-items:center;height:24px;
+  /* 520:36359 / 520:36312 - the band is anchored to the foot of the section
+     now and the rule is its own top edge, one unbroken hairline in #232323
+     across the full bleed. LOVE FOR is not a gap in the line any more: it is a
+     chip in Surface Dark laid OVER it, 40 off the left edge, which is why the
+     line simply stops being visible for the chip's width. */
+  .abrules{position:absolute;left:0;right:0;bottom:81px;height:0;z-index:1}
+  .abrules u{position:absolute;left:0;right:0;top:0;height:1px;
+          background:#232323;display:block}
+  /* 520:36312 - 16 Medium uppercase in Secondary Light, 8 between the slash
+     and the words, 40 of Surface Dark either side of the pair */
+  .ablovefor{position:absolute;left:0;top:0;transform:translateY(-50%);
+          display:flex;align-items:center;gap:8px;
+          padding:4px 40px;background:var(--w-sur);
+          font-family:var(--font-ui);font-size:16px;font-weight:500;
+          line-height:1;letter-spacing:0;text-transform:uppercase;
+          white-space:nowrap;color:#9F9F9F;
+          text-box:trim-both cap alphabetic;
+          text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* the trim has to sit on the two boxes, not on the row: they are blocks of
+     their own, so the row's trim never reaches the type inside them and the
+     chip came out 24 tall instead of the drawn 20. */
+  .ablovefor i,.ablovefor b{display:block;font-style:normal;font-weight:500;
+          text-box:trim-both cap alphabetic;
+          text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* 520:36359 - 81 tall: a hairline, 28 of air, a 24 row, 28 of air. The gap
+     is 40 now, the labels are Secondary Light rather than white, and the
+     discs stay 24 on the first four and 20 on the last six - drawn, not a
+     slip. Full bleed: the drawn frame runs from -178 to 1658. */
+  .abstrip{position:absolute;left:0;right:0;bottom:0;height:80px;
+           padding:28px 0;box-sizing:border-box;overflow:hidden}
+  .abtrack{gap:40px;align-items:center;height:24px;
            font-family:var(--font-ui);font-size:18px;font-weight:500;
-           line-height:1.45;letter-spacing:0;color:#F8F8F8;white-space:nowrap}
+           line-height:1.45;letter-spacing:0;color:#9F9F9F;white-space:nowrap}
   .abtrack .abdisc{flex:none;display:block;
            width:calc(var(--d) * 1px);height:calc(var(--d) * 1px);
            border-radius:999px;background:#FFFFFF}
@@ -1488,6 +1525,9 @@
            text-box-trim:trim-both;text-box-edge:cap alphabetic}
 
   /* every straight rule on the site, painted rather than bordered */
+  [data-surface="light"]{--bar-ink:#1A1A1A}
+  [data-surface="dark"] {--bar-ink:#F8F8F8}
+
   .rulev,.ruleh{position:relative}
   .rulev::before,.ruleh::before{content:'';position:absolute;
         background:var(--rule-c,var(--c-4));pointer-events:none}
@@ -1835,7 +1875,7 @@
   .rzlinks{display:flex;align-items:center;gap:16px;
            font-family:var(--font-ui);font-size:16px;font-weight:500;
            letter-spacing:-.04em;text-transform:uppercase;color:#000}
-  .rzlinks .sep{color:rgba(0,0,0,.25);letter-spacing:-.06em;text-transform:none}
+  .rzlinks .sep{color:var(--bar-sep);letter-spacing:-.06em;text-transform:none}
 
   /* 132:4589 — 192 Black on the cap box, centred on the 1360 guides */
   .rzt{position:sticky;top:var(--rz-title-top);z-index:1;
@@ -1935,15 +1975,17 @@
       padding-bottom:12.5vw}
   .gwtop{position:relative;z-index:2;
          display:flex;align-items:center;justify-content:space-between;
-         margin:var(--m) var(--m) 0;height:22px;
+         margin:16px var(--m) 0;height:60px;
          letter-spacing:var(--track);line-height:1;white-space:nowrap}
-  .gwtop .brand{color:var(--c-1);font-size:22px;font-weight:800;
-                letter-spacing:-.04em}
+  /* 521:37680 - the same wordmark as every other page: 20 Bold on -2%,
+     not 22 at 800 on -4%. */
+  .gwtop .brand{color:var(--bar-ink);font-size:20px;font-weight:700;
+                letter-spacing:-.02em;text-transform:uppercase}
   .gwlinks{display:flex;gap:16px;align-items:center;
            font-family:var(--font-ui);font-size:16px;font-weight:500;
-           letter-spacing:-.04em;text-transform:uppercase;color:var(--c-1)}
+           letter-spacing:0;text-transform:uppercase;color:var(--bar-ink)}
   .gwlinks a{color:inherit}
-  .gwlinks .sep{color:var(--c-3);letter-spacing:-.06em;text-transform:none}
+  .gwlinks .sep{color:var(--bar-sep);letter-spacing:-.06em;text-transform:none}
 
   /* The title and the button share a baseline: the drawn pill sits at 282
      against a title box of 198-338, so it is bottom-aligned to the caps. */
@@ -3389,12 +3431,15 @@
       position:relative;display:flow-root;
       background:var(--w-sur);color:var(--c-1);padding-bottom:240px}
 
-  .cstop{position:relative;z-index:2;
+  /* 521:37680 Project Bleed - the row is the 1130 column with its own 40
+     either side, so the wordmark starts on 195 and Linkedin ends on 1245.
+     It used to sit flush to the column edge, 40 wide on both sides. */
+  .cstop{position:relative;z-index:2;box-sizing:border-box;
          display:flex;align-items:center;justify-content:space-between;
-         margin:var(--m) auto 0;width:var(--cs-col);
-         height:22px;line-height:1;white-space:nowrap;color:var(--c-1)}
-  .cstop .rzlinks{color:var(--c-1)}
-  .cstop .rzlinks a{color:var(--c-1)}
+         margin:16px auto 0;width:var(--cs-col);padding-inline:40px;
+         height:60px;line-height:1;white-space:nowrap;color:var(--bar-ink)}
+  .cstop .rzlinks{color:var(--bar-ink)}
+  .cstop .rzlinks a{color:var(--bar-ink)}
   .cstop .rzlinks .sep{color:rgba(255,255,255,.25)}
 
   /* 297:16696 + 297:16699 — the mark and the claim on one row, both trimmed
@@ -4237,13 +4282,15 @@
          The shadow is drawn as one drop-shadow on the row; it is a
          box-shadow per shape here because a `filter` on the row would make
          it a backdrop root and kill the blur underneath it in Safari. */
+      /* 521:37680 - the track is 80%, not 20% / 40%. White at 80% on a light
+         surface, black at 80% on a dark one, blur 10 on both. */
       .nav-wrap .nav{
             width:var(--pw);padding:4px;border-radius:100px;
-            background:rgba(255,255,255,.2);background-image:none;
+            background:rgba(255,255,255,.8);background-image:none;
             -webkit-backdrop-filter:blur(10px);
             backdrop-filter:blur(10px);
             box-shadow:0 4px 16px rgba(26,26,26,.04)}
-      html.nav-dark .nav-wrap .nav{background:rgba(0,0,0,.4)}
+      html.nav-dark .nav-wrap .nav{background:rgba(0,0,0,.8)}
           .nav-wrap .seg{z-index:3}
           .nav-wrap .ind{z-index:1}
     /* each stop is a third of the track and states its PADDING, not a height:
@@ -4307,18 +4354,18 @@
     /* two fills, one fading out as the other fades in */
       /* 472:19387 — Ink at 5% on the light ground, 472:19312 — Text White 1
          at 5% on the dark one. Not white at 9%. */
-      .nav-wrap .ind{background:rgba(26,26,26,.05);background-image:none}
+      .nav-wrap .ind{background:rgba(26,26,26,.1);background-image:none}
       html.nav-dark .nav-wrap .ind{background:rgba(249,249,249,.05)}
     /* Get in touch — 60 square, and the mark sits in it at Ink 3 */
     .nav-wrap .navroll{overflow:hidden}
           .nav-wrap .navroll{
             width:60px;height:60px;border-radius:999px;overflow:hidden;
-            background:rgba(255,255,255,.2);background-image:none;
+            background:rgba(255,255,255,.8);background-image:none;
             -webkit-backdrop-filter:blur(10px);
             backdrop-filter:blur(10px);
             box-shadow:0 4px 16px rgba(26,26,26,.04);
             color:#515151}
-          html.nav-dark .nav-wrap .navroll{background:rgba(0,0,0,.4);
+          html.nav-dark .nav-wrap .navroll{background:rgba(0,0,0,.8);
             color:#9F9F9F}
 
     /* the collapsed cut: 3 stops at 50 square on the pill's own 4 of
@@ -4331,18 +4378,22 @@
        It does not resize at all any more — it LEAVES, and comes back the
        moment you scroll up. One property, one clock, on the compositor. */
 
-    /* 435:2195 — the pair sits at the right, uppercase, on a quarter-ink rule */
+    /* 521:37680 — the pair sits at the right, uppercase, 16 apart, and its
+       ink is the surface's, not a hard hex */
     .navr{gap:16px;font-size:16px;font-weight:500;letter-spacing:0;
-          text-transform:uppercase;color:#1A1A1A}
-    .navr .sep{letter-spacing:-.06em;color:rgba(26,26,26,.25);
+          text-transform:uppercase;color:var(--bar-ink)}
+    .navr .sep{letter-spacing:-.06em;color:var(--bar-sep);
           text-transform:none;font-weight:500}
 
-    /* 435:2194 — Saans Bold 20 on -2%, in ink */
+    /* 521:37680 — Saans Bold 20 on -2%, in the surface's ink */
     .brand{font-family:var(--font-ui);font-weight:700;letter-spacing:-.02em;
-           line-height:1.45;color:#1A1A1A;
+           line-height:1.45;color:var(--bar-ink);text-transform:uppercase;
            text-box:trim-both cap alphabetic;
            text-box-trim:trim-both;text-box-edge:cap alphabetic}
-    .topbar{top:40px;height:auto;align-items:flex-start}
+    /* the bar is the pill's own row: 16 down from the top and 60 tall, with
+       everything centred in it. That is what puts the wordmark's cap on 39
+       and the links' box on 38 without either of them stating a top. */
+    .topbar{top:16px;height:60px;align-items:center}
     .lines{position:absolute;left:var(--m);right:0;bottom:40.15px;margin:0}
 
     /* 11:1145 — two lines at 24 Medium on 1.45, 8 apart, and the handle is a
@@ -4373,12 +4424,10 @@
     /* 11:1151 — Saans BOLD 20, not the display face at 900. The brand was
        rendering in Inter Black beside Saans SemiBold links, which is what made
        the row read heavy. */
-    .brand{font-family:var(--font-ui);font-weight:700;letter-spacing:-.04em;
-           line-height:1.45;
-           text-box:trim-both cap alphabetic;
-           text-box-trim:trim-both;text-box-edge:cap alphabetic}
-    .navr{gap:32px;font-size:16px;font-weight:500;letter-spacing:-.04em}
-    .navr .sep{font-weight:500;letter-spacing:-.06em;color:rgba(0,0,0,.25)}
+    /* This block used to restate .brand at -4% and .navr on a 32 gap, and
+       being later it won - which is why the wordmark and the links were
+       tracked and spaced off the drawing everywhere. The component states
+       -2% and 16, once, above. Nothing to restate. */
 
     /* the top bar's own links belong to the hero */
     html.past-hero .topbar{opacity:0;pointer-events:none}
@@ -4493,8 +4542,8 @@
        every calc built on it silently falls back to --hl's 64px floor while
        the band itself is 54.454. The gap and the slash are em of the band,
        which is the size they were always meant to be relative to. */
-    .mqtrack{gap:.232558em}
-    .mqtrack .ms{width:calc(1em * var(--sl-w, .4));
+    .lines .mqtrack{gap:.232558em}
+    .lines .mqtrack .ms{width:calc(1em * var(--sl-w, .4));
                  transform:translateY(calc(1em * var(--sl-y, 0) * -1))
                            scale(var(--sl-s, 1))}
     .lines{font-size:13.856vw;                    /* 54.454 @393 */
@@ -4697,13 +4746,13 @@
 </div>
 
 <main class="page on" id="pgWork" data-page="work">
-<section class="hero" id="hero">
+<section  data-surface="light" class="hero" id="hero">
   <div class="topbar">
     <div class="brand u"><span class="txt">Kris<span class="bfull"> Jensson</span></span></div>
     <nav class="navr">
       <a class="u" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
       <span class="sep">/</span>
-      <a class="u" href="mailto:kris.jensson@gmail.com">Contact</a>
+      <a class="u" href="mailto:kris.jensson@gmail.com">Get in touch</a>
     </nav>
   </div>
 
@@ -4726,14 +4775,14 @@
 
 <div class="veil" id="veil"></div>
 
-<section class="work" id="work">
+<section  data-surface="dark" class="work" id="work">
   <div class="work-in">
     <div class="weyebrow"><span class="dim">WORK</span><span class="dim">/</span><span>CASE STUDIES</span></div>
     <h2 id="workhead">The work im proudest of, and the impact that came with it</h2>
   </div>
 </section>
 
-<section class="card" id="cs" data-side="right">
+<section  data-surface="dark" class="card" id="cs" data-side="right">
   <div class="card-stage">
     <div class="card-body">
       <div class="card-main">
@@ -4778,7 +4827,7 @@
   </div>
 </section>
 
-<section class="card" data-side="left" data-study="nfl">
+<section  data-surface="dark" class="card" data-side="left" data-study="nfl">
   <div class="card-stage">
     <div class="card-body">
       <div class="card-main">
@@ -4818,7 +4867,7 @@
   </div>
 </section>
 
-<section class="rail" id="rail">
+<section  data-surface="dark" class="rail" id="rail">
   <div class="rail-stage">
     <div class="rail-track" id="railTrack">
       <article class="rcard" data-page="jbl">
@@ -4926,7 +4975,7 @@
   </div>
 </section>
 
-<section class="clients" id="clients">
+<section  data-surface="dark" class="clients" id="clients">
   <div class="cblock">
     <div class="weyebrow eb-rv"><span class="dim">WORK</span><span class="dim">/</span><span>WHERE IVE MADE IMPACT</span></div>
 
@@ -4997,7 +5046,7 @@
 
 <!-- room for the footer. Without it the grid is the last thing on the page, so
      its view() timeline can never reach cover 100% and the drift stops half-done. -->
-<section class="testi" id="testi">
+<section  data-surface="light" class="testi" id="testi">
   <div class="tstage">
     <!-- 506:81888 - KUDOS, heart, KUDOS, running. Same loop as the hero:
          one measured cycle, a duration derived from it so the pace is the
@@ -5099,7 +5148,7 @@
 </main>
 
 <main class="page" id="pgAbout" data-page="about" hidden>
-  <section class="ab">
+  <section  data-surface="dark" class="ab">
     <div class="abbar">
       <span class="brand ab-brand">KRIS JENSSON</span>
       <nav class="abr">
@@ -5110,7 +5159,7 @@
     </div>
 
     <div class="abhead">
-      <h1 class="abline" id="abL1"><span class="txt"><span class="kc">C</span>RAFT <span class="ki">I</span>S</span></h1>
+      <h1 class="abline" id="abL1"><span class="txt"><span class="kc">C</span>RA<span class="kf">F</span>T <span class="ki">I</span>S</span></h1>
       <div class="abbot">
         <span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span>
         <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span></span>
@@ -5119,15 +5168,13 @@
     </div>
 
     <div class="abfoot">
-      <p class="abcopy"><b>After 8+ years in design</b> I believe the biggest impact comes
-        from embracing constraints, doing the work, and adapting as you go.
-        More to this below.</p>
+      <p class="abcopy"><b>After 8+ years in design,</b> I’ve learned to <b>embrace constraints</b> and adapt as I go. But one thing has stayed constant: <b>delightful design isn’t a nice-to-have. It’s the baseline.</b></p>
     </div>
 
-    <!-- 513:35289 / 513:35302 - the rule, and the band under it. Ten stops on
-         a 48 gap, running off both edges; the track is built and paced in JS
-         off the same cycle the hero marquee uses. -->
-    <div class="abrules" aria-hidden="true"><i></i><span class="ablovefor">Love for</span><u></u></div>
+    <!-- 520:36312 / 520:36359 - the rule, the chip that sits over it, and the
+         band under both. Ten stops on a 40 gap, running off both edges; the
+         track is built and paced in JS off the same cycle the hero uses. -->
+    <div class="abrules" aria-hidden="true"><u></u><span class="ablovefor"><i>/</i><b>Love for</b></span></div>
     <div class="abstrip" aria-label="San Francisco, Code, Design, Motion, People, AI used right, Prototyping, Systems, Illustrations, 3D Design">
       <span class="mqtrack abtrack" id="abTrack" aria-hidden="true"></span>
     </div>
@@ -5135,7 +5182,7 @@
 
   <!-- 513:24124 - About / Second section. Light now, and the picture cluster
        is gone: a 436 title column and a 553 stack of three, 139 apart. -->
-  <section class="st" id="abStory">
+  <section  data-surface="light" class="st" id="abStory">
     <div class="stwrap">
       <div class="stleft">
         <p class="steyebrow" id="stEyebrow"><span>Story</span><i>/</i><b>long version</b></p>
@@ -5159,7 +5206,7 @@
 
   <!-- 513:35373 - About / Journey. The head is centred, then a seven-stop
        timeline threaded by one drawn connector, then the Footer component. -->
-  <section class="jn" id="abJourney">
+  <section  data-surface="light" class="jn" id="abJourney">
     <div class="jnhead">
       <p class="jneb"><span>story</span><i>/</i><b>the path</b></p>
       <div class="jnct">
@@ -5319,9 +5366,9 @@
      Everything after that is the panel's own window: the page keeps scrolling
      and .rzin is driven through it. -->
 <main class="page" id="pgResume" data-page="resume" hidden>
-  <section class="gw">
+  <section  data-surface="dark" class="gw">
     <div class="gwtop">
-      <span class="brand u"><span class="txt">Kris</span></span>
+      <span class="brand u"><span class="txt">Kris Jensson</span></span>
       <nav class="gwlinks">
         <a class="u" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
         <span class="sep">/</span>
@@ -5434,13 +5481,13 @@
      WORK selected while you are on it, and the round button stops rolling and
      holds this study's own mark. -->
 <main class="page" id="pgJbl" data-page="jbl" data-logo="jbl" hidden>
-  <section class="cs">
+  <section  data-surface="dark" class="cs">
     <!-- 474:65930 / 474:65960 — the wordmark is the full name now, the right
          side is one link, and the rule under them is gone. -->
     <div class="cstop">
       <span class="brand">Kris Jensson</span>
       <nav class="rzlinks">
-        <a href="mailto:kris.jensson@gmail.com">Get in touch</a>
+        <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
       </nav>
     </div>
 
@@ -5517,7 +5564,7 @@
        White. The study runs black through the intro and turns over here,
        which is why this is its own section rather than more of .cs — the
        nav's surface sampler reads the change on its own. -->
-  <section class="pw">
+  <section  data-surface="light" class="pw">
     <div class="pwrow pwrow-e">
       <div class="pwl">
         <p class="pweb pweb-a"><b>JBL</b><s>/</s><em>strategy</em></p>
@@ -5630,7 +5677,7 @@
   </section>
 
   <!-- ── 327:20009 · JBL / Final Design ──────────────────────────────── -->
-  <section class="fd">
+  <section  data-surface="dark" class="fd">
     <!-- 474:66296 — 553 wide on the left guide now, not centred on 716. -->
     <div class="fdhead">
       <p class="fdeb"><b>JBL</b><s>/</s><em>Final design</em></p>
@@ -5739,7 +5786,7 @@
   <!-- 464:15803 — Next up. The plate is Volvo's own card clip; the row is a
        button so the whole thing routes, which is the only thing a "next up"
        block can reasonably do. -->
-  <section class="nu" aria-label="Next up">
+  <section  data-surface="light" class="nu" aria-label="Next up">
     <div class="nublock">
       <!-- 474:67485 — an eyebrow now, not the 40 display line -->
       <p class="nut"><s>/</s><em>Next up</em></p>
@@ -5791,13 +5838,11 @@
      baseline, same 16:9 frame, same 438/139/553 body, same impact row.
      The page is content. That was the point of writing the block spec. -->
 <main class="page" id="pgVolvo" data-page="volvo" data-logo="volvo" hidden>
-  <section class="cs">
+  <section  data-surface="dark" class="cs">
     <div class="cstop">
-      <span class="brand">KRIS</span>
+      <span class="brand">Kris Jensson</span>
       <nav class="rzlinks">
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
-        <span class="sep">/</span>
-        <a href="mailto:kris.jensson@gmail.com">Get in touch</a>
       </nav>
     </div>
 
@@ -5879,13 +5924,11 @@
      is just whatever word goes there. The counter reads its decimal places
      off the written value. -->
 <main class="page" id="pgNfl" data-page="nfl" data-logo="nfl" hidden>
-  <section class="cs">
+  <section  data-surface="dark" class="cs">
     <div class="cstop">
-      <span class="brand">KRIS</span>
+      <span class="brand">Kris Jensson</span>
       <nav class="rzlinks">
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
-        <span class="sep">/</span>
-        <a href="mailto:kris.jensson@gmail.com">Get in touch</a>
       </nav>
     </div>
 
@@ -5957,13 +6000,11 @@
 </main>
 
 <main class="page" id="pgEts" data-page="ets" data-logo="ets" hidden>
-  <section class="cs">
+  <section  data-surface="dark" class="cs">
     <div class="cstop">
-      <span class="brand">KRIS</span>
+      <span class="brand">Kris Jensson</span>
       <nav class="rzlinks">
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
-        <span class="sep">/</span>
-        <a href="mailto:kris.jensson@gmail.com">Get in touch</a>
       </nav>
     </div>
 
@@ -6571,107 +6612,86 @@
        background, the answer is cached, and the bar looks up whichever
        block its bottom edge is currently over. Deterministic, and it cannot
        disagree with what is actually painted there. */
-    let gDark=[0,0];
-    function mapGround(){
-      /* Where the page is dark is TWO numbers, and neither of them needs a
-         pixel read.
+    /* WHICH SKIN — the SURFACE, and nothing else.
+       This used to hit-test five points across the bar every frame and take a
+       majority vote on what was painted under them. That is why it flickered:
+       a white card passing under it, the black band inside the light section,
+       a video, a section mid-transition — every one of those is CONTENT, and
+       every one of them flipped the bar.
 
-         It starts at the bottom of the hero — everything below it is covered
-         by .veil, which is position:fixed and scroll-driven, so its own rect
-         is useless as a marker (measured mid-scroll it reported the black
-         starting at y 0, which is how the bar came up dark on the hero).
-
-         It ENDS at the bottom of the last block that paints a dark ground of
-         its own — the clients section. Not at the top of the white one after
-         it: that section is on a timeline and its white slides in some way
-         into its own box, so its top edge is not where it starts looking
-         white. A dark block's own bottom is a fact; the next block's top is
-         a guess. */
-      const host=document.querySelector('main.page.on')||document.body;
-      const hero=host.querySelector('.hero');
-      const start=hero ? hero.offsetTop+hero.offsetHeight : 0;
-      let end=start;
-      [...host.children].forEach(el=>{
-        if(!(el instanceof HTMLElement)) return;
-        if(getComputedStyle(el).position==='fixed') return;   /* the veil */
-        const r=el.getBoundingClientRect();
-        if(r.height<200) return;
-        const m=getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
-        if(!m || (m.length>3 && +m[3]<.9)) return;
-        const dark=(+m[0]*.299 + +m[1]*.587 + +m[2]*.114) < 110;
-        if(dark) end=Math.max(end, r.top+scrollY+r.height);
-      });
-      gDark=[start,end];
-    }
-    /* ── and then the OBJECTS on it ────────────────────────────────────
-       The ground map gets the sections right and is still wrong twice: the
-       white Volvo card passes under the bar on a dark section, and the
-       testimonials block runs black inside the white one. Both put the bar
-       over the opposite of what its section says.
-
-       So the ground is the fallback and the pixel is the answer: five points
-       across the bar's own middle, each a plain "is what is painted here
-       light or dark", majority wins. Binary per point — an average of a
-       half-and-half backdrop is a mid-grey label illegible on both halves,
-       which is the mush this had before. Anything belonging to the bar is
-       skipped, or it reads its own material. */
-    function groundAt(x,y){
-      for(const el of document.elementsFromPoint(x,y)){
-        /* body and html are the PAPER, not a ground. Answering with them
-           ends the walk before the veil — which is pointer-events:none and
-           therefore never in this stack — gets asked, and the black middle
-           of the page came back light. They are the last resort, below. */
-        if(el===document.documentElement||el===document.body) break;
-        if(el.closest('.nav-wrap')||el.closest('.navopen')||el.closest('.navscrim')
-           ||el.closest('.loader')||el.closest('.cur')) continue;
-        const r=el.getBoundingClientRect();
-        if(r.width<80||r.height<40) continue;
-        if(/^(IMG|VIDEO|SVG|CANVAS)$/.test(el.tagName)) return 1;
-        const m=getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
-        if(!m || (m.length>3 && +m[3]<.9)) continue;
-        return (+m[0]*.299 + +m[1]*.587 + +m[2]*.114) >= 128 ? 1 : 0;
-      }
-      /* The veil is the black behind the whole middle of the page and it is
-         pointer-events:none, so hit-testing walks straight past it. Its rect
-         is the only way to see it — and it is only asked once the stack has
-         offered nothing, so a browser that has not sampled its scroll
-         animation yet cannot make the bar dark over the white hero. */
-      const v=document.getElementById('veil');
-      if(v){ const b=v.getBoundingClientRect();
-        if(b.top<=y && b.bottom>=y && b.left<=x && b.right>=x) return 0; }
-      /* nothing between the bar and the paper */
-      const pm=getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g);
-      if(pm) return (+pm[0]*.299 + +pm[1]*.587 + +pm[2]*.114) >= 128 ? 1 : 0;
-      return null;
-    }
-    function navGround(){
+       The bar does not belong to what is under it. It belongs to the SURFACE
+       the page is on, and every section states its own on the element:
+       data-surface="dark" or data-surface="light". Read once per page, cached,
+       and looked up by the bar's own middle. No pixels, no luminance, no
+       majority — so it can only change where a section changes, which is
+       exactly as often as the surface actually changes. */
+    function navY(){
+      const w=document.querySelector('.nav-wrap');
       const row=document.getElementById('navRow');
-      if(!row) return 'light';
-      const r=row.getBoundingClientRect();
-      if(r.width){
-        const cy=r.top+r.height/2;
-        let light=0, n=0;
-        for(const gx of [.02,.26,.5,.74,.98]){
-          const v=groundAt(r.left+r.width*gx, cy);
-          if(v===null) continue;
-          light+=v; n++;
-        }
-        if(n) return light*2 >= n ? 'light' : 'dark';
-      }
-      if(!gDark[1]) mapGround();
-      const y = scrollY + (r.height ? r.bottom : 80);
-      return (y>=gDark[0] && y<gDark[1]) ? 'dark' : 'light';
+      const h=row?row.offsetHeight:60;
+      if(!w) return 16+h/2;
+      const cs=getComputedStyle(w);
+      const t=parseFloat(cs.top), bm=parseFloat(cs.bottom);
+      if(!isNaN(t)) return t+h/2;
+      if(!isNaN(bm)) return innerHeight-bm-h/2;
+      return 16+h/2;
     }
-    /* WHICH SKIN, on demand. It used to be read only inside onScroll, and
-       onScroll waits on document.fonts.ready - so landing straight on a dark
-       page showed the LIGHT bar for the first ~480ms before it flipped, and
-       routing from a light page to a dark one left it wrong until you
-       scrolled. It is a synchronous read of what is under the bar; there is
-       no reason to make it wait for anything. */
+    let navSurf=[], navMapH=0;
+    /* the section's FLOW position, walked up the offsetParent chain. Not a
+       rect: .nu is sticky and .testi rides a negative margin, and a rect
+       reports where a section has been shifted TO rather than where it lives.
+       offsetTop is the layout position and neither sticky nor transform can
+       move it. */
+    function flowTop(el){ let y=0; for(let n=el;n;n=n.offsetParent) y+=n.offsetTop; return y; }
+    function mapSurfaces(){
+      navSurf=[];
+      const host=[...document.querySelectorAll('.page')]
+                 .find(el=>getComputedStyle(el).display!=='none') || document.body;
+      for(const el of host.querySelectorAll('[data-surface]')){
+        if(el.parentElement!==host) continue;     /* top-level sections only */
+        /* a sticky or fixed section is not a band of the scroll: JBL's Next
+           up is a sticky panel pinned to 360-900 of the WINDOW that the black
+           section slides off, so its flow position says 360 and it would
+           claim the top of the page. It is never under the bar. */
+        const pos=getComputedStyle(el).position;
+        if(pos==='sticky'||pos==='fixed') continue;
+        const h=el.offsetHeight;
+        if(h<1) continue;
+        const top=flowTop(el);
+        navSurf.push([top, top+h, el.dataset.surface]);
+      }
+      /* DOM order, deliberately NOT sorted: where two sections overlap - the
+         testimonial sheet riding up over the black clients band - the one
+         later in the document is the one painted on top, so the last match
+         wins rather than the first. */
+      navMapH=document.documentElement.scrollHeight;
+    }
+    window.__navRemap=()=>{ navSurf=[]; };
+    function navGround(){
+      /* a page that has finished loading its media is a taller page, and the
+         map was measured before that. One number to notice it. */
+      if(navSurf.length && document.documentElement.scrollHeight!==navMapH) navSurf=[];
+      if(!navSurf.length) mapSurfaces();
+      if(!navSurf.length) return 'light';
+      /* the bar's RESTING middle, in page coordinates. Not its live rect:
+         the bar leaves on the way down and comes back on the way up, and a
+         transformed rect put its middle wherever the animation had it — which
+         is why the skin was changing a hundred pixels late. `top` / `bottom`
+         off the computed style and offsetHeight are both transform-proof, so
+         this is where the bar sits whether or not it is currently there. */
+      const y=scrollY + navY();
+      let hit=null;
+      for(const [top,bottom,skin] of navSurf) if(y>=top && y<bottom) hit=skin;
+      if(hit) return hit;
+      /* above the first section or below the last: take that section's own */
+      return y < navSurf[0][0] ? navSurf[0][2] : navSurf[navSurf.length-1][2];
+    }
     function navSkin(){ root.classList.toggle('nav-dark', navGround()==='dark'); }
     window.__navSkin=navSkin;
-    addEventListener('resize',()=>{ gDark=[0,0]; });
-    (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{ gDark=[0,0]; });
+    /* the map is rects, so it is stale after a resize, after the real face
+       lands, and after a route change - it is rebuilt lazily on the next read */
+    addEventListener('resize',()=>{ navSurf=[]; });
+    (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{ navSurf=[]; });
 
     /* the pill's width is a transition, so the stop's final size does not
        exist until it ends — re-measure the chip when it does */
@@ -6926,8 +6946,11 @@
       if(!ab||!foot) return;
       const fh=foot.getBoundingClientRect().height;
       if(!fh) return;                       /* the page is still display:none */
+      /* the block is 1.8144 units tall - a .7287 cap, a .0857 gap and a
+         portrait that is a full unit - and the section's own padding is 81
+         top and bottom rather than 87 and 80. */
       ab.style.setProperty('--abcap',
-        Math.max(56,(innerHeight-309-fh)/1.7531).toFixed(2)+'px');
+        Math.max(56,(innerHeight-304-fh)/1.814414).toFixed(2)+'px');
     }
     addEventListener('resize',abFit);
     (document.fonts?document.fonts.ready:Promise.resolve()).then(abFit);
@@ -6975,8 +6998,10 @@
       current=name;
       top0();
       document.documentElement.classList.toggle('on-about', name==='about');
-      /* the surface under the bar just changed - read it now, not on the next
-         scroll, or the bar wears the outgoing page's skin */
+      /* a different page means a different set of surfaces - drop the map,
+         then read it now rather than on the next scroll, or the bar wears the
+         outgoing page's skin */
+      if(typeof window.__navRemap==='function') window.__navRemap();
       if(typeof window.__navSkin==='function') window.__navSkin();
       /* the button stops rolling and holds this study's mark */
       if(typeof window.__navLogo==='function') window.__navLogo(to.dataset.logo||null);
@@ -7684,7 +7709,31 @@
       root.style.setProperty('--sl-w', (sc*sl.width/size).toFixed(5));
     }
 
-    function mqLine(ln, words, slash){
+    /* The loop itself. Two frames, a plain px travel, linear, forever — no
+       var() anywhere in the keyframes, because Safari will not accelerate a
+       keyframe whose value has to be resolved from a custom property and runs
+       the whole band on the main thread instead. Rebuilds keep their place:
+       the old animation's time is carried over so a resize cannot make the
+       band jump backwards. */
+    function mqLoop(t, cycle, speed, rev){
+      const dur=cycle/speed*1000;
+      const old=t.__mqa;
+      const at=old ? (Number(old.currentTime)||0)%dur : 0;
+      const held=old ? old.playState==='paused' : false;
+      if(old) old.cancel();
+      t.__mqa=null;
+      if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+      const a=t.animate(
+        [{transform:'translate3d(0,0,0)'},
+         {transform:'translate3d('+(-cycle).toFixed(4)+'px,0,0)'}],
+        {duration:dur, iterations:Infinity, easing:'linear',
+         direction: rev ? 'reverse' : 'normal'});
+      a.currentTime=at;
+      if(held) a.pause();
+      t.__mqa=a;
+    }
+
+    function mqLine(ln, words, slash, rev){
       const t=ln.querySelector('.mqtrack'); if(!t) return;
       t.replaceChildren(mqSeq(words,slash));
       const gap=parseFloat(getComputedStyle(t).columnGap)||0;
@@ -7696,6 +7745,7 @@
          exactly or the join walks by a hundredth of a pixel every pass */
       t.style.setProperty('--mq-cycle', cycle.toFixed(4)+'px');
       t.style.setProperty('--mq-dur', (cycle/MQ_SPEED).toFixed(3)+'s');
+      mqLoop(t, cycle, MQ_SPEED, rev);
     }
     function mqBuild(){
       if(!mqLines.length) return;
@@ -7704,7 +7754,10 @@
            repeated, which is the desktop sequence with the other two words
            taken out of it. The slash's fit is measured once — it is the same
            face at the same size on all three. */
-        mqLines.forEach((ln,i)=> mqLine(ln,[MQ_WORDS[i%MQ_WORDS.length]],true));
+        /* bands one and three run the other way — it used to be an
+           animation-direction in the media query, and direction is an option
+           on the animation now that the animation is built in script */
+        mqLines.forEach((ln,i)=> mqLine(ln,[MQ_WORDS[i%MQ_WORDS.length]],true,i%2===0));
         mqSlash();
       }else{
         /* two bands, both carrying the whole sequence. They are the same
@@ -7712,7 +7765,7 @@
            copies has to be seamless in both directions — which the fill
            already guarantees: the track covers the window plus a cycle. */
         /* one band, the whole sequence — 2:386 */
-        mqLine(mqLines[0], MQ_WORDS, true);
+        mqLine(mqLines[0], MQ_WORDS, true, false);
       }
     }
 
@@ -8536,6 +8589,25 @@
         track.appendChild(seq());
       track.style.setProperty('--mq-cycle', cycle.toFixed(4)+'px');
       track.style.setProperty('--mq-dur', (cycle/KUDOS_SPEED).toFixed(3)+'s');
+      loop(cycle);
+    }
+    /* same two frames as the hero, same reason — see mqLoop there */
+    function loop(cycle){
+      const dur=cycle/KUDOS_SPEED*1000;
+      const old=track.__mqa;
+      const at=old ? (Number(old.currentTime)||0)%dur : 0;
+      const held=old ? old.playState==='paused'
+                     : track.classList.contains('tkstill');
+      if(old) old.cancel();
+      track.__mqa=null;
+      if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+      const a=track.animate(
+        [{transform:'translate3d(0,0,0)'},
+         {transform:'translate3d('+(-cycle).toFixed(4)+'px,0,0)'}],
+        {duration:dur, iterations:Infinity, easing:'linear'});
+      a.currentTime=at;
+      if(held) a.pause();
+      track.__mqa=a;
     }
     build();
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(build);
@@ -8558,7 +8630,11 @@
                if(m3) dy=parseFloat(m3[1].split(',')[13])||0; }
       }
       const level=Math.abs(dy)<.5;
-      if(level!==still){ still=level; track.classList.toggle('tkstill',level); }
+      if(level!==still){
+        still=level;
+        track.classList.toggle('tkstill',level);
+        if(track.__mqa){ level ? track.__mqa.pause() : track.__mqa.play(); }
+      }
     }
     addEventListener('scroll',check,{passive:true});
     addEventListener('resize',check);
@@ -8600,6 +8676,22 @@
       for(let i=1, need=Math.ceil(w/cycle)+1; i<need; i++) track.appendChild(seq());
       track.style.setProperty('--mq-cycle', cycle.toFixed(4)+'px');
       track.style.setProperty('--mq-dur', (cycle/SPEED).toFixed(3)+'s');
+      loop(cycle);
+    }
+    /* same two frames as the hero, same reason - see mqLoop there */
+    function loop(cycle){
+      const dur=cycle/SPEED*1000;
+      const old=track.__mqa;
+      const at=old ? (Number(old.currentTime)||0)%dur : 0;
+      if(old) old.cancel();
+      track.__mqa=null;
+      if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+      const a=track.animate(
+        [{transform:'translate3d(0,0,0)'},
+         {transform:'translate3d('+(-cycle).toFixed(4)+'px,0,0)'}],
+        {duration:dur, iterations:Infinity, easing:'linear'});
+      a.currentTime=at;
+      track.__mqa=a;
     }
     if('ResizeObserver' in window) new ResizeObserver(build).observe(track.parentElement);
     addEventListener('resize',build,{passive:true});
