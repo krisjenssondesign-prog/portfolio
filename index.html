@@ -20,9 +20,6 @@
      section's body copy is drawn Light 300 and was resolving DOWN to
      Regular, which is why black-ground body looked identical to the
      white-ground body it was meant to contrast with. */
-  /* live build: Inter stands in for Saans while the licence is
-     pending. 300 is ExtraLight, one step light of Saans Light —
-     see make-live.py for why it is not simply left to fall to 400. */
   @font-face{font-family:'Inter';font-style:normal;font-weight:300;font-display:block;src:url(fonts/Inter-ExtraLight.woff) format('woff')}
 
   :root{
@@ -150,7 +147,7 @@
     --link-hover:#fff;
     --link-idle:#808080;            /* White 3 — the drawn idle stop */
     --p:0;                          /* 0 = hero · 1 = scrolled */
-    --ty:0px;                       /* slide-out offset - phone */
+    --ty:0px;                       /* slide-out offset — phone */
     --nty:0px;                      /* the desktop bar's own slide-out */
     --dir-thresh:6px;
     --veil-end:1;               /* the panel is full exactly one viewport in */
@@ -558,6 +555,41 @@
      compositing hint so the two cannot fight. */
   .gmedia.volvo > video{transform:translateZ(0) scale(1.01)}
 
+  /* ── the Volvo gate — the card that does not open ───────────────────
+     Volvo's rail card does not route on click: it drops a curtain over its
+     own picture and asks for the passcode. #000 at 90% with a 10px backdrop
+     blur behind it, and the same pill the NFL storyboard card carries,
+     centred in the plate. The clip pauses under it — nothing plays behind a
+     curtain.
+
+     visibility, not display. The pill measures its own rest width at load and
+     a display:none element measures zero, so the closed gate has to keep its
+     layout — it is merely invisible and untouchable. */
+  .rlock{position:absolute;inset:0;z-index:3;
+         display:flex;align-items:center;justify-content:center;
+         padding:0 5.5%;
+         background:rgba(0,0,0,.9);
+         -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+         opacity:0;visibility:hidden;pointer-events:none;
+         transition:opacity .42s cubic-bezier(.22,1,.3,1),
+                    visibility 0s linear .42s}
+  .rcard.locked .rlock{opacity:1;visibility:visible;pointer-events:auto;
+         transition:opacity .42s cubic-bezier(.22,1,.3,1),visibility 0s}
+  /* the pill keeps every measurement it has on the storyboard card; the only
+     thing that changes is the fill — 10% white on a 20px backdrop blur */
+  /* stacked, not the storyboard card's row. GET CODE beside the pill pushes
+     the pill half its width off centre, and the pill is the thing that has to
+     sit in the middle of the plate. */
+  .rlock .cta{flex-direction:column;align-items:center;justify-content:center;
+         gap:20px;cursor:default}
+  .rlock .card-cta{background:rgba(255,255,255,.1);
+         -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+  .rlock .card-cta:hover{background:rgba(255,255,255,.16);
+         box-shadow:inset 0 0 0 1px #fff}
+  .rlock .cta.open .card-cta{background:rgba(255,255,255,.1);
+         box-shadow:inset 0 0 0 1px var(--c-1)}
+  @media (prefers-reduced-motion:reduce){ .rlock{transition:none} }
+
   /* ── the stand-in plates ────────────────────────────────────────────
      Flat brand ground with the mark centred on it, until the real clips
      land. Colours sampled off Kris's frame, marks and sizes taken from
@@ -569,41 +601,6 @@
      mark is centred on the drawn plate and still drifts with the picture.
      Sized off HEIGHT, because the layer is 80 wider than the plate and a
      width percentage would resolve against the wrong box. */
-  /* -- the Volvo gate: the card that does not open --------------------
-     Volvo's rail card does not route on click: it drops a curtain over its
-     own picture and asks for the passcode. #000 at 90% with a 10px backdrop
-     blur behind it, and the same pill the NFL storyboard card carries,
-     centred in the plate. The clip pauses under it - nothing plays behind a
-     curtain.
-
-     visibility, not display. The pill measures its own rest width at load and
-     a display:none element measures zero, so the closed gate has to keep its
-     layout - it is merely invisible and untouchable. */
-  .rlock{position:absolute;inset:0;z-index:3;
-         display:flex;align-items:center;justify-content:center;
-         padding:0 5.5%;
-         background:rgba(0,0,0,.9);
-         -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-         opacity:0;visibility:hidden;pointer-events:none;
-         transition:opacity .42s cubic-bezier(.22,1,.3,1),
-                    visibility 0s linear .42s}
-  .rcard.locked .rlock{opacity:1;visibility:visible;pointer-events:auto;
-         transition:opacity .42s cubic-bezier(.22,1,.3,1),visibility 0s}
-  /* stacked, not the storyboard card's row. GET CODE beside the pill pushes
-     the pill half its width off centre, and the pill is the thing that has to
-     sit in the middle of the plate. */
-  .rlock .cta{flex-direction:column;align-items:center;justify-content:center;
-         gap:20px;cursor:default}
-  /* the pill keeps every measurement it has on the storyboard card; the only
-     thing that changes is the fill - 10% white on a 20px backdrop blur */
-  .rlock .card-cta{background:rgba(255,255,255,.1);
-         -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
-  .rlock .card-cta:hover{background:rgba(255,255,255,.16);
-         box-shadow:inset 0 0 0 1px #fff}
-  .rlock .cta.open .card-cta{background:rgba(255,255,255,.1);
-         box-shadow:inset 0 0 0 1px var(--c-1)}
-  @media (prefers-reduced-motion:reduce){ .rlock{transition:none} }
-
   .gmedia.fb i{display:flex;align-items:center;justify-content:center}
   .gmedia.fb .fbmark{display:block;height:var(--mk);aspect-ratio:var(--mkr)}
   .gmedia.fb .fbmark svg{display:block;width:100%;height:100%}
@@ -883,7 +880,9 @@
      padding plus ~613 of content, so a deeper tuck would poke a white sliver
      out above it on tall screens. 380svh tall, 280svh of contain — the wipe is
      the first 60/280 = 21.43%. */
-  .testi{position:relative;z-index:2;background:#fff;
+  /* Surface Light, 506:81763 - #F6F6F6. The cards are WHITE on it, which
+     is what makes their 12 radius and E7 hairline read at all. */
+  .testi{position:relative;z-index:2;background:#F6F6F6;
          margin-top:-60svh;height:380svh}
   .testi.css-timeline{view-timeline-name:--testiTL;view-timeline-axis:block}
   /* 506:81763 - one set of numbers for the whole composition, so the band,
@@ -910,8 +909,8 @@
      both edges, so left:0 / width:100% and .tstage's own overflow clips it.
 
      Its own size, not --hl. The drawn cap is 114 on a 1440 frame against the
-     hero's 139.6, so the band is the smaller of the two - 156.75 at 1440 in
-     Inter Black, whose cap is .7273 of the em (measured off the face the
+     hero's 139.6, so the band is the smaller of the two - 155.1 at 1440 in
+     Inter Black, whose cap is .735 of the em (measured off the face the
      browser actually resolved, not assumed). The clamp is --hl's own clamp
      scaled by the same ratio, so it tracks the headline at every width. */
   .ttitle{position:absolute;left:0;top:var(--tband);width:100%;
@@ -963,35 +962,60 @@
   .tslot:nth-child(6){--rest:0svh}
   /* 295 as drawn, but never so tall that the row lands on the footer — 160
      keeps a margin under the cards on short windows. */
+  /* 508:82332 - 322 x 344. White on the section's own white, so the card is
+     read off its 12 radius and the hairline rather than off a fill: the frame
+     draws it white with Container-on-light for the edge.
+     Two blocks 40 apart: the head (avatar + name + role) and the quote. The
+     quote block flexes, which is what holds the mark on the same line in every
+     card whether the quote runs four lines or five. */
   .tcard{position:relative;width:100%;
-         height:min(295px, calc(100svh - var(--ttop) - 160px));
-         min-height:210px;
-         background:#f5f5f5;overflow:clip;will-change:transform;
-         display:flex;flex-direction:column;gap:16px;padding-top:24px}
+         height:min(344px, calc(100svh - var(--ttop) - 160px));
+         min-height:240px;
+         background:#FFFFFF;box-shadow:inset 0 0 0 1px #E7E7E7;
+         border-radius:12px;overflow:clip;will-change:transform;
+         display:flex;flex-direction:column;gap:40px;padding-top:24px}
   /* PLACEHOLDER FILL. Drop an <img> inside and it takes over — the circle,
      the crop and the size are already here. Light now: a dark disc on a #f5f5f5
      card reads as a decision rather than a gap. */
+  /* 508:82335 - 64 square on a 12 radius now, not a disc */
   .tav{flex:none;width:64px;height:64px;margin:0 24px;
-       border-radius:999px;overflow:clip;background:#d9d9d9;display:block}
+       border-radius:12px;overflow:clip;background:#E7E7E7;display:block}
   .tav img{width:100%;height:100%;object-fit:cover;display:block}
+  /* 508:82334 - 16 from the avatar to the pair, 8 inside it */
+  .thead{flex:none;padding:0;display:flex;flex-direction:column;gap:16px}
   .tmeta{padding:0 24px;display:flex;flex-direction:column;gap:8px}
   /* Inter Semi Bold 18, black — which finally reads, now the card is light */
-  .tname{font-size:18px;font-weight:600;letter-spacing:-.02em;line-height:1.15;
-         color:#000;
+  /* 508:82337 - 20 SemiBold on 1.45, Text Dark 1 */
+  .tname{font-family:var(--font-ui);font-size:20px;font-weight:600;
+         letter-spacing:0;line-height:1.45;color:#1A1A1A;
          text-box:trim-both cap alphabetic;
          text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* gap 4 sits between the ROLE and the @-group only — inside the group the @
      is hard against the company name, which is how Frame 85 is drawn */
   .trole .tco{display:flex;align-items:center}
-  .trole{display:flex;align-items:center;gap:4px;
-         font-size:18px;font-weight:500;letter-spacing:-.02em;line-height:1.15;
-         color:#000}
-  .trole .tat{width:17px;font-size:16px;font-weight:600;letter-spacing:-.02em;
+  /* 508:82338 - 18 Medium on 1.45 in Secondary Dark, and the gap is 2, not 4:
+     the @ sits hard against the company in the frame */
+  .trole{display:flex;align-items:flex-start;gap:2px;
+         font-family:var(--font-ui);font-size:18px;font-weight:500;
+         letter-spacing:0;line-height:1.45;color:#777777;
+         text-box:trim-both cap alphabetic;
+         text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* 508:82340 - the @ is its own 16-wide box in Bold at 16 */
+  .trole .tat{width:16px;font-size:16px;font-weight:700;letter-spacing:0;
               text-box:trim-both cap alphabetic;
               text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .tquote{padding:0 24px 24px;font-family:var(--font-ui);
-          font-size:18px;font-weight:400;line-height:1.25;letter-spacing:0;
-          color:#000}
+  /* 508:82342 - the quote block: the mark, 12, then the copy. It flexes so
+     the card's own height absorbs a long quote instead of the row reflowing. */
+  .tquoteb{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
+          gap:12px;width:100%}
+  /* 508:82344 - 18.366 x 16. PLACEHOLDER: this is the typographic mark set to
+     the drawn box, not Kris's exported vector. */
+  .tqmark{flex:none;display:block;margin:0 24px;
+          width:18.366px;height:16px;color:#777777}
+  .tqmark svg{display:block;width:100%;height:100%}
+  .tquote{margin:0;padding:0 24px;font-family:var(--font-ui);
+          font-size:18px;font-weight:500;line-height:1.25;letter-spacing:0;
+          color:#777777}
 
   /* the common climb — linear, so it tracks the wheel one to one and unwinds
      exactly on the way back up. It finishes at 88% and leaves the last stretch
@@ -1017,118 +1041,31 @@
   .testi.css-timeline .tslot:nth-child(4) .tcard{--off:32.44svh}   /* 292      */
 
   /* ── footer — same frame, pinned to the bottom of the settled view ──── */
-  /* -- 464:15803 . Next up / Volvo --------------------------------------
-     80 top, 80 between the block and the footer, 155 side guides on the
-     block and 40 on the footer. */
-  /* -- 464:15803 . Next up / Volvo ------------------------------------ */
-  .nu{background:var(--paper);color:var(--ink);
-      padding:64px 0 0;display:flex;flex-direction:column;gap:64px}
-  .nublock{display:flex;flex-direction:column;gap:32px;
-           padding:0 calc(155 / 1440 * 100%)}
-  .nut{margin:0;display:flex;align-items:center;gap:8px;
-       font-family:var(--font-ui);font-size:16px;font-weight:600;
-       line-height:1.45;letter-spacing:0;text-transform:uppercase;
-       white-space:nowrap;color:var(--ink)}
-  .nut s{font-size:14px;text-decoration:none;color:#9F9F9F}
-  .nut em{font-style:normal}
-  /* items-end: the plate and the text column are set on their BOTTOMS in
-     464:15806, which is what puts the button on the plate's own baseline */
-  .nurow{display:flex;align-items:flex-end;gap:48px;width:100%;
-         background:none;border:0;padding:0;margin:0;text-align:left;
-         font:inherit;color:inherit;cursor:pointer}
-  /* 464:15807 - 322 x 236, and 12 like every other container */
-  .numedia{flex:none;width:322px;max-width:44%;
-           aspect-ratio:322 / 236;border-radius:12px;overflow:hidden;
-           background:#000;position:relative}
-  /* 1% over, so the resampled edge never lands inside the frame */
-  .numedia video,.numedia img{position:absolute;inset:0;
-           width:100%;height:100%;display:block;object-fit:cover;
-           transform:scale(1.01);
-           transition:transform .6s cubic-bezier(.22,1,.3,1)}
-  /* 464:19031 - 413 wide, 40 between the block and the button, and 12 of
-     air under it so the button's own box sits off the plate's bottom edge */
-  .nutext{flex:none;width:413px;max-width:56%;min-width:0;
-          display:flex;flex-direction:column;justify-content:center;
-          gap:40px;padding-bottom:12px}
-  .nuhead{display:flex;flex-direction:column;gap:16px;width:100%;min-width:0}
-  /* 464:19032 - 64 Heavy at -1.28, which is -.02em */
-  .nuname{margin:0;font-family:var(--font-display);font-size:64px;
-          font-weight:900;line-height:normal;letter-spacing:-.02em;
-          white-space:nowrap;color:var(--ink);
-          text-box:trim-both cap alphabetic;
-          text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  /* 471:19069 - 24 Medium on 1.1, Secondary dark on light, 297 measure.
-     Not trimmed in the frame, and it wraps on its own rather than on a
-     break, so the measure is what sets the lines. */
-  .nusub{margin:0;width:min(297px,100%);
-         font-family:var(--font-display);font-size:24px;font-weight:500;
-         line-height:1.1;letter-spacing:0;color:#515151}
-
-  /* -- 472:19266 / 472:19263 . the action button --------------------
-     Dark, 40 tall, 24 either side, and on hover it keeps its fill, takes
-     the 4/16 shadow and OPENS: the right padding drops to 16 and a 19-wide
-     slot with the arrow in it grows out of nothing, 130 -> 147. The label
-     never moves, which is why the slot animates and not the box. */
-  .nucta{display:inline-flex;align-items:center;align-self:flex-start;
-         height:40px;padding:0 24px;border-radius:999px;
-         background:var(--ink);
-         font-family:var(--font-ui);font-size:14px;font-weight:600;
-         line-height:1;letter-spacing:0;text-transform:uppercase;
-         color:var(--w-1);white-space:nowrap;
-         box-shadow:0 4px 16px rgba(26,26,26,0);
-         transition:padding-right .42s cubic-bezier(.22,1,.3,1),
-                    box-shadow .42s ease}
-  .nuctai{flex:none;display:block;width:0;height:20px;overflow:hidden;
-          margin-left:0;opacity:0;
-          transition:width .42s cubic-bezier(.22,1,.3,1),
-                     margin-left .42s cubic-bezier(.22,1,.3,1),
-                     opacity .28s ease}
-  .nuctai svg{display:block;width:15px;height:10px;margin:5px 2px;
-              color:var(--w-1)}
-  .nurow:hover .nucta,.nurow:focus-visible .nucta{
-         padding-right:16px;box-shadow:0 4px 16px rgba(26,26,26,.04)}
-  .nurow:hover .nuctai,.nurow:focus-visible .nuctai{
-         width:19px;margin-left:6px;opacity:1}
-  @media (prefers-reduced-motion:reduce){
-    .nucta,.nuctai{transition:none}
-  }
-
-  /* hover rides the video, not the frame - the frame carries the reveal */
-  .nurow:hover .numedia video{transform:scale(1.03)}
-  /* 464:15812 - 40 under the row now, not 60 */
-  .nu .tfoot{position:static;padding:0 40px 40px}
-  @media (max-width:900px){
-    .nurow{flex-direction:column;align-items:flex-start}
-    .numedia{width:100%;max-width:none}
-    .nutext{width:100%;padding-top:0}
-    .nuname{font-size:clamp(56px,11vw,104px)}
-    .nu .tfrow{flex-direction:column;align-items:flex-start;gap:24px}
-    .nu .tflinks{flex-wrap:wrap;gap:16px 24px}
-  }
-
-  /* -- Next up . the reveal --------------------------------------------
+  /* ── Next up · the reveal ────────────────────────────────────────────
      The testimonial's move, not a fade. The dark section above is the sheet:
      it scrolls up and OFF the block, and the block underneath does not
-     travel with it - it is already in place, pinned to the bottom of the
+     travel with it — it is already in place, pinned to the bottom of the
      window, and the black simply stops covering it.
 
      Two facts make it work: .fd paints an opaque ground and sits a layer
      above, and .nu is sticky to the bottom so it arrives before its own
      turn in the flow and waits there.
 
-     Height-guarded: on a short screen a sticky bottom would pin the block
-     with its own top cut off, so below 640 it sits in the flow. */
+     Height-guarded. The whole point is that the block fits the window; on a
+     short screen a sticky bottom would pin it with its own top cut off, so
+     below 640 it goes back to sitting in the flow. */
   @media (min-width:1081px) and (min-height:640px){
     /* EVERY section above it is the sheet, not just the last one. .nu is
        pinned to the bottom of the window for the whole page, so anything
-       that does not sit above it gets covered by it. */
+       that does not sit above it gets covered by it — which is the whole
+       study, not just the black one. */
     #pgJbl .cs,#pgJbl .pw,#pgJbl .fd{position:relative;z-index:2}
     #pgJbl .nu{position:sticky;bottom:0;z-index:1}
   }
 
-  /* -- 465:19037 . JBL testimonial --------------------------------------
+  /* ── 465:19037 · JBL testimonial ─────────────────────────────────────
      240 top, the column 611 wide inside a 379 side guide. The name is Inter
-     Regular here - the one line in the section that is not the UI face. */
+     Regular here — the one line in the section that is not the UI face. */
   .jtm{margin:0 auto;padding:240px 0 140px;width:100%;
        display:flex;flex-direction:column;align-items:center;gap:80px}
   .jtmquote{width:100%;display:flex;flex-direction:column;
@@ -1162,16 +1099,18 @@
     .jtmrole{flex-wrap:wrap;white-space:normal}
   }
 
-  /* -- 474:67482 . the strategy film, full bleed -----------------------
-     1445 on a 1440 frame - 5 over each side - and 785 tall, no radius. */
+  /* ── 474:67482 · the strategy film, full bleed ────────────────────────
+     1445 on a 1440 frame — 5 over each side — and 785 tall, no radius. The
+     canvas frames the artwork the same way it did in the process band. */
   .fdfilm{position:relative;margin:140px 0 0 -0.347%;width:100.347%;
           aspect-ratio:1445 / 785;overflow:hidden}
   .fdfilm video,.fdfilm canvas{position:absolute;inset:0;
           width:100%;height:100%;display:block}
   .fdfilm video{object-fit:cover}
 
-  /* -- 474:66285 . the strategy statics --------------------------------
-     1132 wide on its own 154 guides - no longer full-bleed. */
+  /* ── 474:66285 · the strategy statics ─────────────────────────────────
+     1132 wide on its own 154 guides — no longer full-bleed. Left tile the
+     full 596, right column two at 288.011 on a 19.978 gap. */
   .pwsg{margin:90px auto 0;width:min(1132px, calc(100% - var(--m) * 2));
         display:flex;gap:calc(21.643 / 1132 * 100%);align-items:stretch}
   .pwsgr{flex:1 1 0;min-width:0;display:flex;flex-direction:column;
@@ -1182,7 +1121,10 @@
          background:rgba(0,0,0,.05)}
   .pwsgc img{width:100%;height:100%;display:block;object-fit:cover}
 
-  /* -- 474:65989 . SYSTEM SNAPSHOT ------------------------------------- */
+  /* ── 474:65989 · SYSTEM SNAPSHOT ──────────────────────────────────────
+     The board is 1131.25 inside a 1132 box; the columns carry their drawn
+     widths as flex-basis and the tiles their drawn heights, so every gap
+     stays where it was drawn at any width. */
   .pwsn{margin:40px auto 0;width:100%;
         display:flex;align-items:stretch;gap:calc(21.643 / 1131.254 * 100%);
         aspect-ratio:1131.254 / 595.208}
@@ -1190,6 +1132,7 @@
   .pwsnt{display:block;min-height:0;border-radius:12px;overflow:hidden;
          background:rgba(0,0,0,.05)}
   .pwsnt img,.pwsnt video{width:100%;height:100%;display:block;object-fit:cover}
+  /* the label on this one is the 22 Medium pair, black and black-at-half */
   @media (max-width:900px){
     .pwsg{flex-direction:column;gap:19.978px}
     .pwsg > .pwsgc{aspect-ratio:555.179 / 596;flex:none}
@@ -1197,11 +1140,15 @@
     .pwsnc{flex:1 1 44% !important;aspect-ratio:268.038 / 595.208}
   }
 
-  /* 474:65884 - label / list / button on a 40 rhythm; the "Overview"
-     heading is not in the final frame. */
+  /* 474:65884 — the left column is label / list / button on a 40 rhythm; the
+     "Overview" heading is not in the final frame. */
   #pgJbl .cslede{gap:40px}
 
-  /* -- 474:65930 / 474:65960 . the case-study page bar ------------------ */
+  /* ── 474:65930 / 474:65960 · the case-study page bar ──────────────────
+     The wordmark is the full name at 20 Bold on -2%, the right side is one
+     link at 16 Medium in caps, and there is no rule under them any more.
+     Both are cap-trimmed, so their boxes ARE their cap heights (14 and 12)
+     and the drawn 41 / 40 tops are what the margins set. */
   .cs .cstop{height:auto;align-items:flex-start;margin-top:41px}
   .cs .cstop .brand{font-family:var(--font-ui);font-size:20px;font-weight:700;
         line-height:1.45;letter-spacing:-.02em;color:var(--c-1);
@@ -1216,17 +1163,112 @@
         text-box-trim:trim-both;text-box-edge:cap alphabetic;
         transition:color .25s ease}
   .cs .cstop .rzlinks a:hover{color:var(--c-2)}
-  /* 474:65904 - 86 lands the hero cap top on the drawn 141 */
+  /* 474:65904 — the head is 40 under its own frame top, and the frame starts
+     at 101; the bar's cap bottom is 55, so 86 lands the cap top on 141. */
   .cs .cshead{margin-top:86px}
 
-  /* 474:65907 - pure white numerals; captions BFBFBF / 9F9F9F / BFBFBF */
+  /* 474:65907 — the numerals are pure white in the frame, and the captions
+     are NOT one colour: BFBFBF / 9F9F9F / BFBFBF across the three. Built as
+     drawn; the middle one looks like an oversight. */
   #pgJbl .cifig{color:#FFFFFF}
   #pgJbl .cirow > .cistat:nth-of-type(1) .cicap,
   #pgJbl .cirow > .cistat:nth-of-type(3) .cicap{color:#BFBFBF}
   #pgJbl .cirule{--rule-c:#1C1C1C}
 
+  /* ── 464:15803 · Next up / Volvo ──────────────────────────────────────
+     80 top, 80 between the block and the footer, 155 side guides on the
+     block and 40 on the footer — the two do not share a gutter in the
+     drawing, so they do not share one here. */
+  /* ── 464:15803 · Next up / Volvo ──────────────────────────────────── */
+  .nu{background:var(--paper);color:var(--ink);
+      padding:64px 0 0;display:flex;flex-direction:column;gap:64px}
+  .nublock{display:flex;flex-direction:column;gap:32px;
+           padding:0 calc(155 / 1440 * 100%)}
+  .nut{margin:0;display:flex;align-items:center;gap:8px;
+       font-family:var(--font-ui);font-size:16px;font-weight:600;
+       line-height:1.45;letter-spacing:0;text-transform:uppercase;
+       white-space:nowrap;color:var(--ink)}
+  .nut s{font-size:14px;text-decoration:none;color:#9F9F9F}
+  .nut em{font-style:normal}
+  /* items-end: the plate and the text column are set on their BOTTOMS in
+     464:15806, which is what puts the button on the plate's own baseline */
+  .nurow{display:flex;align-items:flex-end;gap:48px;width:100%;
+         background:none;border:0;padding:0;margin:0;text-align:left;
+         font:inherit;color:inherit;cursor:pointer}
+  /* 464:15807 — 322 x 236, and 12 like every other container */
+  .numedia{flex:none;width:322px;max-width:44%;
+           aspect-ratio:322 / 236;border-radius:12px;overflow:hidden;
+           background:#000;position:relative}
+  /* 1% over, so the resampled edge never lands inside the frame */
+  .numedia video,.numedia img{position:absolute;inset:0;
+           width:100%;height:100%;display:block;object-fit:cover;
+           transform:scale(1.01);
+           transition:transform .6s cubic-bezier(.22,1,.3,1)}
+  /* 464:19031 — 413 wide, 40 between the block and the button, and 12 of
+     air under it so the button's own box sits off the plate's bottom edge */
+  .nutext{flex:none;width:413px;max-width:56%;min-width:0;
+          display:flex;flex-direction:column;justify-content:center;
+          gap:40px;padding-bottom:12px}
+  .nuhead{display:flex;flex-direction:column;gap:16px;width:100%;min-width:0}
+  /* 464:19032 — 64 Heavy at -1.28, which is -.02em */
+  .nuname{margin:0;font-family:var(--font-display);font-size:64px;
+          font-weight:900;line-height:normal;letter-spacing:-.02em;
+          white-space:nowrap;color:var(--ink);
+          text-box:trim-both cap alphabetic;
+          text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* 471:19069 — 24 Medium on 1.1, Secondary dark on light, 297 measure.
+     Not trimmed in the frame, and it wraps on its own rather than on a
+     break, so the measure is what sets the two lines. */
+  .nusub{margin:0;width:min(297px,100%);
+         font-family:var(--font-display);font-size:24px;font-weight:500;
+         line-height:1.1;letter-spacing:0;color:#515151}
+
+  /* ── 472:19266 / 472:19263 · the action button ─────────────────────
+     Dark, 40 tall, 24 either side, and on hover it keeps its fill, takes
+     the 4/16 shadow and OPENS: the right padding drops to 16 and a 19-wide
+     slot with the arrow in it grows out of nothing, 130 -> 147. The label
+     never moves, which is why the slot animates and not the box. */
+  .nucta{display:inline-flex;align-items:center;align-self:flex-start;
+         height:40px;padding:0 24px;border-radius:999px;
+         background:var(--ink);
+         font-family:var(--font-ui);font-size:14px;font-weight:600;
+         line-height:1;letter-spacing:0;text-transform:uppercase;
+         color:var(--w-1);white-space:nowrap;
+         box-shadow:0 4px 16px rgba(26,26,26,0);
+         transition:padding-right .42s cubic-bezier(.22,1,.3,1),
+                    box-shadow .42s ease}
+  .nuctai{flex:none;display:block;width:0;height:20px;overflow:hidden;
+          margin-left:0;opacity:0;
+          transition:width .42s cubic-bezier(.22,1,.3,1),
+                     margin-left .42s cubic-bezier(.22,1,.3,1),
+                     opacity .28s ease}
+  .nuctai svg{display:block;width:15px;height:10px;margin:5px 2px;
+              color:var(--w-1)}
+  .nurow:hover .nucta,.nurow:focus-visible .nucta{
+         padding-right:16px;box-shadow:0 4px 16px rgba(26,26,26,.04)}
+  .nurow:hover .nuctai,.nurow:focus-visible .nuctai{
+         width:19px;margin-left:6px;opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .nucta,.nuctai{transition:none}
+  }
+
+  /* the page-end footer is the testimonial footer, standing in flow */
+  /* 464:15812 — 40 under the row now, not 60 */
+  .nu .tfoot{position:static;padding:0 40px 40px}
+  @media (max-width:900px){
+    .nurow{flex-direction:column;align-items:flex-start}
+    .numedia{width:100%;max-width:none}
+    .nutext{width:100%;padding-top:0}
+    .nuname{font-size:clamp(56px,11vw,104px)}
+    .nu .tfrow{flex-direction:column;align-items:flex-start;gap:24px}
+    .nu .tflinks{flex-wrap:wrap;gap:16px 24px}
+  }
+
+  /* 513:24050 - the Footer component. 120 tall: a hairline, 40, the 40-tall
+     row, 40 of bottom padding. One definition, used by the testimonial and by
+     Next up, so the two cannot drift. */
   .tfoot{position:absolute;left:0;bottom:0;width:100%;
-         padding:0 40px 60px;display:flex;flex-direction:column;gap:40px}
+         padding:0 40px 40px;display:flex;flex-direction:column;gap:40px}
   /* a slow drift against the sheet, not a ride on it */
   .testi.css-timeline .ttitle{animation:tTitle linear both;
        animation-timeline:--testiTL;
@@ -1236,21 +1278,50 @@
   .testi.css-timeline .tfoot{opacity:0;
        animation:tFootIn linear(0, .38 25%, .70 50%, .89 75%, 1) both;
        animation-timeline:--testiTL;animation-range:contain 92% contain 99%}
-  /* 474:67496 - Ink 3 at a quarter, 1px */
-  .tfrule{--rule-c:rgba(169,169,169,.25);width:100%;height:1px}
-  .tfrow{display:flex;align-items:flex-start;justify-content:space-between;
-         width:100%}
-  .tflinks{display:flex;align-items:center;gap:40px}
-  .tfoot span,.tfoot a,.tfoot button{font-family:var(--font-ui);
-              font-size:16px;font-weight:400;letter-spacing:-.04em;
+  /* 506:81910 - Divider Light, 1px, the full 40-guide span */
+  .tfrule{--rule-c:#E7E7E7;width:100%;height:1px}
+  .tfrow{display:flex;align-items:center;justify-content:space-between;
+         width:100%;height:40px}
+  /* 512:23703 - one 16 gap between every item, slashes included */
+  .tflinks{display:flex;align-items:center;gap:16px;white-space:nowrap}
+  /* 512:23706 - 14 Medium, uppercase, Text Dark 1, cap-trimmed */
+  .tfoot .tflinks span,.tfoot .tflinks a{font-family:var(--font-ui);
+              font-size:14px;font-weight:500;letter-spacing:0;
               line-height:1;text-transform:uppercase;white-space:nowrap;
-              color:#515151;text-decoration:none}
-  .tfright{display:flex;align-items:center;gap:4px;
-           background:none;border:0;padding:0;cursor:pointer;
-           transition:color .25s ease}
-  .tfright svg{width:20px;height:20px;display:block}
-  .tfright{transition:color .25s ease}
-  .tfoot a:hover,.tfright:hover{color:#000}
+              color:#1A1A1A;text-decoration:none;
+              text-box:trim-both cap alphabetic;
+              text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* 513:23917 - the wordmark is 18 Bold at -.02em, and the (c) is Heavy */
+  .tfoot .tflinks .tfmark{font-size:18px;font-weight:700;letter-spacing:-.02em;
+              line-height:1.45}
+  .tfoot .tflinks .tfmark b{font-weight:900}
+  /* 512:23705 - the slashes are their own thing: 16 Medium, Secondary Light,
+     -.06em, and NOT cap-trimmed - they run the full 16 line the frame draws */
+  .tfoot .tfsl{font-family:var(--font-ui);font-size:16px;font-weight:500;
+              font-style:normal;letter-spacing:-.06em;line-height:1;
+              color:#9F9F9F}
+  /* 512:23712 - 24 from the line to the icon pair, 10 between the icons */
+  .tfright{display:flex;align-items:center;gap:24px}
+  /* 512:23713 - 16 Regular, Text Dark 1, sentence case, cap-trimmed */
+  .tfoot .tfby{font-family:var(--font-ui);font-size:16px;font-weight:400;
+              letter-spacing:0;line-height:1;text-transform:none;
+              white-space:nowrap;color:#1A1A1A;
+              text-box:trim-both cap alphabetic;
+              text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .tficons{display:flex;align-items:center;gap:10px}
+  /* 512:23715 / 512:23718 - 40 square on Container-on-light */
+  .tfic{flex:none;display:grid;place-items:center;width:40px;height:40px;
+              border-radius:999px;background:#E7E7E7;color:#1A1A1A;
+              transition:background-color .25s ease, color .25s ease}
+  .tfic svg{display:block;width:40px;height:40px}
+  .tfic:hover{background:#1A1A1A;color:#FFFFFF}
+  /* the two halves collide at about 960: the line alone is ~600 and the right
+     group 277 against 738 of column. It stacks rather than running off. */
+  @media (max-width:1000px){
+    .tfrow{height:auto;flex-direction:column;align-items:flex-start;gap:24px}
+    .tflinks{flex-wrap:wrap;white-space:normal;gap:12px 16px}
+    .tfright{flex-wrap:wrap;gap:16px 24px}
+  }
 
   @media (prefers-reduced-motion:reduce){
     .testi.css-timeline .tslot,
@@ -1273,15 +1344,23 @@
      matters: the headline never comes closer than 64 to the top bar. It is set
      from JS because it depends on how many lines the standfirst takes, and CSS
      cannot see that. Whichever term runs out first wins. */
+  /* 513:24087 - 164 on the 1440 frame, not the old 214. The row is
+     6 + THE 306 + 20 + 148 + 20 + PULSE 478 + 12 + 40 = 1030, which is 6.28
+     units of type, so the measure term keeps it inside the guides on a narrow
+     window while 11.389vw holds the drawn size everywhere else. */
   .ab{--abcap:999px;
-      --abhl:clamp(56px,
-                   min(calc((100vw - 80px) / 6.348), var(--abcap)),
+      --abhl:clamp(40px,
+                   min(11.389vw, calc((100vw - 80px) / 6.28), var(--abcap)),
                    320px);
-      position:relative;min-height:100svh;background:#000;color:var(--c-1);
+      /* Surface Dark, 513:24080. --w-sur is already #101010 in the tokens -
+         this was painting raw #000 and ignoring it. */
+      position:relative;min-height:100svh;background:var(--w-sur);color:var(--c-1);
       display:flex;flex-direction:column;justify-content:center;
       /* the group is centred in the band the bar and the nav leave it, not in
          the window — that is what keeps the air even top and bottom */
-      padding:87px var(--m) 104px;
+      /* 87 for the nav and 80 for the rule: on a 900 window that centres the
+         group at 453 against the drawn 450 */
+      padding:87px var(--m) 80px;
       box-sizing:border-box}
   .abbar{position:absolute;left:var(--m);right:var(--m);top:var(--m);
          height:22px;display:flex;align-items:center;justify-content:space-between}
@@ -1293,15 +1372,15 @@
   .abr .sep{color:rgba(255,255,255,.25);letter-spacing:-.06em;text-transform:none}
 
   /* headline block sits on the 40 guide at y180; the row below it at y352 */
-  .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * .1667)}  /* 32 */
+  .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * .1463)}  /* 24 */
   .abline{font-size:var(--abhl);font-weight:900;letter-spacing:var(--track);
           line-height:normal;color:var(--c-1);white-space:nowrap;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* the row is centred on the portrait, not on the type: the caps and the
      circle share a middle, which is what makes the face read as a word */
-  .abbot{display:flex;align-items:center;gap:calc(var(--abhl) * .125);        /* 24 */
-         padding-left:calc(var(--abhl) * .03125)}                             /*  6 */
+  .abbot{display:flex;align-items:center;gap:calc(var(--abhl) * .1220);       /* 20 */
+         padding-left:calc(var(--abhl) * .0366)}                              /*  6 */
   /* position:relative so the flap rack (.fx / .ch) can lay itself over the
      word — same rack the hero headline uses, so About gets the board for free */
   /* CSS lets the negative tracking run on past the last glyph; Figma stops it
@@ -1331,14 +1410,14 @@
   .ki{margin-right:.0156em}   /* I|S  +3.0      */
   .kl{margin-right:.0139em}   /* L|S  +2.7      */
   .kt{margin-right:.0183em}   /* T|H  +3.5      */
-  .abpul{display:flex;align-items:flex-end;gap:calc(var(--abhl) * .0208)}     /*  4 */
+  .abpul{display:flex;align-items:flex-end;gap:calc(var(--abhl) * .0732)}     /* 12 */
   /* 165 on a 192 headline — the circle scales with the type, not the window */
   /* The portrait is a flap card like every letter beside it: a blank disc on
      one face, the photograph on the other, turning on the same axis. The
      source lives here once, as a custom property, so both faces can wear it
      without the file carrying the image twice. */
   .abav{--abav:url(media/abav.webp);
-        flex:none;width:calc(var(--abhl) * .8594);height:calc(var(--abhl) * .8594);
+        flex:none;width:calc(var(--abhl) * .9024);height:calc(var(--abhl) * .9024);
         border-radius:999px;display:block;perspective:var(--flip-persp)}
   .abavcard{position:relative;display:block;width:100%;height:100%;
             transform-style:preserve-3d;will-change:transform}
@@ -1349,7 +1428,7 @@
   .abavb{transform:rotateY(180deg)}
   /* the full stop is a drawn circle, so it can carry the pulse */
   .abdot{flex:none;display:block;
-         width:calc(var(--abhl) * .1979);height:calc(var(--abhl) * .1979);      /* 38 */
+         width:calc(var(--abhl) * .2439);height:calc(var(--abhl) * .2439);      /* 40 */
          border-radius:999px;background:var(--pulse);
          will-change:transform,opacity}
 
@@ -1359,14 +1438,33 @@
      they do not chase the right margin. Narrower than the measure the
      standfirst gives way first, and narrower still they drop to their own row
      rather than running off the grid. */
-  .abfoot{margin-top:40px;
-          display:flex;align-items:center;justify-content:flex-start;
-          flex-wrap:wrap;row-gap:40px;column-gap:30px}
-  .abcopy{flex:1 1 420px;max-width:662px;min-width:0;font-family:var(--font-ui);
-          font-size:22px;font-weight:400;line-height:1.65;letter-spacing:-.01em;
-          color:var(--c-2)}
-  .abcopy b{font-weight:400;color:var(--c-1)}
-  .abgrid{flex:none;display:flex;align-items:center;gap:48px}
+  /* 513:35367 - a flat 48 under the headline, and the fact grid is gone: the
+     band at the foot of the page carries what it used to say. */
+  .abfoot{margin-top:48px;display:flex;align-items:flex-start}
+  /* 513:24169 - 28 Medium on 1.45 over 668. The opening clause is Text White 1
+     and the rest of it drops to 50%, which is the whole of the colour logic. */
+  .abcopy{flex:0 1 700px;max-width:700px;min-width:0;font-family:var(--font-ui);
+          font-size:24px;font-weight:500;line-height:1.45;letter-spacing:0;
+          color:rgba(248,248,248,.5)}
+  .abcopy b{font-weight:500;color:#F8F8F8}
+
+  /* 513:35289 - the hairline, 80 off the foot of the section */
+  /* .ruleh sets position:relative and is declared later, so this has to out-
+     specify it or the rule falls back into the flow and cuts the standfirst */
+  .ab .abrule{position:absolute;left:0;right:0;bottom:80px;height:1px;
+          --rule-c:var(--c-4)}
+  /* 513:35302 - 32 discs and 22 labels on a 48 gap, running off both edges.
+     24 of air under it, which is where the drawn band sits on a 900 frame. */
+  .abstrip{position:absolute;left:0;right:0;bottom:24px;height:32px;
+           overflow:hidden}
+  .abtrack{gap:48px;align-items:center;height:32px;
+           font-family:var(--font-ui);font-size:22px;font-weight:500;
+           line-height:1.45;letter-spacing:0;color:#F8F8F8;white-space:nowrap}
+  .abtrack .abdisc{flex:none;display:block;width:32px;height:32px;
+           border-radius:999px;background:#FFFFFF}
+  .abtrack .ablabel{flex:none;display:block;
+           text-box:trim-both cap alphabetic;
+           text-box-trim:trim-both;text-box-edge:cap alphabetic}
 
   /* every straight rule on the site, painted rather than bordered */
   .rulev,.ruleh{position:relative}
@@ -1468,193 +1566,164 @@
   /* 32, not the drawn 96: with the About hero leaving 140 of its own under
      its last line, the drawn padding put 236px of nothing above the eyebrow
      and the reveal was spending itself down in that dead space. */
+  /* 513:24124 - light now, not black. 154 guides, 1132 of content, 80 down
+     from the section top, and the picture cluster is gone entirely. */
   .st{position:relative;display:flex;flex-direction:column;
       box-sizing:border-box;
-      padding:32px var(--m) 40px;background:#000;color:var(--c-1)}
-  /* Both the picture box and the copy are placed from the frame rather than
-     the flow, so neither contributes height — the column has to be held open
-     by hand. 790 is the copy's own bottom edge (77 + 572 = 649) plus the 140
-     of air Kris asked for between it and the rule. */
-  .stwrap{position:relative;z-index:2;flex:1 0 auto;min-height:790px}
-
-  /* the eyebrow frame sits on 36 with 2 of its own padding — ink lands on 38 */
-  .steyebrow{margin:0 0 0 -2px;display:flex;align-items:center;gap:9px;
-             font-family:var(--font-ui);font-size:18px;font-weight:400;
-             line-height:1.45;color:var(--c-3);text-transform:uppercase}
+      padding:80px var(--m) 0;background:#F6F6F6;color:#1A1A1A}
+  .stwrap{position:relative;z-index:2;margin:0 auto;
+          width:min(1132px, calc(100% - var(--m) * 2));
+          display:flex;align-items:flex-start;gap:calc(139 / 1132 * 100%);
+          padding-bottom:122px}
+  /* 513:35426 - 436 wide, eyebrow then a 24 gap then the title */
+  .stleft{flex:0 0 calc(436 / 1132 * 100%);min-width:0;
+          display:flex;flex-direction:column;gap:24px}
+  /* I513:35426;503:80751 - 16 SemiBold uppercase on an 8 gap: Secondary Dark
+     for the first two runs, Text Dark 1 for the last */
+  .steyebrow{margin:0;display:flex;align-items:center;gap:8px;
+             font-family:var(--font-ui);font-size:16px;font-weight:600;
+             line-height:1.45;color:#777777;text-transform:uppercase;
+             white-space:nowrap}
   .steyebrow i{font-style:normal}
-  .steyebrow b{font-weight:400;color:var(--c-1)}
-
-  /* 128:4434 — 48/1.1, -0.96 tracking, trimmed to the cap box so the 173 in
-     the file is the CAP top, not the line box top */
-  /* 620, not the drawn 618: "The story behind the person" measures 619.1 here,
-     so the drawn box misses the intended break by 1.1px and throws "person"
-     onto the second line. The break is set with a <br> in the markup as well,
-     so it can never depend on the measure again. */
-  .sthead{margin:48px 0 0 -4px;max-width:620px;
-          font-family:var(--font-display);
-          font-size:48px;font-weight:400;letter-spacing:-.02em;line-height:1.1;
-          color:var(--c-1);
+  .steyebrow b{font-weight:600;color:#1A1A1A}
+  /* 503:80721 - 40 Medium on 1.1, cap-trimmed */
+  .sthead{margin:0;width:100%;
+          font-family:var(--font-ui);
+          font-size:40px;font-weight:500;letter-spacing:0;line-height:1.1;
+          color:#1A1A1A;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
-
-  /* 127:4285 — x732 on the 1440 frame is the centre plus 12 */
-  .stcopy{position:absolute;left:calc(50% + 12px);top:77px;width:553px;
-          display:flex;flex-direction:column;gap:32px}
-  .stcopy p{margin:0;font-family:var(--font-ui);font-size:22px;font-weight:400;
-            line-height:1.65;letter-spacing:-.01em;color:var(--c-2)}
-  .stcopy em{font-style:normal;color:var(--c-1)}
-  /* Each paragraph arrives on its own — a slight lift, a slight defocus and
-     transparency, scrubbed on its OWN position in the viewport. Anchoring
-     each one to itself is what gives the stagger; there are no hand-set
-     delays to fall out of step. Much lighter than the headline reveal: the
-     eyebrow and title carry the entrance, the copy just settles in behind. */
+  /* 513:35427 - 553 wide, dropped 48, three blocks 16 apart */
+  .stcopy{flex:0 0 calc(553 / 1132 * 100%);min-width:0;
+          padding-top:48px;
+          display:flex;flex-direction:column;gap:16px}
+  .stcopy p{margin:0;font-family:var(--font-ui);font-size:18px;font-weight:500;
+            line-height:1.25;letter-spacing:0;color:#777777}
+  .stcopy em{font-style:normal;color:#1A1A1A}
   .stcopy p{will-change:opacity,filter,transform}
   @media (prefers-reduced-motion:reduce){
     .stcopy p{opacity:1;filter:none;transform:none;will-change:auto}
   }
 
-  /* ── the picture cluster — 147:6085 ──────────────────────────────────
-     668x440, its own coordinate space. Sized in percent of that box so the
-     whole cluster scales as one thing rather than drifting apart. */
-  /* placed from the frame, not from the flow — 40/301 on the 1440 board,
-     which is 0/205 inside the padded column */
-  .stcluster{position:absolute;left:0;top:205px;width:668px;height:440px}
-  .stcluster .stcirc,.stcluster .stplus{will-change:opacity,transform}
+  /* ---- 513:35373 - About / Journey ---------------------------------
+     A centred head, then the timeline. Every stop is placed from the drawn
+     board (1130 x 1550) as a percentage of it, so the whole thing scales as
+     one picture and the connector - which is drawn in the same coordinate
+     space - cannot come apart from the pills it threads. */
+  .jn{position:relative;box-sizing:border-box;
+      padding:80px var(--m) 0;background:#F6F6F6;color:#1A1A1A}
+  .jnhead{margin:0 auto;width:min(663px, calc(100% - var(--m) * 2));
+          display:flex;flex-direction:column;align-items:center;gap:24px}
+  /* 513:35482 - the 16/14 SemiBold pair in Secondary Light, 8 apart */
+  .jneb{margin:0;display:flex;align-items:center;gap:8px;
+        font-family:var(--font-ui);font-size:16px;font-weight:600;
+        line-height:1.45;color:#9F9F9F;text-transform:uppercase;
+        white-space:nowrap}
+  .jneb i{font-style:normal;font-size:14px}
+  .jneb b{font-weight:600;color:#1A1A1A}
+  .jnct{display:flex;flex-direction:column;align-items:center;gap:16px;
+        width:100%;text-align:center}
+  /* 513:35487 - 40 Medium on 1.1 over the drawn 494; fit-content so the line
+     is not broken by a Saans measure the fallback face cannot hold */
+  .jnt{margin:0;width:fit-content;max-width:100%;
+       font-family:var(--font-ui);font-size:40px;font-weight:500;
+       line-height:1.1;letter-spacing:0;color:#1A1A1A;
+       text-box:trim-both cap alphabetic;
+       text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* 513:35488 - 18 Medium on 1.25 over 593 */
+  .jnlead{margin:0;width:min(620px,100%);
+          font-family:var(--font-ui);font-size:18px;font-weight:500;
+          line-height:1.25;letter-spacing:0;color:#777777;text-wrap:balance}
+  /* 513:35491 - the Action Button, 40 tall */
+  .jncta{display:inline-flex;align-items:center;align-self:center;
+         height:40px;padding:0 24px;border-radius:999px;background:#1A1A1A;
+         font-family:var(--font-ui);font-size:14px;font-weight:600;
+         line-height:1;letter-spacing:0;text-transform:uppercase;
+         color:#F8F8F8;white-space:nowrap;text-decoration:none;
+         box-shadow:0 4px 16px rgba(26,26,26,0);
+         transition:padding-right .42s cubic-bezier(.22,1,.3,1),
+                    box-shadow .42s ease}
+  .jncta:hover,.jncta:focus-visible{padding-right:16px;
+         box-shadow:0 4px 16px rgba(26,26,26,.04)}
+  .jncta:hover .csliveai,.jncta:focus-visible .csliveai{
+         width:19px;margin-left:6px;opacity:1}
+
+  /* 516:35665 - the board. aspect-ratio holds the drawn 1130 x 1550 so every
+     percentage below lands where it is drawn. */
+  .jnwrap{position:relative;margin:120px auto 0;
+          width:min(1130px, calc(100% - var(--m) * 2));
+          aspect-ratio:1130 / 1550}
+  .jnline{position:absolute;inset:0;width:100%;height:100%;
+          display:block;z-index:0;overflow:visible}
+  .jnlist{position:absolute;inset:0;margin:0;padding:0;list-style:none;z-index:1}
+  .jstop{position:absolute;display:flex;gap:calc(24 / 1130 * 100%);
+         align-items:flex-start}
+  /* the two stops drawn as a column rather than a row - the pill sits ABOVE
+     its copy instead of beside it */
+  .jstop[data-kind="b"]{flex-direction:column;gap:24px}
+  /* 513:35511 - 91 x 48 on Divider Light, with a 2px ring in the section's own
+     ground so the connector reads as passing BEHIND the pill */
+  .jpill{flex:none;box-sizing:border-box;
+         display:grid;place-items:center;
+         width:91px;height:48px;
+         border-radius:999px;background:#E7E7E7;
+         box-shadow:0 0 0 2px #F6F6F6;
+         font-family:var(--font-ui);font-size:16px;font-weight:600;
+         line-height:1;letter-spacing:0;color:#1A1A1A;white-space:nowrap}
+  .jbody{flex:1 1 auto;min-width:0;padding-top:16px;
+         display:flex;flex-direction:column;gap:12px}
+  .jstop[data-kind="b"] .jbody{padding-top:0;padding-left:12px;padding-right:12px}
+  /* 503:80719 - 20 SemiBold on 1.45 */
+  .jbody h3{margin:0;font-family:var(--font-ui);font-size:20px;font-weight:600;
+            line-height:1.45;letter-spacing:0;color:#1A1A1A;
+            text-box:trim-both cap alphabetic;
+            text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* 503:80759 - 18 Medium on 1.25 in Secondary Dark */
+  .jbody p{margin:0;font-family:var(--font-ui);font-size:18px;font-weight:500;
+           line-height:1.25;letter-spacing:0;color:#777777}
+  /* Each stop's copy is held until the STROKE reaches its pill - the class is
+     set off the line's own progress, not off the block's position in the
+     window, so the two can never drift apart. Same --rv-* reveal the rest of
+     the site uses: out of transparency, a little defocus, a little lift. */
+  .jbody h3,.jbody p{opacity:var(--rv-o);filter:blur(var(--rv-blur));
+           transform:translateY(var(--rv-y));
+           transition:opacity var(--rv-dur) var(--rv-ease),
+                      filter var(--rv-dur) var(--rv-ease),
+                      transform var(--rv-dur) var(--rv-ease)}
+  /* the line lands on the title first and the copy follows it in */
+  .jbody p{transition-delay:.09s}
+  .jstop.lit .jbody h3,.jstop.lit .jbody p{
+           opacity:1;filter:blur(0);transform:none}
   @media (prefers-reduced-motion:reduce){
-    .stcluster .stcirc,.stcluster .stplus{opacity:1;transform:none}
+    .jbody h3,.jbody p{opacity:1;filter:none;transform:none;transition:none}
   }
-  /* Two elements per bubble on purpose. The ENTRY is a transform on the outer
-     box, driven from the same scroll pass as the copy; the FLOAT is a
-     translate on the inner disc, running on its own clock forever. Putting
-     both on one element would mean one overwriting the other every frame. */
-  .stcirc{position:absolute}
-  .stcirc u{display:block;width:100%;height:100%}
-  /* The exports are circular with transparent corners and no ring of their
-     own, so the ring is drawn here — proportional to the bubble, off Marlowe's
-     drawn 4.667 on 175. */
-  .stcirc i{display:block;width:100%;height:100%;border-radius:999px;
-            overflow:hidden;
-            background:#d9d9d9;background-size:cover;background-position:center;
-            box-shadow:0 0 0 calc(var(--sz,120px) * .0267) #fff;
-            animation:stBob  var(--by) ease-in-out infinite alternate,
-                      stSway var(--bx) ease-in-out infinite alternate;
-            animation-delay:var(--dy), var(--dx)}
-  /* The rise and the sway are SEPARATE animations on different clocks — one
-     alternating translate is a straight line back and forth, and the eye reads
-     a thing sliding along a line as mechanical, or at these amplitudes as not
-     moving at all. Two axes on periods that never divide into each other trace
-     a slow open loop instead, which is what floating looks like.
-     Different properties so they compose: `translate` carries the rise,
-     `transform` the sway, and the entry animation lives on the parent. */
-  @keyframes stBob { from{translate:0 0}           to{translate:0 var(--fy)} }
-  @keyframes stSway{ from{transform:translateX(0)} to{transform:translateX(var(--fx))} }
-  .stc1 i     {--by:5.2s;--bx:7.9s; --dy:-1.2s;--dx:-3.1s;--fy:-17px;--fx: 11px}
-  .stc2 i     {--by:6.7s;--bx:4.9s; --dy:-3.4s;--dx:-0.8s;--fy: 14px;--fx:-9px}
-  .stc3 i     {--by:4.6s;--bx:6.1s; --dy:-0.5s;--dx:-2.4s;--fy: 16px;--fx: 10px}
-  .stc4 i     {--by:7.3s;--bx:5.5s; --dy:-2.6s;--dx:-4.2s;--fy:-13px;--fx:-12px}
-  .stmarlowe i{--by:8.1s;--bx:6.4s; --dy:-4.1s;--dx:-1.7s;--fy:-11px;--fx: 8px}
-  @media (prefers-reduced-motion:reduce){ .stcirc i{animation:none} }
-  .stc1{--sz:110px;left:83px;  top:36px;  width:110px;height:110px}   /* 127:4289 */
-  .stc2{--sz:120px;left:443px; top:56px;  width:120px;height:120px}   /* 127:4293 */
-  .stc3{--sz:120px;left:32px;  top:264px; width:120px;height:120px}   /* 127:4288 */
-  .stc4{--sz:140px;left:461px; top:264px; width:140px;height:140px}   /* 127:4291 */
-  /* 127:4307 — the one with the ring. The border sits OUTSIDE the 175 in the
-     file, so the box is 175 and the ring is drawn with a shadow rather than a
-     border, which would otherwise eat into the disc. */
-  .stmarlowe{left:219px;top:149.5px;width:175px;height:175px}
-  .stmarlowe i{--sz:175px}
-  /* the default bubbles carry the artwork; the centre carries a video */
-  .stc1 i{background-image:url(media/stc1-i.webp)}
-  .stc2 i{background-image:url(media/stc2-i.webp)}
-  .stc3 i{background-image:url(media/stc3-i.webp)}
-  .stc4 i{background-image:url(media/stc4-i.webp)}
-  .sp1 i{background-image:url(media/sp1-i.webp)}
-  .sp2 i{background-image:url(media/sp2-i.webp)}
-  .sp3 i{background-image:url(media/sp3-i.webp)}
-  .sp4 i{background-image:url(media/sp4-i.webp)}
-  .sp5 i{background-image:url(media/sp1-i.webp)}
-  .sp6 i{background-image:url(media/sp3-i.webp)}
-  .stvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-         border-radius:999px;display:block}
+  /* every stop placed off the drawn board: left / top / width as percentages
+     of 1130 x 1550 */
+  .js1{left:0;                    top:calc(   0 / 1550 * 100%); width:calc( 544 / 1130 * 100%)}
+  .js2{left:calc(233 / 1130 * 100%); top:calc( 261 / 1550 * 100%); width:calc( 344 / 1130 * 100%)}
+  .js3{left:calc(693 / 1130 * 100%); top:calc( 379 / 1550 * 100%); width:calc( 437 / 1130 * 100%)}
+  .js4{left:calc(693 / 1130 * 100%); top:calc( 639 / 1550 * 100%); width:calc( 437 / 1130 * 100%)}
+  .js5{left:calc(346 / 1130 * 100%); top:calc( 807 / 1550 * 100%); width:calc( 344 / 1130 * 100%)}
+  .js6{left:0;                    top:calc(1123 / 1550 * 100%); width:calc( 437 / 1130 * 100%)}
+  .js7{left:calc(693 / 1130 * 100%); top:calc(1393 / 1550 * 100%); width:calc( 437 / 1130 * 100%)}
+  .jn .tfoot{position:static;margin-top:80px;padding:0 0 40px}
 
-  /* ── open / closed — 147:6115 ────────────────────────────────────────
-     The four around Marlowe drop away, and six photographs come out from
-     behind her to the drawn positions. Each photo's closed state is a
-     translate onto Marlowe's own centre (306.5, 237 in the cluster's box)
-     plus a scale, so "behind her" is literal rather than approximate. */
-  .stcirc u{transition:opacity .3s ease, transform .3s cubic-bezier(.4,0,1,1)}
-  .stcluster.open .stfade u{opacity:0;transform:scale(.5)}
-
-  .stphoto{pointer-events:none}
-  .stphoto u{opacity:0;transform:translate(var(--ox),var(--oy)) scale(.16);
-             transition:opacity .24s ease, transform .24s cubic-bezier(.4,0,1,1);
-             transition-delay:calc((5 - var(--i)) * .028s)}
-  .stcluster.open .stphoto u{opacity:1;transform:none;
-             transition:opacity .34s ease, transform var(--land-dur) var(--land-spring);
-             transition-delay:calc(.2s + var(--i) * .045s)}
-  .sp1{--sz:104.08px;left:175px;    top:33px;      width:104.08px;height:104.08px;--ox: 79.46px;--oy: 151.96px}
-  .sp2{--sz:121.85px;left:382px;    top:43px;      width:121.85px;height:121.85px;--ox:-136.42px;--oy: 133.08px}
-  .sp3{--sz:118.46px;left:70px;     top:175.31px;  width:118.46px;height:118.46px;--ox: 177.27px;--oy:   2.46px}
-  .sp4{--sz:67.69px;left:443px;    top:200px;     width:67.69px; height:67.69px; --ox:-170.35px;--oy:   3.15px}
-  .sp5{--sz:67.69px;left:150.38px; top:329.31px;  width:67.69px; height:67.69px; --ox: 122.27px;--oy:-126.15px}
-  .sp6{--sz:93.08px;left:396px;    top:329px;     width:93.08px; height:93.08px; --ox:-136.04px;--oy:-138.54px}
-  .sp1 i{--by:5.8s;--bx:7.3s;--fy:-14px;--fx: 9px}
-  .sp2 i{--by:6.9s;--bx:5.1s;--fy: 12px;--fx:-10px}
-  .sp3 i{--by:4.9s;--bx:6.7s;--fy: 15px;--fx: 8px}
-  .sp4 i{--by:7.6s;--bx:5.8s;--fy:-11px;--fx:-9px}
-  .sp5 i{--by:5.4s;--bx:7.7s;--fy: 13px;--fx: 11px}
-  .sp6 i{--by:6.2s;--bx:4.7s;--fy:-16px;--fx:-8px}
-  .sp1 i{--dy:-2.2s;--dx:-0.9s} .sp2 i{--dy:-4.3s;--dx:-2.7s}
-  .sp3 i{--dy:-1.1s;--dx:-3.8s} .sp4 i{--dy:-3.5s;--dx:-1.4s}
-  .sp5 i{--dy:-0.7s;--dx:-4.9s} .sp6 i{--dy:-2.9s;--dx:-0.3s}
-
-  /* the plus loses its upright and becomes a minus */
-  .stplus i::before{transition:opacity .22s ease, transform .3s cubic-bezier(.4,0,1,1)}
-  .stcluster.open .stplus i::before{opacity:0;transform:translate(-50%,-50%) rotate(90deg)}
-
-  /* 141:5500 — the control. Two 1.882 bars on a 20 box, both drawn from the
-     file's own numbers. */
-  .stplus{position:absolute;left:286px;top:342px;width:48px;height:48px;
-          display:grid;place-items:center;
-          border-radius:999px;background:#2b2b2b;border:0;padding:0;
-          cursor:pointer}
-  .stplus i{position:relative;display:block;width:20px;height:20px}
-  .stplus i::before,.stplus i::after{content:'';position:absolute;
-          left:50%;top:50%;background:#d9d9d9;border-radius:11.765px}
-  .stplus i::before{width:1.882px;height:20px;transform:translate(-50%,-50%)}
-  .stplus i::after {width:1.882px;height:20px;transform:translate(-50%,-50%) rotate(90deg)}
-
-  /* ── the reveal ──────────────────────────────────────────────────────
-     The eyebrow and the title resolve word by word, the way the work
-     headline does — same --rv-* tokens, same curve, same overlapping slices.
-     Driven from JS rather than a scroll timeline: the work section can use
-     one because it is pinned to the page scroll, whereas this reveal has to
-     read its own position in the viewport, and a single code path is worth
-     more here than the CSS timeline would save. */
-  .st .w{display:inline-block;white-space:pre;
-         opacity:var(--rv-o);filter:blur(var(--rv-blur));
-         transform:translateY(var(--rv-y));
-         will-change:opacity,filter,transform}
-  @media (prefers-reduced-motion:reduce){
-    .st .w{opacity:1;filter:none;transform:none}
+  /* the board stops being a board on a narrow window - it becomes one column
+     with the connector taken out, because a routed line through seven points
+     only means anything at the width it was drawn for */
+  @media (max-width:1080px){
+    .st{padding-top:64px}
+    .stwrap{flex-direction:column;gap:40px;padding-bottom:80px}
+    .stleft,.stcopy{flex:none;width:100%}
+    .stcopy{padding-top:0}
+    .jnwrap{aspect-ratio:auto;margin-top:80px}
+    .jnline{display:none}
+    .jnlist{position:static;display:flex;flex-direction:column;gap:48px}
+    .jstop{position:static;width:100% !important;left:auto;top:auto;
+           flex-direction:column;gap:24px}
+    .jstop .jpill{width:91px}
+    .jstop .jbody{padding:0}
   }
-
-
-  /* ── the foot ──────────────────────────────────────────────────────── */
-  .stfoot{margin-top:auto;position:relative;z-index:2}
-  .strule{height:1.4px;background:var(--c-4)}
-  .stmeta{margin-top:40px;display:flex;align-items:center;justify-content:space-between;
-          font-family:var(--font-ui);font-size:16px;font-weight:400;
-          letter-spacing:-.04em;line-height:1;color:var(--c-3);
-          text-transform:uppercase}
-  .stml{display:flex;align-items:center;gap:40px}
-  .stml a:hover{color:var(--c-1)}
-  .stmr{display:flex;align-items:center;gap:4px;
-        font:inherit;letter-spacing:inherit;text-transform:inherit;
-        color:inherit;background:none;border:0;padding:0;
-        transition:color .25s ease}
-  .stmr:hover{color:var(--c-1)}
-  .stmr svg{width:20px;height:20px;display:block}
 
   /* ── Resume — 132:4568 ───────────────────────────────────────────────
      White page. The title sticks 80 from the top; the panel sticks at 150,
@@ -2056,7 +2125,7 @@
                         background-color .3s ease, color .3s ease}
     .curchip.live > span{opacity:1;transform:translate(-50%,-50%) scale(1)}
     /* Volvo is gated, so its chip says so. The lock is the same 16px padlock
-       the NFL pill carries, and it only exists over a card that is locked -
+       the NFL pill carries, and it only exists over a card that is locked —
        every other card's chip is the word on its own, unchanged. */
     .curchip .chiplock{display:none;flex:none;width:16px;height:16px;
              margin-right:6px}
@@ -3230,7 +3299,7 @@
      own 147 guide from the drawing — 8 left of this one, as drawn. */
   .cs{--cs-side:calc(155 / 1440 * 100%);
       --cs-col:min(1130px, calc(100% - var(--cs-side) * 2));
-      /* 2.0 - Text White 1 / Secondary Light on Surface Dark */
+      /* 2.0 — Text White 1 / Secondary Light on Surface Dark */
       --c-1:var(--w-1); --c-2:var(--w-2); --c-3:var(--w-2);
       position:relative;display:flow-root;
       background:var(--w-sur);color:var(--c-1);padding-bottom:240px}
@@ -3330,7 +3399,7 @@
           line-height:1.25;color:var(--c-1)}
   /* 297:16637 — "What we did" is the LABEL over the list now, not a heading
      above the column: Saans Regular in White 2, same size as the items. */
-  /* 444:2756 - the label is cap-trimmed to 14 and sits 40 clear of the list,
+  /* 444:2756 — the label is cap-trimmed to 14 and sits 40 clear of the list,
      so it carries 28 on top of the column's own 12. */
   .csdisc .csdlab{font-size:20px;font-weight:600;line-height:1.45;color:var(--c-1);
                   margin-bottom:28px;
@@ -3339,7 +3408,8 @@
   /* 44 tall on a 1px hairline, and the label is the same 16 the nav uses */
   .cslive{display:inline-flex;align-items:center;justify-content:center;
           height:48px;padding:0 24px;border-radius:999px;
-          /* 474:65892 - Text Dark 1, and the drop shadow is off in the frame */
+          /* 474:65892 — Text Dark 1, and the drop shadow is switched OFF in
+             the frame, so it paints flat */
           background:var(--ink);
           font-family:var(--font-ui);font-size:14px;font-weight:600;
           line-height:1;letter-spacing:0;text-transform:uppercase;
@@ -3347,7 +3417,7 @@
           box-shadow:0 4px 16px rgba(26,26,26,0);
           transition:padding-right .42s cubic-bezier(.22,1,.3,1),
                      box-shadow .42s ease}
-  /* 472:19266 - the Action Button, not an invert. It keeps its fill on hover,
+  /* 472:19266 — the Action Button, not an invert. It keeps its fill on hover,
      takes the 4/16 shadow and OPENS: right padding drops to 16 and a 19-wide
      slot grows out of nothing with the arrow in it. Same component as the
      Next-up button, so it behaves the same everywhere. */
@@ -3367,7 +3437,7 @@
   }
 
   .csread{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:32px}
-  /* 474:65894 - 12 inside a block, 32 between them */
+  /* 474:65894 — 12 inside a block, 32 between them */
   .csblock{display:flex;flex-direction:column;gap:12px}
   .csblock h3{margin:0;font-family:var(--font-ui);font-size:20px;font-weight:600;
               line-height:1.45;letter-spacing:0;color:var(--c-1)}
@@ -3387,7 +3457,7 @@
      is what makes them EQUAL: with auto they would be sized by their own
      captions and "Systemized, better, and cohesive brand" would take more
      room than "Increase in avg. session time on page". */
-  /* 474:65907 - 240 down, and 36 either side rather than the page's 40 */
+  /* 474:65907 — 36 either side, not the page's 40 */
   .csimp{margin:240px auto 0;width:min(1364px, calc(100% - 72px));
          display:flex;flex-direction:column;align-items:center;gap:120px}
   .csimp .cstitle{margin:0;width:100%;text-align:center}
@@ -3466,7 +3536,8 @@
   .pweb-b{gap:16px;font-size:22px;font-weight:500;text-transform:none;
           color:#000000}
   .pweb-b s{font-size:22px;font-weight:500;color:rgba(0,0,0,.5)}
-  /* 474:65965 - the strategy eyebrow is the 20/18 Medium pair on a 10 gap */
+  /* 474:65965 — the strategy eyebrow is the 20/18 Medium pair on a 10 gap,
+     not the 16/14 SemiBold the other three use */
   .pweb-a{gap:10px;font-size:20px;font-weight:500}
   .pweb-a b,.pweb-a s{font-weight:500}
   .pweb-a s{font-size:18px}
@@ -3496,9 +3567,9 @@
        line-height:1.1;letter-spacing:0;color:var(--ink);
        text-box:trim-both cap alphabetic;
        text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  /* 474:65971 - 16 between the paragraphs, the still 32 under the pair */
+  /* 474:65971 — 16 between the paragraphs, and the still 32 under the pair */
   .pwcopy{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:16px}
-  /* 2.0 Body in Secondary Dark - #777777, not ink */
+  /* 2.0 Body in Secondary Dark — #777777, not ink */
   .pwcopy p,.pwlead{margin:0;font-family:var(--font-ui);font-size:18px;font-weight:500;
         line-height:1.25;letter-spacing:0;color:#777777}
 
@@ -3550,7 +3621,7 @@
      Anything nested inside a column block takes width:100%. */
   .pwmob .pweb,.pwmot .pweb{width:100%}
 
-  /* 474:65985 - 1132 on the 154 guides, not the 1130 column */
+  /* 474:65985 — this block is 1132 on the 154 guides, not the 1130 column */
   .pwmob{margin:120px auto 0;width:min(1132px, calc(100% - var(--m) * 2))}
   .pwphones{display:flex;gap:calc(33 / 1130 * 100%);margin-top:40px}
   .pwph{flex:1 1 0;min-width:0;display:block;
@@ -3563,7 +3634,7 @@
      than left to object-fit: the plate sits dead centre in frame and cutting
      the 39% of width that would be cropped anyway is 40% fewer pixels to
      ship. object-fit:cover still covers whatever the column resolves to. */
-  /* 474:66019 - no radius on this one in the frame */
+  /* 474:66019 — no radius on this one in the frame */
   .pwcym{display:block;width:100%;aspect-ratio:553 / 511.5;margin-top:16px;
          overflow:hidden;background:rgba(0,0,0,.07)}
   .pwcym video{width:100%;height:100%;display:block;object-fit:cover}
@@ -3584,7 +3655,7 @@
      not with the icon's box. Moving the eyebrow to 131 to "fix" it put the
      slash 24 to the left of every glyph. */
   .pwico{margin:120px auto 0;width:100%}
-  /* 474:66025 - the label alone is inset 24 so it lands on the 155 guide */
+  /* 474:66025 — the label alone is inset 24 so it lands on the 155 guide */
   .pwico > .pweb{padding-left:24px}
   .pwico .pweb{width:var(--cs-col)}
   .pwgrid{margin:40px auto 0;width:min(1178px, calc(100% - var(--m) * 2));
@@ -3635,7 +3706,8 @@
       --cs-col:min(1130px, calc(100% - var(--cs-side) * 2));
       --c-1:var(--w-1); --c-2:var(--w-2); --c-3:var(--w-2);
       position:relative;display:flow-root;
-      /* 474:66291 - pure black in the final frame, not Surface Dark */
+      /* 474:66291 — this band is pure black in the final frame, not
+          Surface Dark like the intro */
       background:#000000;color:var(--c-1);
       padding:155px 0 0;overflow-x:clip}
 
@@ -3666,7 +3738,7 @@
   /* the three theme names sit up in White 1 inside the paragraph */
   .fdlead b{font-weight:400;color:var(--c-1)}
 
-  /* 474:66304 - 193 under the head in the final frame */
+  /* 474:66304 — the block sits 193 under the head in the final frame */
   .fdrow{display:flex;align-items:flex-start;margin:193px auto 0;
          width:var(--cs-col);gap:calc(139 / 1130 * 100%)}
 
@@ -3682,7 +3754,7 @@
      click or Enter jumps to that panel. role+tabindex rather than <button>
      because a button's content model is phrasing content and these hold a
      heading and a paragraph. */
-  /* 474:66312 / 66319 / 66326 - the row is 438 wide: a 390 text column and a
+  /* 474:66312 / 66319 / 66326 — the row is 438 wide: a 390 text column and a
      48 arrow frame beside it. The arrow's own box is 48 x 50.53 and sits
      35.47 down from the row's top, which is what lines it up with the second
      line of the description rather than with the middle of the row. */
@@ -3693,6 +3765,8 @@
   /* the dormant two lift halfway on hover — enough to say "this is a thing
      you can press" without competing with the one that is actually current */
   .fdic{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px}
+  /* percentage margin-top resolves against the column's WIDTH, so the 35.47
+     drawn offset scales with the column instead of drifting */
   /* Fixed, not a percentage of the column. The heading and the line under it
      are 22 and 18 at every width, so an arrow that shrank with the column sat
      at 27 beside 22pt type on an 818 window and at 14 on a phone. The drawn
@@ -3707,7 +3781,7 @@
   .fdi:not(.on):hover .fdiar{color:#5A5A5A}
   .fdi:focus-visible{outline:var(--stroke) solid var(--c-1);
                      outline-offset:12px;border-radius:2px}
-  /* 474:66310 - 22 Medium, and the two dormant rows are #1C1C1C */
+  /* 474:66310 — 22 Medium, and the two dormant rows are #1C1C1C */
   .fdi h3{margin:0;font-family:var(--font-ui);font-size:22px;font-weight:500;
           line-height:1.45;color:inherit;
           transition:color .55s cubic-bezier(.33,1,.68,1)}
@@ -3735,7 +3809,7 @@
      every other section on the site unscrollable past. */
   .fdtwo,.fdsc{scroll-snap-align:center;scroll-margin:24px}
   .fdtwo{display:flex;gap:calc(40 / 557 * 100%)}
-  /* 474:66331 - the export carries the bezel, so the radius is the device's
+  /* 474:66331 — the export carries the bezel, so the radius is the device's
      own 39.07 and there is no inset screen to draw */
   .fdph{flex:1 1 0;min-width:0;display:block;position:relative;overflow:hidden;
         aspect-ratio:258.29 / 559.99;border-radius:39.07px;
@@ -3743,7 +3817,7 @@
   .fdph img{position:absolute;inset:0;width:100%;height:100%;
             display:block;object-fit:cover}
   /* 334:24923 — 557 x 376 with the screen inset 9 all round */
-  /* 474:67208 - the desktop export includes its frame, radius 20 */
+  /* 474:67208 — same: the desktop export includes its frame, radius 20 */
   .fdsc{display:block;width:100%;aspect-ratio:557 / 376;border-radius:20px;
         overflow:hidden;background:rgba(255,255,255,.07)}
   .fdsc img{width:100%;height:100%;display:block;object-fit:cover}
@@ -4040,9 +4114,10 @@
        is 3 x 62 + its own 8 = 194. The chip is then a shade wider than tall
        rather than a bare circle, which read as pinched. */
     /* The centre piece rides out of the top of the window on the way down
-       and comes back on the way up. transform only - no width, no scale, no
-       layout - so the whole thing is one composited property on one clock.
-       The travel is measured live in JS (--nty). */
+       and comes back on the way up. transform only — no width, no scale, no
+       layout — so the whole thing is one composited property on one clock.
+       The travel is measured live in JS (--nty), because the row is 68 tall
+       and sits 21 down, and both can change. */
     .navrow{pointer-events:auto;gap:8px;
             transform:translate3d(0,var(--nty,0px),0);
             transition:transform .62s cubic-bezier(.22,1,.32,1);
@@ -4066,9 +4141,9 @@
          floating over a dark page. On the light page that is the blob. Its
          chip is white at 11%, which on a white pill is nothing. Both are
          overridden here, in every position, and --surf does the flipping. */
-      /* 472:19386 / 472:19311 - the glass MATCHES its ground rather than
+      /* 472:19386 / 472:19311 — the glass MATCHES its ground rather than
          opposing it: white at 20% over a light surface, black at 10% over a
-         dark one. Blur is 10, flat - the saturate was mine and is gone.
+         dark one. Blur is 10, flat — the saturate was mine and is gone.
          The shadow is drawn as one drop-shadow on the row; it is a
          box-shadow per shape here because a `filter` on the row would make
          it a backdrop root and kill the blur underneath it in Safari. */
@@ -4103,11 +4178,8 @@
        the answer: past-hero. No sampling, no averaging, no colour functions —
        two plain hexes and one switch.
 
-         light ground   glass white 20%   selected #1A1A1A  idle #515151
-                        chip ink 5%
-         dark ground    glass black 10%   selected #F8F8F8  idle #9F9F9F
-                        chip Text White 1 at 5%
-         Blur is 10 flat on both, and the shadow is 0 4 16 at 4% ink.
+         on the hero      selected #181818   idle #9D9D9D   chip ink 5%
+         past the hero    selected #FFFFFF   idle #9D9D9D   chip white 9%
 
        (What was here read the luminance under the bar every frame and mixed
        a colour from it. It could be wrong, it could be mid-transition, and it
@@ -4143,7 +4215,7 @@
             -webkit-backdrop-filter:none;backdrop-filter:none;
             box-shadow:none}
     /* two fills, one fading out as the other fades in */
-      /* 472:19387 - Ink at 5% on the light ground, 472:19312 - Text White 1
+      /* 472:19387 — Ink at 5% on the light ground, 472:19312 — Text White 1
          at 5% on the dark one. Not white at 9%. */
       .nav-wrap .ind{background:rgba(26,26,26,.05);background-image:none}
       html.nav-dark .nav-wrap .ind{background:rgba(249,249,249,.05)}
@@ -4166,7 +4238,7 @@
        back to the dark bar's own 372 and stepping off centre */
     .nav-wrap .nav{width:var(--pw)}
     /* The pill used to collapse to 194 and drop its labels on the way down.
-       It does not resize at all any more - it LEAVES, and comes back the
+       It does not resize at all any more — it LEAVES, and comes back the
        moment you scroll up. One property, one clock, on the compositor. */
 
     /* 435:2195 — the pair sits at the right, uppercase, on a quarter-ink rule */
@@ -4604,7 +4676,7 @@
     <div class="card-phone-wrap"><div class="phoneskew"><div class="card-phone art">
       <!-- Kris's own device art: the shell, the bezel and the corners are all
            in the file, so the CSS phone stands down. The mockup animation is
-           anamorphic - 1750x1080 stored with a 108:367 pixel aspect, which
+           anamorphic — 1750x1080 stored with a 108:367 pixel aspect, which
            displays 515x1080, or 0.4768 against the wrap's 0.4760. The still
            is the poster, so the card is never empty while it decodes. -->
       <video class="phoneart" muted loop autoplay playsinline
@@ -4845,74 +4917,89 @@
        aria-hidden="true"></span></p>
     <div class="ttrack" id="ttrack">
       <div class="tslot"><article class="tcard">
-        <span class="tav" data-avatar="1"></span>
+        <div class="thead"><span class="tav" data-avatar="1"></span>
         <div class="tmeta">
           <p class="tname">Will Bender</p>
           <p class="trole"><span>Digital Manager</span><span class="tco"><span class="tat">@</span>Volvo</span></p>
-        </div>
-        <p class="tquote">Kris has an incredible eye for visual design. He brings a level of craft and polish that consistently makes the work feel more distinctive and considered</p>
+        </div></div>
+        <div class="tquoteb"><span class="tqmark" aria-hidden="true"><svg viewBox="0 0 18.366 16" fill="none"><path d="M0 16V9.79C0 6.85.62 4.47 1.86 2.66 3.1.85 4.98 0 7.5 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16H0Zm10.87 0V9.79c0-2.94.62-5.32 1.86-7.13C13.97.85 15.85 0 18.366 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16h-7.28Z" fill="currentColor"/></svg></span>
+          <p class="tquote">Kris has an incredible eye for visual design. He brings a level of craft and polish that consistently makes the work feel more distinctive and considered</p></div>
       </article></div>
       <div class="tslot"><article class="tcard">
-        <span class="tav" data-avatar="2"></span>
+        <div class="thead"><span class="tav" data-avatar="2"></span>
         <div class="tmeta">
           <p class="tname">Vanessa Mering</p>
           <p class="trole"><span>Head of Global Brand</span><span class="tco"><span class="tat">@</span>JBL</span></p>
-        </div>
-        <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p>
+        </div></div>
+        <div class="tquoteb"><span class="tqmark" aria-hidden="true"><svg viewBox="0 0 18.366 16" fill="none"><path d="M0 16V9.79C0 6.85.62 4.47 1.86 2.66 3.1.85 4.98 0 7.5 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16H0Zm10.87 0V9.79c0-2.94.62-5.32 1.86-7.13C13.97.85 15.85 0 18.366 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16h-7.28Z" fill="currentColor"/></svg></span>
+          <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p></div>
       </article></div>
       <div class="tslot"><article class="tcard">
-        <span class="tav" data-avatar="3"></span>
+        <div class="thead"><span class="tav" data-avatar="3"></span>
         <div class="tmeta">
           <p class="tname">Stephen Clements</p>
           <p class="trole"><span>CEO</span><span class="tco"><span class="tat">@</span>10k Robots</span></p>
-        </div>
-        <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p>
+        </div></div>
+        <div class="tquoteb"><span class="tqmark" aria-hidden="true"><svg viewBox="0 0 18.366 16" fill="none"><path d="M0 16V9.79C0 6.85.62 4.47 1.86 2.66 3.1.85 4.98 0 7.5 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16H0Zm10.87 0V9.79c0-2.94.62-5.32 1.86-7.13C13.97.85 15.85 0 18.366 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16h-7.28Z" fill="currentColor"/></svg></span>
+          <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p></div>
       </article></div>
       <div class="tslot"><article class="tcard">
-        <span class="tav" data-avatar="4"></span>
+        <div class="thead"><span class="tav" data-avatar="4"></span>
         <div class="tmeta">
           <p class="tname">Lauren Manning</p>
           <p class="trole"><span>Head of Design</span><span class="tco"><span class="tat">@</span>NFL</span></p>
-        </div>
-        <p class="tquote">Kris consistently raises the bar for craft. He brings strong taste, thoughtful systems thinking, and a level of execution that makes the entire team’s work better</p>
+        </div></div>
+        <div class="tquoteb"><span class="tqmark" aria-hidden="true"><svg viewBox="0 0 18.366 16" fill="none"><path d="M0 16V9.79C0 6.85.62 4.47 1.86 2.66 3.1.85 4.98 0 7.5 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16H0Zm10.87 0V9.79c0-2.94.62-5.32 1.86-7.13C13.97.85 15.85 0 18.366 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16h-7.28Z" fill="currentColor"/></svg></span>
+          <p class="tquote">Kris consistently raises the bar for craft. He brings strong taste, thoughtful systems thinking, and a level of execution that makes the entire team’s work better</p></div>
       </article></div>
       <div class="tslot"><article class="tcard">
-        <span class="tav" data-avatar="5"></span>
+        <div class="thead"><span class="tav" data-avatar="5"></span>
         <div class="tmeta">
           <p class="tname">Arjun Kalyanpur</p>
           <p class="trole"><span>Head of Product</span><span class="tco"><span class="tat">@</span>C&amp;T Agency</span></p>
-        </div>
-        <p class="tquote">Kris has an incredible eye for visual design. He brings a level of craft and polish that consistently makes the work feel more distinctive and considered</p>
+        </div></div>
+        <div class="tquoteb"><span class="tqmark" aria-hidden="true"><svg viewBox="0 0 18.366 16" fill="none"><path d="M0 16V9.79C0 6.85.62 4.47 1.86 2.66 3.1.85 4.98 0 7.5 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16H0Zm10.87 0V9.79c0-2.94.62-5.32 1.86-7.13C13.97.85 15.85 0 18.366 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16h-7.28Z" fill="currentColor"/></svg></span>
+          <p class="tquote">Kris has an incredible eye for visual design. He brings a level of craft and polish that consistently makes the work feel more distinctive and considered</p></div>
       </article></div>
       <div class="tslot"><article class="tcard">
-        <span class="tav" data-avatar="6"></span>
+        <div class="thead"><span class="tav" data-avatar="6"></span>
         <div class="tmeta">
           <p class="tname">August Kreowski</p>
           <p class="trole"><span>Head of Global Brand</span><span class="tco"><span class="tat">@</span>JBL</span></p>
-        </div>
-        <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p>
+        </div></div>
+        <div class="tquoteb"><span class="tqmark" aria-hidden="true"><svg viewBox="0 0 18.366 16" fill="none"><path d="M0 16V9.79C0 6.85.62 4.47 1.86 2.66 3.1.85 4.98 0 7.5 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16H0Zm10.87 0V9.79c0-2.94.62-5.32 1.86-7.13C13.97.85 15.85 0 18.366 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16h-7.28Z" fill="currentColor"/></svg></span>
+          <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p></div>
       </article></div>
       <div class="tslot"><article class="tcard">
-        <span class="tav" data-avatar="7"></span>
+        <div class="thead"><span class="tav" data-avatar="7"></span>
         <div class="tmeta">
           <p class="tname">Hannah Dow</p>
           <p class="trole"><span>Head of XD</span><span class="tco"><span class="tat">@</span>C&amp;T Agency</span></p>
-        </div>
-        <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p>
+        </div></div>
+        <div class="tquoteb"><span class="tqmark" aria-hidden="true"><svg viewBox="0 0 18.366 16" fill="none"><path d="M0 16V9.79C0 6.85.62 4.47 1.86 2.66 3.1.85 4.98 0 7.5 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16H0Zm10.87 0V9.79c0-2.94.62-5.32 1.86-7.13C13.97.85 15.85 0 18.366 0v3.2c-1.3 0-2.26.4-2.88 1.2-.62.8-.93 1.93-.93 3.4v.62h3.6V16h-7.28Z" fill="currentColor"/></svg></span>
+          <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p></div>
       </article></div>
     </div>
     <footer class="tfoot">
       <div class="tfrule ruleh"></div>
       <div class="tfrow">
         <div class="tflinks">
-          <span>Kris Jensson 2026</span>
+          <span class="tfmark"><b>&copy;</b>KRIS JENSSON</span>
+          <i class="tfsl" aria-hidden="true">/</i>
+          <span>Staff Experience Designer</span>
+          <i class="tfsl" aria-hidden="true">/</i>
           <span>San Francisco</span>
-          <span>415 439 9394</span>
-          <a href="mailto:kris.jensson@gmail.com">kris.jensson@gmail.com</a>
+          <i class="tfsl" aria-hidden="true">/</i>
+          <span>415-439-9394</span>
         </div>
-        <button class="tfright" type="button" id="tfTop">Design &amp; built by me
-          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 15.5V4.5M10 4.5L5.5 9M10 4.5L14.5 9"
-               stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="tfright">
+          <span class="tfby">Designed &amp; built by me</span>
+          <span class="tficons">
+            <a class="tfic" href="https://www.linkedin.com/in/krisjensson/" target="_blank"
+               rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M13.2 15.1a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8Zm-1.6 1.8h3.2v11.8h-3.2V16.9Zm6 0h3.06v1.62h.04c.43-.8 1.47-1.65 3.02-1.65 3.23 0 3.83 2.1 3.83 4.84v6h-3.2v-5.32c0-1.27-.02-2.9-1.78-2.9-1.79 0-2.06 1.38-2.06 2.8v5.42h-3.2V16.9Z" fill="currentColor"/></svg></a>
+            <a class="tfic" href="mailto:kris.jensson@gmail.com" aria-label="Email Kris"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="11.5" y="13.8" width="17" height="12.4" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m12.4 15.2 6.6 5.1a1.6 1.6 0 0 0 2 0l6.6-5.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </span>
+        </div>
       </div>
     </footer>
   </div>
@@ -4924,7 +5011,7 @@
 <main class="page" id="pgAbout" data-page="about" hidden>
   <section class="ab">
     <div class="abbar">
-      <span class="brand ab-brand">KRIS</span>
+      <span class="brand ab-brand">KRIS JENSSON</span>
       <nav class="abr">
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener" class="ablink">Linkedin</a>
         <span class="sep">/</span>
@@ -4942,26 +5029,28 @@
     </div>
 
     <div class="abfoot">
-      <p class="abcopy">After <b>8+ years in design</b>, I believe the biggest impact comes
-        from embracing constraints, doing the work, and adapting as you go.</p>
-      <div class="abgrid">
-        <div class="abcell rulev"><span class="ablab">Location</span><span class="abval">San Francisco</span></div>
-        <div class="abcell rulev"><span class="ablab">Strengths</span>
-          <span class="abval abrow">Design<i>/</i>Motion<i>/</i>Code</span></div>
-      </div>
+      <p class="abcopy"><b>After 8+ years in design</b> I believe the biggest impact comes
+        from embracing constraints, doing the work, and adapting as you go.
+        More to this below.</p>
+    </div>
+
+    <!-- 513:35289 / 513:35302 - the rule, and the band under it. Ten stops on
+         a 48 gap, running off both edges; the track is built and paced in JS
+         off the same cycle the hero marquee uses. -->
+    <div class="abrule ruleh" aria-hidden="true"></div>
+    <div class="abstrip" aria-label="San Francisco, Code, Design, Motion, People, AI used right, Prototyping, Systems, Illustrations, 3D Design">
+      <span class="mqtrack abtrack" id="abTrack" aria-hidden="true"></span>
     </div>
   </section>
 
-  <!-- ── About / Second section — 127:4279 ────────────────────────────────
-       Statics. The five discs are placeholders at the drawn sizes and
-       positions; the artwork drops straight onto them. -->
+  <!-- 513:24124 - About / Second section. Light now, and the picture cluster
+       is gone: a 436 title column and a 553 stack of three, 139 apart. -->
   <section class="st" id="abStory">
     <div class="stwrap">
-      <p class="steyebrow" id="stEyebrow"><span>About</span><i>/</i><b>Story</b></p>
-      <!-- the break is set, not left to the measure: a line ending on "the"
-           hangs the article -->
-      <h2 class="sthead" id="stHead">The story behind the person<br>doing the work.</h2>
-
+      <div class="stleft">
+        <p class="steyebrow" id="stEyebrow"><span>Story</span><i>/</i><b>long version</b></p>
+        <h2 class="sthead" id="stHead">The story behind the person doing the work.</h2>
+      </div>
       <div class="stcopy">
         <p>I’m drawn to the part of design where craft meets reality; navigating
           complex constraints and ambitious KPIs while still raising the standard
@@ -4975,43 +5064,99 @@
           complex constraints and ambitious KPIs while still raising the standard
           and delight. Because to me, craft isn’t a nice-to-have. It’s the baseline.</p>
       </div>
+    </div>
+  </section>
 
-      <!-- Three nested elements per bubble, and each level owns exactly one
-           transform: the outer takes the scroll entry, the middle the open /
-           closed state, the inner the float. Two of them on one element and
-           whichever runs last wins. -->
-      <div class="stcluster" id="stCluster">
-        <span class="stcirc stfade stc1"><u><i></i></u></span>
-        <span class="stcirc stfade stc2"><u><i></i></u></span>
-        <span class="stcirc stmarlowe"><u><i><video class="stvid" id="stVid" muted playsinline preload="auto">
-              <source src="media/about-marlowe.webm" type="video/webm">
-              <source src="media/about-marlowe.mp4" type="video/mp4">
-            </video></i></u></span>
-        <span class="stcirc stfade stc3"><u><i></i></u></span>
-        <span class="stcirc stfade stc4"><u><i></i></u></span>
-        <span class="stcirc stphoto sp1" style="--i:0"><u><i></i></u></span>
-        <span class="stcirc stphoto sp2" style="--i:1"><u><i></i></u></span>
-        <span class="stcirc stphoto sp3" style="--i:2"><u><i></i></u></span>
-        <span class="stcirc stphoto sp4" style="--i:3"><u><i></i></u></span>
-        <span class="stcirc stphoto sp5" style="--i:4"><u><i></i></u></span>
-        <span class="stcirc stphoto sp6" style="--i:5"><u><i></i></u></span>
-        <button class="stplus" type="button" id="stPlus"
-                aria-expanded="false" aria-label="Show photos of Marlowe"><i></i></button>
+  <!-- 513:35373 - About / Journey. The head is centred, then a seven-stop
+       timeline threaded by one drawn connector, then the Footer component. -->
+  <section class="jn" id="abJourney">
+    <div class="jnhead">
+      <p class="jneb"><span>story</span><i>/</i><b>the path</b></p>
+      <div class="jnct">
+        <h2 class="jnt">My path into design</h2>
+        <p class="jnlead">A not-so-straight path through soccer, San Francisco,
+          school, ambitious projects, and the experiences that shaped how I work today.</p>
       </div>
+      <a class="jncta" href="#" download>Download resume<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
     </div>
 
-    <footer class="stfoot">
-      <div class="strule"></div>
-      <div class="stmeta">
-        <div class="stml">
-          <span>Kris Jensson 2026</span>
+    <div class="jnwrap">
+      <svg class="jnline" id="jnLine" viewBox="0 0 1130 1550" fill="none"
+           preserveAspectRatio="none" aria-hidden="true"><path d="" stroke="#E7E7E7"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <ol class="jnlist">
+        <li class="jstop js1" data-side="l" data-kind="a">
+          <span class="jpill">Today</span>
+          <div class="jbody">
+            <h3>Redesigning an app that I love</h3>
+            <p>Today I’m helping rethink Venmo, an app I’d already loved and used for years. I still play and coach soccer on the side, and spend the rest of my time in San Francisco with my Aussie girlfriend and our little pup Marlowe aka Goose aka Chubby aka no barking, who is unquestionably in charge.</p>
+          </div>
+        </li>
+        <li class="jstop js2" data-side="l" data-kind="b">
+          <span class="jpill">2025</span>
+          <div class="jbody">
+            <h3>Saying bye to agency life... for now</h3>
+            <p>After years of jumping between clients, industries and problems, I wanted to go deeper. One product, one team, and the chance to live with the decisions long after launch.</p>
+          </div>
+        </li>
+        <li class="jstop js3" data-side="r" data-kind="a">
+          <span class="jpill">2023</span>
+          <div class="jbody">
+            <h3>Design at full speed</h3>
+            <p>Code and Theory threw me into ambitious work across brands, products and industries. JBL, NFL, Volvo, Lucid and plenty more taught me how to move fast without letting the craft disappear.</p>
+          </div>
+        </li>
+        <li class="jstop js4" data-side="r" data-kind="a">
+          <span class="jpill">2021</span>
+          <div class="jbody">
+            <h3>The first real real gig</h3>
+            <p>At YML, I went from internships and student projects to real products, real clients and real constraints. Biggest growth of my career, and where I really learned what great culture stood for.</p>
+          </div>
+        </li>
+        <li class="jstop js5" data-side="l" data-kind="b">
+          <span class="jpill">2025</span>
+          <div class="jbody">
+            <h3>Turns out I really love doing this</h3>
+            <p>I graduated with a BFA in UX/UI Interaction Design and left school knowing I wanted to make digital products for a living. Soccer stayed with me, but design had officially become the main thing.</p>
+          </div>
+        </li>
+        <li class="jstop js6" data-side="l" data-kind="a">
+          <span class="jpill">2021</span>
+          <div class="jbody">
+            <h3>Soccer &amp; design, what a combo</h3>
+            <p>Four years at Academy of Art meant design classes by day and goalkeeper gloves by night. I played for the university team for four year, captained for two, and made some of my best mates while doing it.</p>
+          </div>
+        </li>
+        <li class="jstop js7" data-side="r" data-kind="a">
+          <span class="jpill">2017</span>
+          <div class="jbody">
+            <h3>Trading Iceland for Silicon Valley</h3>
+            <p>I grew up in Iceland, splitting most of my time between school and a soccer field. In 2017, I moved to San Francisco to study interaction design and keep playing the game I’d grown up with.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <footer class="tfoot">
+      <div class="tfrule ruleh"></div>
+      <div class="tfrow">
+        <div class="tflinks">
+          <span class="tfmark"><b>&copy;</b>KRIS JENSSON</span>
+          <i class="tfsl" aria-hidden="true">/</i>
+          <span>Staff Experience Designer</span>
+          <i class="tfsl" aria-hidden="true">/</i>
           <span>San Francisco</span>
-          <span>415 439 9394</span>
-          <a href="mailto:kris.jensson@gmail.com">kris.jensson@gmail.com</a>
+          <i class="tfsl" aria-hidden="true">/</i>
+          <span>415-439-9394</span>
         </div>
-        <button class="stmr" type="button" id="stTop">Design &amp; built by me
-          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 15.5V4.5M10 4.5L5.5 9M10 4.5L14.5 9"
-               stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="tfright">
+          <span class="tfby">Designed &amp; built by me</span>
+          <span class="tficons">
+            <a class="tfic" href="https://www.linkedin.com/in/krisjensson/" target="_blank"
+               rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M13.2 15.1a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8Zm-1.6 1.8h3.2v11.8h-3.2V16.9Zm6 0h3.06v1.62h.04c.43-.8 1.47-1.65 3.02-1.65 3.23 0 3.83 2.1 3.83 4.84v6h-3.2v-5.32c0-1.27-.02-2.9-1.78-2.9-1.79 0-2.06 1.38-2.06 2.8v5.42h-3.2V16.9Z" fill="currentColor"/></svg></a>
+            <a class="tfic" href="mailto:kris.jensson@gmail.com" aria-label="Email Kris"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="11.5" y="13.8" width="17" height="12.4" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m12.4 15.2 6.6 5.1a1.6 1.6 0 0 0 2 0l6.6-5.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </span>
+        </div>
       </div>
     </footer>
   </section>
@@ -5142,7 +5287,7 @@
      holds this study's own mark. -->
 <main class="page" id="pgJbl" data-page="jbl" data-logo="jbl" hidden>
   <section class="cs">
-    <!-- 474:65930 / 474:65960 - the wordmark is the full name now, the right
+    <!-- 474:65930 / 474:65960 — the wordmark is the full name now, the right
          side is one link, and the rule under them is gone. -->
     <div class="cstop">
       <span class="brand">Kris Jensson</span>
@@ -5239,7 +5384,7 @@
     <!-- One video, seventeen destinations. The <video> is the only decoder;
          the canvas blits each tile's source rect to its own scroll-driven
          offset, so the columns travel at different speeds off a single file. -->
-    <!-- 474:66285 - three statics where the film used to be. The film itself
+    <!-- 474:66285 — three statics where the film used to be. The film itself
          has moved down to the Final Design band. -->
     <div class="pwsg">
       <span class="pwsgc"><img src="media/jbl-str-a.webp" alt="JBL regional site walkthrough" loading="lazy" decoding="async"></span>
@@ -5257,8 +5402,10 @@
       </div>
     </div>
 
-    <!-- 474:65989 - the SYSTEM SNAPSHOT board. Four columns on a 21.643
-         gap, tiles 19.978 apart; flex-basis carries each drawn size. -->
+    <!-- 474:65989 — the SYSTEM SNAPSHOT board. Four columns at
+         268.038 / 268.038 / 268.038 / 262.211 on a 21.643 gap, tiles 19.978
+         apart. Flex-basis carries each tile's drawn height so the column
+         fills its 595.2 exactly. -->
     <div class="pwmob">
       <p class="pweb pweb-b"><s>/</s><em>SYSTEM SNAPSHOT</em></p>
       <div class="pwsn">
@@ -5336,7 +5483,7 @@
 
   <!-- ── 327:20009 · JBL / Final Design ──────────────────────────────── -->
   <section class="fd">
-    <!-- 474:66296 - 553 wide on the left guide now, not centred on 716. -->
+    <!-- 474:66296 — 553 wide on the left guide now, not centred on 716. -->
     <div class="fdhead">
       <p class="fdeb"><b>JBL</b><s>/</s><em>Final design</em></p>
       <div class="fdct">
@@ -5390,9 +5537,10 @@
       <!-- 463:12985. Eleven tiles: four clips and seven stills, each at the
            aspect the frame draws it. Column two's middle tile carries .grow
            because 463:12994 is flex-[1_0_0] there. -->
-    <!-- 474:67482 - the strategy film, moved down here and run full bleed:
-         1445 on a 1440 frame, so it overhangs 5 either side. -->
-    <!-- 474:67482 - the 2.0 film, played straight. The canvas that used to
+    <!-- 474:67482 — the strategy film, moved down here and run full bleed:
+         1445 on a 1440 frame, so it overhangs 5 either side. The tile float
+         travels with it. -->
+    <!-- 474:67482 — the 2.0 film, played straight. The canvas that used to
          sit here re-cut the picture into 21 tiles at coordinates measured off
          the OLD file; against the 2.0 file those rects land in the wrong
          places and the board came out shredded. It is a plate in the frame,
@@ -5403,9 +5551,11 @@
       </video>
     </div>
       </div>
-      <!-- 465:19037 - the avatar has no export yet, so the 148 circle stands
+
+      <!-- 465:19037 — the avatar has no export yet, so the 148 circle stands
            at Containers on Dark until one lands. -->
-      <!-- 474:67448 - 240 above, 140 below, impact row 80 under the quote. -->
+      <!-- 474:67448 — 240 above, 140 below, and the impact row now closes the
+           section 80 under the quote. -->
       <figure class="jtm">
         <div class="jtmquote">
           <span class="jtmav"><img src="media/jbl-avatar.webp" alt="" loading="lazy" decoding="async"></span>
@@ -5437,11 +5587,13 @@
         </section>
       </figure>
   </section>
-  <!-- 464:15803 - Next up. The plate is Volvo's own card clip; the row is a
-       button so the whole thing routes. -->
+
+  <!-- 464:15803 — Next up. The plate is Volvo's own card clip; the row is a
+       button so the whole thing routes, which is the only thing a "next up"
+       block can reasonably do. -->
   <section class="nu" aria-label="Next up">
     <div class="nublock">
-      <!-- 474:67485 - an eyebrow now, not the 40 display line -->
+      <!-- 474:67485 — an eyebrow now, not the 40 display line -->
       <p class="nut"><s>/</s><em>Next up</em></p>
       <button class="nurow" type="button" data-page="volvo"
               aria-label="Read the Volvo case study">
@@ -5464,14 +5616,22 @@
       <div class="tfrule ruleh"></div>
       <div class="tfrow">
         <div class="tflinks">
-          <span>Kris Jensson 2026</span>
+          <span class="tfmark"><b>&copy;</b>KRIS JENSSON</span>
+          <i class="tfsl" aria-hidden="true">/</i>
+          <span>Staff Experience Designer</span>
+          <i class="tfsl" aria-hidden="true">/</i>
           <span>San Francisco</span>
-          <span>415 439 9394</span>
-          <a href="mailto:kris.jensson@gmail.com">kris.jensson@gmail.com</a>
+          <i class="tfsl" aria-hidden="true">/</i>
+          <span>415-439-9394</span>
         </div>
-        <button class="tfright" type="button" data-top>Design &amp; built by me
-          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 15.5V4.5M10 4.5L5.5 9M10 4.5L14.5 9"
-               stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="tfright">
+          <span class="tfby">Designed &amp; built by me</span>
+          <span class="tficons">
+            <a class="tfic" href="https://www.linkedin.com/in/krisjensson/" target="_blank"
+               rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M13.2 15.1a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8Zm-1.6 1.8h3.2v11.8h-3.2V16.9Zm6 0h3.06v1.62h.04c.43-.8 1.47-1.65 3.02-1.65 3.23 0 3.83 2.1 3.83 4.84v6h-3.2v-5.32c0-1.27-.02-2.9-1.78-2.9-1.79 0-2.06 1.38-2.06 2.8v5.42h-3.2V16.9Z" fill="currentColor"/></svg></a>
+            <a class="tfic" href="mailto:kris.jensson@gmail.com" aria-label="Email Kris"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="11.5" y="13.8" width="17" height="12.4" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m12.4 15.2 6.6 5.1a1.6 1.6 0 0 0 2 0l6.6-5.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </span>
+        </div>
       </div>
     </footer>
   </section>
@@ -6421,7 +6581,8 @@
         /* Desktop: the bar LEAVES rather than shrinking. Travel is its own
            height plus the 21 it sits down from the top plus 24 of air, so it
            clears the window's edge with its shadow rather than parking a
-           blurred hairline on it. Measured, not typed. */
+           blurred hairline on it. Measured, not typed — the row is 68 now
+           and the number has moved before. */
         if(!mob){
           const nr=row.getBoundingClientRect();
           const top=parseFloat(getComputedStyle(row.parentElement).top)||0;
@@ -6713,7 +6874,7 @@
       c.tabIndex=0;
       c.setAttribute('role','link');
       c.setAttribute('aria-label','Read the '+name.trim()+' case study');
-      /* Volvo is behind a passcode. The gate answers for it - if it takes
+      /* Volvo is behind a passcode. The gate answers for it — if it takes
          the click, the card does not route. Every other card is unchanged. */
       const open=e=>{ e.preventDefault();
         if(typeof window.__cardGate==='function' && window.__cardGate(key,c)) return;
@@ -8107,11 +8268,11 @@
     window.__railHideChip=hideChip;
   })();
 
-  /* -- the Volvo gate -------------------------------------------------
+  /* ── the Volvo gate ─────────────────────────────────────────────────
      The card's click does not route it. It raises the curtain over the
      picture, pauses the clip and puts the passcode pill in the middle of the
      plate. The pill itself is the same component the NFL storyboard card
-     uses and is wired by the same handler above - this only decides WHEN it
+     uses and is wired by the same handler above — this only decides WHEN it
      is on screen, and gets out of the way once the code has been accepted.
 
      One code covers both cards; it lives on data-code in the markup, in the
@@ -8138,7 +8299,7 @@
       pauseClip();
       card.classList.add('locked');
       pill.tabIndex=0;
-      /* the pill opens itself into the field - the curtain exists to ask for
+      /* the pill opens itself into the field — the curtain exists to ask for
          the code, so there is no reason to make you click twice */
       requestAnimationFrame(()=>pill.click());
     }
@@ -8155,7 +8316,7 @@
       if(key!=='volvo'||unlocked) return false;
       show(); return true;
     };
-    /* the code was accepted somewhere - the card is open from now on */
+    /* the code was accepted somewhere — the card is open from now on */
     if(typeof window.__goTo==='function'){
       const go=window.__goTo;
       window.__goTo=function(k){ if(k==='volvo') unlock(); return go.apply(this,arguments); };
@@ -8240,6 +8401,200 @@
     addEventListener('scroll',check,{passive:true});
     addEventListener('resize',check);
     check();
+  })();
+
+  /* -- 513:35302 - the About skill band ------------------------------
+     The hero's marquee again: ten stops, a measured cycle, and the duration
+     derived from it at the same 46px/s the other two bands run at. It is
+     built by a ResizeObserver rather than on load because the About page is
+     hidden until it is routed to, and a hidden element measures zero. */
+  (function(){
+    const track=document.getElementById('abTrack');
+    if(!track) return;
+    const SPEED=46;
+    const STOPS=['San Francisco','Code','Design','Motion','People',
+                 'AI used right','Prototyping','Systems','Illustrations','3D Design'];
+    function seq(){
+      const f=document.createDocumentFragment();
+      STOPS.forEach(t=>{
+        const d=document.createElement('span'); d.className='abdisc';
+        const l=document.createElement('span'); l.className='ablabel'; l.textContent=t;
+        f.appendChild(d); f.appendChild(l);
+      });
+      return f;
+    }
+    let last=0;
+    function build(){
+      const w=track.parentElement.getBoundingClientRect().width;
+      if(!w || Math.abs(w-last)<1) return;
+      last=w;
+      track.replaceChildren(seq());
+      const gap=parseFloat(getComputedStyle(track).columnGap)||0;
+      const cycle=track.getBoundingClientRect().width + gap;
+      if(!cycle) return;
+      for(let i=1, need=Math.ceil(w/cycle)+1; i<need; i++) track.appendChild(seq());
+      track.style.setProperty('--mq-cycle', cycle.toFixed(4)+'px');
+      track.style.setProperty('--mq-dur', (cycle/SPEED).toFixed(3)+'s');
+    }
+    if('ResizeObserver' in window) new ResizeObserver(build).observe(track.parentElement);
+    addEventListener('resize',build,{passive:true});
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(build);
+    build();
+  })();
+
+  /* -- 513:35515 - the journey connector -----------------------------
+     One continuous snake, not an elbow per pair. Traced off the drawn vector
+     at 1:1 and it is three verticals and three horizontals, nothing else:
+
+       down  the LEFT column  from under Today, to 2025's row
+       right the 2025 row,    through 2025, to the RIGHT column
+       down  the RIGHT column, through 2023 and 2021, to the second 2025 row
+       left  that row,        through 2025, back to the LEFT column
+       down  the LEFT column, through 2021, to 2017's row
+       right that row,        into 2017
+
+     Which is why five of the seven pills sit ON the line rather than beside
+     it - the two columns are the Today/2021 x and the 2023/2021/2017 x, and
+     the three horizontals are the rows of the three stops in between. The
+     drawn vector's bounding box is 47,44.5 -> 736.5,1418; against the pills
+     this route resolves to 45.5,48 -> 738.5,1417, which is the same line
+     inside the 2.07 stroke.
+
+     Every anchor is read out of the laid-out board rather than typed, so the
+     line still lands on the pills if the copy reflows - and the board is a
+     real coordinate space (percentages of the drawn 1130 x 1550), so anything
+     dropped in later can be placed off the same numbers. */
+  (function(){
+    const wrap=document.querySelector('#abJourney .jnwrap');
+    const svg=document.getElementById('jnLine');
+    if(!wrap||!svg) return;
+    const path=svg.querySelector('path');
+    const R=32;                       /* corner, at the drawn 1130 board */
+    let lastW=0,lastH=0;
+    const f=p=>p.x.toFixed(2)+' '+p.y.toFixed(2);
+
+    /* a polyline with its corners rounded - the radius shrinks on a short
+       segment so two corners can never eat each other */
+    function rounded(pts,r){
+      let d='M '+f(pts[0]);
+      for(let i=1;i<pts.length-1;i++){
+        const p=pts[i], a=pts[i-1], b=pts[i+1];
+        const la=Math.hypot(p.x-a.x,p.y-a.y), lb=Math.hypot(b.x-p.x,b.y-p.y);
+        if(!la||!lb) continue;
+        const q=Math.min(r, la/2, lb/2);
+        d+=' L '+f({x:p.x+(a.x-p.x)/la*q, y:p.y+(a.y-p.y)/la*q})
+          +' Q '+f(p)+' '+f({x:p.x+(b.x-p.x)/lb*q, y:p.y+(b.y-p.y)/lb*q});
+      }
+      return d+' L '+f(pts[pts.length-1]);
+    }
+
+    function draw(){
+      /* below the breakpoint there is no line to build - tick still has to run
+         so the copy is not left holding for a stroke that never arrives */
+      if(getComputedStyle(svg).display==='none'){ tick(); return; }
+      const wb=wrap.getBoundingClientRect();
+      if(!wb.width||!wb.height) return;
+      if(Math.abs(wb.width-lastW)<1 && Math.abs(wb.height-lastH)<1) return;
+      lastW=wb.width; lastH=wb.height;
+      svg.setAttribute('viewBox','0 0 '+wb.width.toFixed(2)+' '+wb.height.toFixed(2));
+
+      const pills=[...wrap.querySelectorAll('.jstop .jpill')];
+      if(pills.length<7){ path.setAttribute('d',''); return; }
+      const box=el=>{ const r=el.getBoundingClientRect();
+        return {cx:r.left-wb.left+r.width/2, cy:r.top-wb.top+r.height/2,
+                bottom:r.bottom-wb.top}; };
+      const b=pills.map(box);
+      const leftX=b[0].cx, rightX=b[2].cx;
+      const y1=b[1].cy, y2=b[4].cy, y3=b[6].cy;
+      const pts=[{x:leftX,y:b[0].bottom},
+                 {x:leftX,y:y1},{x:rightX,y:y1},
+                 {x:rightX,y:y2},{x:leftX,y:y2},
+                 {x:leftX,y:y3},{x:rightX,y:y3}];
+      /* the corner scales with the board so it reads the same at every width */
+      path.setAttribute('d', rounded(pts, R * (wb.width/1130)));
+      /* the line is DRAWN, not faded: dasharray is its whole length and the
+         offset is how much of it is still to come. Measured after the path is
+         written, because the length changes with the board. */
+      len=path.getTotalLength();
+      path.style.strokeDasharray=len.toFixed(2);
+      firstY=b[0].cy; lastY=b[6].cy;
+
+      /* How far along the line each stop sits. Sampled off the real path
+         rather than added up by hand: the rounded corners shorten it and the
+         copy has to light on the frame the stroke actually arrives, not a
+         frame either side of it. The first stop is the start and the last is
+         the end, so only the five in between are looked for. */
+      mark=b.map(()=>0); mark[6]=len;
+      for(let i=1;i<6;i++){
+        let best=Infinity, at=0;
+        for(let L=0;L<=len;L+=2){
+          const q=path.getPointAtLength(L);
+          const d=(q.x-b[i].cx)*(q.x-b[i].cx)+(q.y-b[i].cy)*(q.y-b[i].cy);
+          if(d<best){ best=d; at=L; }
+        }
+        mark[i]=at;
+      }
+      tick();
+    }
+
+    /* Scrubbed on the board's own travel, and by LENGTH rather than by height:
+       a horizontal run has no height at all, so mapping scroll to y would
+       snap the three sideways runs on in a single frame. Against length they
+       sweep - which is the part worth watching, and it lands on 2025, 2025 and
+       2017 because those runs ARE those three rows.
+
+       The range is the board top from .85 of the window down to its bottom at
+       .5: at that pace every stop has its line by the time it is comfortably
+       on screen, and the whole thing unwinds exactly on the way back up
+       because nothing here is stateful. */
+    /* ONE reading line, at .66 of the window, and the range is written
+       backwards from it: the tip is on that line when it is at the first stop
+       and again when it is at the last. Which makes travel the pill span
+       itself - so the tip's average vertical rate is exactly 1:1 with the
+       scroll, and every stop in between gets its line while it sits in the
+       lower-middle of the window rather than down at the edge, which is what
+       was reading as early. The three horizontal sweeps come for free out of
+       the same budget. */
+    const READ=.62;
+    let len=0, firstY=0, lastY=0, mark=[], queued=false;
+    function tick(){
+      queued=false;
+      const stops=[...wrap.querySelectorAll('.jstop')];
+      /* the no-line cases come FIRST, before the length guard: with the line
+         hidden there is no length, and bailing on that left every stop dark */
+      if(STILL.matches || getComputedStyle(svg).display==='none'){
+        if(len) path.style.strokeDashoffset='0';
+        stops.forEach(el=>el.classList.add('lit'));
+        return;
+      }
+      if(!len) return;
+      const r=wrap.getBoundingClientRect();
+      const a=innerHeight*READ-firstY;
+      /* clamped against the scroll that actually EXISTS below the board - on a
+         tall window there may be less of it than the geometry asks for, and a
+         line that cannot finish is worse than a fast one */
+      const doc=r.top+scrollY;
+      const maxScroll=Math.max(0,(document.documentElement.scrollHeight||0)-innerHeight);
+      let travel=lastY-firstY;
+      travel=Math.max(1, Math.min(travel, (a-doc+maxScroll)*.94));
+      const p=Math.min(1, Math.max(0, (a-r.top)/travel));
+      const drawn=len*p;
+      path.style.strokeDashoffset=(len-drawn).toFixed(2);
+      /* and the copy, stop by stop, on the stroke's own arrival. The first
+         stop's mark is zero - the line STARTS on it - so it takes the floor
+         instead, or it would be lit from the top of the page. */
+      for(let i=0;i<stops.length;i++)
+        stops[i].classList.toggle('lit', drawn > 0 && drawn >= (mark[i]||0) - .5);
+    }
+    const STILL=matchMedia('(prefers-reduced-motion: reduce)');
+    const onScroll=()=>{ if(!queued){ queued=true; requestAnimationFrame(tick); } };
+
+    if('ResizeObserver' in window) new ResizeObserver(draw).observe(wrap);
+    addEventListener('resize',draw,{passive:true});
+    addEventListener('scroll',onScroll,{passive:true});
+    if(STILL.addEventListener) STILL.addEventListener('change',tick);
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(draw);
+    draw();
   })();
 
   const MET_DUR=760, MET_TURN=80;
@@ -8598,10 +8953,17 @@
     const CROP={x:160,y:48,w:1634,h:937};
     const ctx=cv.getContext('2d',{alpha:false});
 
-    /* One speed per COLUMN, not per tile: tiles in a column belong to the
-       same strip in the drawing and sliding them apart would tear it. The
-       numbers are deliberately not a ramp — a left-to-right gradient reads as
-       the whole board shearing. Mixed, they read as depth. */
+    /* One float per COLUMN, not per tile: tiles in a column belong to the
+       same strip in the drawing and sliding them apart would tear it.
+
+       It does not read the scroll any more. Each column just breathes —
+       the same idea as the icon grid, which runs its own clock at 4.6–8.1s
+       with the periods deliberately not sharing a factor, so the board never
+       lines up and never repeats a pose. Amplitudes are half the icons' and
+       the periods are long: this has to be felt, not watched.
+
+       AMP is at 1440 and scales with the band. Phases are seeded so the
+       columns start spread through their cycles rather than all at rest. */
     const FLOAT=[
       {a: 9, p:6.2, ph:0.00},
       {a:-7, p:7.7, ph:1.90},
@@ -8611,9 +8973,9 @@
       {a:-9, p:7.1, ph:4.20},
       {a: 8, p:5.9, ph:1.30}
     ];
-    const EASE=.085;           /* the lerp — this is the "smooth" */
 
-    /* the film moved from the white process band to the black final one */
+    /* the film moved from the white process band to the black final one, so
+       the ground behind the tiles is whatever section it is actually in */
     const host=stage.closest('.pw,.fd,section') || stage.parentElement;
     const PAPER=getComputedStyle(stage).backgroundColor==='rgba(0, 0, 0, 0)'
       ? getComputedStyle(host).backgroundColor
@@ -8630,15 +8992,6 @@
       return true;
     }
 
-    /* Progress is the stage's own position in the window: -1 when its top is
-       a screenful below the fold, +1 when its bottom is a screenful above.
-       Centred on 0 so the tiles sit where they were drawn as it passes. */
-    function progress(){
-      const r=stage.getBoundingClientRect();
-      const span=innerHeight+r.height;
-      return Math.max(-1, Math.min(1, 1 - 2*(r.top+r.height)/span));
-    }
-
     function paint(){
       ctx.setTransform(dpr,0,0,dpr,0,0);
       /* the PAGE's background, read off the section — a hand-picked #fcfcfc
@@ -8649,12 +9002,17 @@
       ctx.fillStyle=PAPER;
       ctx.fillRect(0,0,W,H);
       /* CROP, not the whole frame. The export carries white around the
-         collage - scanned against its own 254 ground the tiles occupy
-         x 160-1793 and y 48-984 of 1920 x 1080 - so the band is mapped onto
-         the ARTWORK's box, not the file's. */
+         collage — scanned against its own 254 ground the tiles occupy
+         x 160–1793 and y 48–984 of 1920 x 1080 — so the band is mapped onto
+         the ARTWORK's box, not the file's. s covers the band from that box;
+         width governs here, which runs the artwork 1.9% past the band's
+         height, so about 1% goes off the top and the bottom. */
       const s=Math.max(W/CROP.w, H/CROP.h);
       const ox=(W-CROP.w*s)/2, oy=(H-CROP.h*s)/2;
       const k=W/1440, TAU=Math.PI*2;
+      /* seconds since the section woke, not since the page loaded — so a
+         study opened from the router starts its columns where they were
+         seeded rather than mid-cycle */
       const t0=(performance.now()-born)/1000;
       for(let i=0;i<TILES.length;i++){
         const t=TILES[i], f=FLOAT[t.c];
@@ -8668,10 +9026,12 @@
     /* Idle when there is nothing to do. The lerp converges but never
        arrives, so without a floor this repainted seventeen crops every frame
        forever — for a picture that had stopped moving. It wakes on scroll. */
+    /* No stop condition any more. The float never settles, so the only thing
+       that parks the loop is leaving the window — which the observer below
+       already does. Reduced motion holds it on one frame. */
     const STILL=matchMedia('(prefers-reduced-motion: reduce)');
     function frame(){
-      if(!alive){ running=false; return; }
-      if(STILL.matches){ running=false; paint(); return; }
+      if(!alive || STILL.matches){ running=false; paint(); return; }
       paint();
       requestAnimationFrame(frame);
     }
@@ -8724,7 +9084,7 @@
      Looping videos never fire `ended`, so this only catches the ones meant
      to hold. */
   (function(){
-    /* the Next-up plate runs on its own rule below - the governor's
+    /* the Next-up plate runs on its own rule below — the governor's
        geometry test is wrong for a sticky element that is painted
        behind everything until the very end of the page */
     const vids=[...document.querySelectorAll('video')]
@@ -8747,11 +9107,11 @@
     },{rootMargin:'0px'});
     vids.forEach(v=>io.observe(v));
 
-    /* -- the Next-up plate is a special case ---------------------------
+    /* ── the Next-up plate is a special case ───────────────────────────
        It is sticky: it sits pinned to the bottom of the window for the whole
        page, painted BEHIND every section, and only stops being covered when
        the black sheet above it has scrolled off. An IntersectionObserver
-       cannot see that - geometry says the plate has been on screen since the
+       cannot see that — geometry says the plate has been on screen since the
        top of the page, so the governor had it running for minutes and its
        opening was long gone by the time you saw it.
 
@@ -8765,8 +9125,8 @@
       if(plate){
         let armed=true, starting=false;
 
-        /* A seek issued before the element has a frame is DROPPED - silently,
-           with no error and no event - which is how this kept opening mid
+        /* A seek issued before the element has a frame is DROPPED — silently,
+           with no error and no event — which is how this kept opening mid
            shot no matter how many times currentTime was set to 0. So nothing
            here calls play() on hope: it waits for real data, issues the seek,
            waits for `seeked` to confirm it landed, and only then starts. */
