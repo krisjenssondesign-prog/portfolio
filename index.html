@@ -1629,17 +1629,25 @@
      and the reveal was spending itself down in that dead space. */
   /* 513:24124 - light now, not black. 154 guides, 1132 of content, 80 down
      from the section top, and the picture cluster is gone entirely. */
+  /* ---- 521:37946 - About / Second section --------------------------
+     Two columns on the case-study grid: 438 / 139 / 553 of 1130, the left one
+     STICKY the way JBL's does it, the right one scrolling past it. The drawn
+     block is 1333 tall against a 317 left column, so without the pin the
+     title and the facts would sit alone at the top of a long scroll. */
   .st{position:relative;display:flex;flex-direction:column;
       box-sizing:border-box;
-      padding:80px var(--m) 0;background:#F6F6F6;color:#1A1A1A}
+      padding:80px var(--m) 188px;background:#F6F6F6;color:#1A1A1A}
   .stwrap{position:relative;z-index:2;margin:0 auto;
-          width:min(1132px, calc(100% - var(--m) * 2));
-          display:flex;align-items:flex-start;gap:calc(139 / 1132 * 100%);
-          padding-bottom:122px}
-  /* 513:35426 - 436 wide, eyebrow then a 24 gap then the title */
-  .stleft{flex:0 0 calc(436 / 1132 * 100%);min-width:0;
-          display:flex;flex-direction:column;gap:24px}
-  /* I513:35426;503:80751 - 16 SemiBold uppercase on an 8 gap: Secondary Dark
+          width:min(1130px, calc(100% - var(--m) * 2));
+          display:flex;align-items:flex-start;gap:calc(139 / 1130 * 100%)}
+  /* 521:37948 - the title block, then 40, then the facts. Pinned at 80, the
+     same number the JBL column uses, so the two sections behave alike. */
+  .stleft{flex:0 0 calc(438 / 1130 * 100%);min-width:0;
+          position:sticky;top:80px;align-self:flex-start;
+          display:flex;flex-direction:column;gap:40px;padding-bottom:8px}
+  /* 521:37949 - eyebrow then a 24 gap then the title */
+  .stintro{display:flex;flex-direction:column;gap:24px}
+  /* I521:37949;503:80751 - 16 SemiBold uppercase on an 8 gap: Secondary Dark
      for the first two runs, Text Dark 1 for the last */
   .steyebrow{margin:0;display:flex;align-items:center;gap:8px;
              font-family:var(--font-ui);font-size:16px;font-weight:600;
@@ -1654,16 +1662,83 @@
           color:#1A1A1A;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  /* 513:35427 - 553 wide, dropped 48, three blocks 16 apart */
-  .stcopy{flex:0 0 calc(553 / 1132 * 100%);min-width:0;
+  /* 521:37950 - a 2 x 2 of facts, 40 apart both ways, 16 clear of the
+     column's right edge. Every cell hangs from its own 1.4 hairline. */
+  .stfacts{margin:0;padding:0 16px 0 0;
+           display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  .stfact{display:flex;flex-direction:column;gap:12px;
+          padding-top:20px;border-top:1.4px solid #E7E7E7}
+  .stfact dt,.stfact dd{margin:0;font-family:var(--font-ui);font-weight:500;
+          line-height:1.5;letter-spacing:0;
+          text-box:trim-both cap alphabetic;
+          text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .stfact dt{font-size:16px;color:#9F9F9F;text-transform:uppercase}
+  .stfact dd{font-size:18px;color:#1A1A1A}
+
+  /* 521:37967 - the scrolling column: 48 down, then the lede, How I work and
+     Skills, 32 apart */
+  .stcopy{flex:0 0 calc(553 / 1130 * 100%);min-width:0;
           padding-top:48px;
-          display:flex;flex-direction:column;gap:16px}
+          display:flex;flex-direction:column;gap:32px}
+  /* 521:37968 - the two opening blocks, 16 apart; the title sits 12 off its
+     own paragraph */
+  .stlede{display:flex;flex-direction:column;gap:16px}
+  .stblock{display:flex;flex-direction:column;gap:12px}
   .stcopy p{margin:0;font-family:var(--font-ui);font-size:18px;font-weight:500;
             line-height:1.25;letter-spacing:0;color:#777777}
   .stcopy em{font-style:normal;color:#1A1A1A}
-  .stcopy p{will-change:opacity,filter,transform}
+  .stlede p{will-change:opacity,filter,transform}
+  /* I521:37969;503:80758 - 20 SemiBold on 1.45, cap-trimmed */
+  .stsub{margin:0;font-family:var(--font-ui);font-size:20px;font-weight:600;
+         line-height:1.45;letter-spacing:0;color:#1A1A1A;
+         text-box:trim-both cap alphabetic;
+         text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .stgroup{display:flex;flex-direction:column;gap:32px}
+
+  /* ---- 521:37974 - the accordions ----------------------------------
+     A row is 32 of air, the line, 32 of air, and a hairline under it. The
+     first row has no air above it and nothing has a rule on top, so the
+     drawn 133 / 165 / 142 falls out of the padding rather than being set.
+     The rule is inset 4 on the left and flush right, which is the drawn
+     542 against a 546 row. */
+  .stacc{margin:0;padding:0;list-style:none;
+         display:flex;flex-direction:column}
+  .swrow{position:relative;padding:32px 0}
+  .swrow:first-child{padding-top:0}
+  .swrow::after{content:'';position:absolute;left:4px;right:0;bottom:0;
+         height:1.4px;background:#E7E7E7}
+  .swhead{display:flex;align-items:flex-start;gap:20px}
+  /* 521:37977 / 521:37979 - 28 Medium on 1.1, the number Secondary Light and
+     the title Text Dark 1, both cap-trimmed */
+  .swn,.swt{margin:0;font-family:var(--font-ui);font-size:28px;font-weight:500;
+         line-height:1.1;letter-spacing:0;
+         text-box:trim-both cap alphabetic;
+         text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .swn{flex:0 0 35px;color:#9F9F9F}
+  .swc{flex:1 1 auto;min-width:0}
+  .swt{color:#1A1A1A}
+  /* The body is the only thing that opens. A grid row from 0fr to 1fr rather
+     than a max-height guess: the row measures its own copy, so two lines and
+     three lines both open to exactly their own height and neither snaps at
+     the end of the transition. The 12 gap lives INSIDE the collapsing box,
+     or it would hold the title 12 off nothing while closed. */
+  .swbody{display:grid;grid-template-rows:1fr;
+          transition:grid-template-rows .46s cubic-bezier(.22,1,.3,1)}
+  /* the clip is a wrapper, not the paragraph: a 0fr track sets the CONTENT
+     box to zero and padding still counts, so a padding-top on the paragraph
+     itself left 12px of it showing while closed. */
+  .swbody > div{min-height:0;overflow:hidden}
+  .swbody p{padding-top:12px}
+  /* Hover, and only hover - and only where a hover actually exists. On a
+     touch screen there is nothing to hover with, so the rows simply stay
+     open rather than being unreadable. */
+  @media (hover:hover) and (pointer:fine){
+    .swbody{grid-template-rows:0fr}
+    .swrow:hover .swbody{grid-template-rows:1fr}
+  }
   @media (prefers-reduced-motion:reduce){
-    .stcopy p{opacity:1;filter:none;transform:none;will-change:auto}
+    .swbody{transition:none}
+    .stlede p{opacity:1;filter:none;transform:none;will-change:auto}
   }
 
   /* ---- 513:35373 - About / Journey ---------------------------------
@@ -1834,10 +1909,13 @@
      with the connector taken out, because a routed line through seven points
      only means anything at the width it was drawn for */
   @media (max-width:1080px){
-    .st{padding-top:64px}
-    .stwrap{flex-direction:column;gap:40px;padding-bottom:80px}
-    .stleft,.stcopy{flex:none;width:100%}
+    .st{padding:64px var(--m) 80px}
+    .stwrap{flex-direction:column;gap:40px}
+    /* stacked, so there is nothing for the left column to be pinned BESIDE -
+       sticky here would park the title on top of the copy under it */
+    .stleft,.stcopy{flex:none;width:100%;position:static;top:auto}
     .stcopy{padding-top:0}
+    .stfacts{padding-right:0}
     .jnwrap{aspect-ratio:auto;margin-top:80px}
     .jnline{display:none}
     .jnlist{position:static;display:flex;flex-direction:column;gap:48px}
@@ -3367,6 +3445,13 @@
      looking at is not part of that list any more. */
   html.nav-held .nrcell{color:var(--link-active)}
   .nrcell svg{height:var(--h);width:var(--w);display:block;overflow:visible}
+  /* PLACEHOLDER. 521:37677 / 521:37670 draw the ETS lockup as a vector and
+     Figma's asset URLs are not reachable from here, so this is the mark SET
+     rather than the mark drawn. Swap it for the export when it lands - the
+     slot, the size and the colour are already right. */
+  .nrcell.nrets b{display:block;font-family:var(--font-ui);font-weight:700;
+          font-size:calc(var(--btn-size, 60px) * .26);line-height:1;
+          letter-spacing:-.04em;color:currentColor;font-style:normal}
 
   /* Each logo is scaled to carry the same INK as the others, not to share a
      box: matched on area, sqrt(ink_nfl / ink_this), anchored on the NFL shield
@@ -4282,6 +4367,17 @@
          The shadow is drawn as one drop-shadow on the row; it is a
          box-shadow per shape here because a `filter` on the row would make
          it a backdrop root and kill the blur underneath it in Safari. */
+      /* 521:37680 - the bar's own ink. --bar-ink is set by the SECTION and
+         the bar is fixed outside every section, so it needs its own copy of
+         the same two values, switched by the same skin class. */
+      .nav-wrap{--nav-ink:#1A1A1A}
+      html.nav-dark .nav-wrap{--nav-ink:#F8F8F8}
+      /* the study mark in the round chip is full ink on both surfaces - it
+         was painting the idle grey (#515151 / #9F9F9F), which is the colour
+         of an unselected LABEL, not of the mark. 521:37666 draws it in Text
+         Dark 1 and 521:37668 in Text White 1, rolling or held. */
+      .nav-wrap .nrcell,
+      html.nav-held .nav-wrap .nrcell{color:var(--nav-ink)}
       /* 521:37680 - the track is 80%, not 20% / 40%. White at 80% on a light
          surface, black at 80% on a dark one, blur 10 on both. */
       .nav-wrap .nav{
@@ -5185,21 +5281,89 @@
   <section  data-surface="light" class="st" id="abStory">
     <div class="stwrap">
       <div class="stleft">
-        <p class="steyebrow" id="stEyebrow"><span>Story</span><i>/</i><b>long version</b></p>
-        <h2 class="sthead" id="stHead">The story behind the person doing the work.</h2>
+        <div class="stintro">
+          <p class="steyebrow" id="stEyebrow"><span>Story</span><i>/</i><b>long version</b></p>
+          <h2 class="sthead" id="stHead">The story behind the person doing the work.</h2>
+        </div>
+        <!-- 521:37950 -->
+        <dl class="stfacts">
+          <div class="stfact"><dt>Location</dt><dd>San Francisco</dd></div>
+          <div class="stfact"><dt>Experience</dt><dd>8 Years</dd></div>
+          <div class="stfact"><dt>Title</dt><dd>Staff XD Designer</dd></div>
+          <div class="stfact"><dt>Company</dt><dd>Vemmo</dd></div>
+        </dl>
       </div>
       <div class="stcopy">
-        <p>I’m drawn to the part of design where craft meets reality; navigating
-          complex constraints and ambitious KPIs while still raising the standard
-          and delight. Because to me, craft isn’t a nice-to-have. It’s the baseline.</p>
-        <p>A lot of how I work has been shaped outside of design too. Soccer
-          brought me from Iceland to San Francisco and taught me early the
-          importance of team. Away from the screen, life is mostly fun stuff with
-          my girlfriend, caring for our dog Marlowe, and a huge appreciation for
-          food, Arsenal, and San Francisco.</p>
-        <p>I’m drawn to the part of design where craft meets reality; navigating
-          complex constraints and ambitious KPIs while still raising the standard
-          and delight. Because to me, craft isn’t a nice-to-have. It’s the baseline.</p>
+        <div class="stlede">
+          <div class="stblock">
+            <h3 class="stsub">The work</h3>
+            <p>I’m drawn to the part of design where craft meets reality; navigating
+              complex constraints and ambitious KPIs while still raising the standard
+              and delight. Because to me, craft isn’t a nice-to-have. It’s the baseline.</p>
+          </div>
+          <div class="stblock">
+            <p>A lot of how I work has been shaped outside of design too. Soccer
+              brought me from Iceland to San Francisco and taught me early the
+              importance of team. Away from the screen, life is mostly fun stuff with
+              my girlfriend, caring for our dog Marlowe, and a huge appreciation for
+              food, Arsenal, and San Francisco.</p>
+          </div>
+        </div>
+        <!-- 521:37972 - How I work. The body of each row opens on hover only. -->
+        <div class="stgroup">
+          <h3 class="stsub">How I work</h3>
+          <ol class="stacc">
+        <li class="swrow">
+          <div class="swhead"><p class="swn" aria-hidden="true">01</p>
+            <div class="swc"><h4 class="swt">Connect &amp; create</h4>
+              <div class="swbody"><div><p>I like to get close to the people, the problem, and the context as early as I can. The more I understand what matters, the easier it is to move with intention.</p></div></div>
+            </div>
+          </div>
+        </li>
+        <li class="swrow">
+          <div class="swhead"><p class="swn" aria-hidden="true">02</p>
+            <div class="swc"><h4 class="swt">Explore &amp; refine</h4>
+              <div class="swbody"><div><p>Starting early creates room to try directions, challenge assumptions, and push the details until the experience feels considered and complete.</p></div></div>
+            </div>
+          </div>
+        </li>
+        <li class="swrow">
+          <div class="swhead"><p class="swn" aria-hidden="true">03</p>
+            <div class="swc"><h4 class="swt">Learn &amp; evolve</h4>
+              <div class="swbody"><div><p>Ship it. See how the work performs in the real world, and use what you learn to keep making it better.</p></div></div>
+            </div>
+          </div>
+        </li>
+          </ol>
+        </div>
+        <!-- 521:37998 - Skills. The drawn rows still carry the component's
+             default copy; swap the three when you write them. -->
+        <div class="stgroup">
+          <h3 class="stsub">Skills</h3>
+          <ol class="stacc">
+        <li class="swrow">
+          <div class="swhead"><p class="swn" aria-hidden="true">01</p>
+            <div class="swc"><h4 class="swt">Connect &amp; create</h4>
+              <div class="swbody"><div><p>I like to get close to the people, the problem, and the context as early as I can. The more I understand what matters, the easier it is to move with intention.</p></div></div>
+            </div>
+          </div>
+        </li>
+        <li class="swrow">
+          <div class="swhead"><p class="swn" aria-hidden="true">02</p>
+            <div class="swc"><h4 class="swt">Explore &amp; refine</h4>
+              <div class="swbody"><div><p>Starting early creates room to try directions, challenge assumptions, and push the details until the experience feels considered and complete.</p></div></div>
+            </div>
+          </div>
+        </li>
+        <li class="swrow">
+          <div class="swhead"><p class="swn" aria-hidden="true">03</p>
+            <div class="swc"><h4 class="swt">Learn &amp; evolve</h4>
+              <div class="swbody"><div><p>Ship it. See how the work performs in the real world, and use what you learn to keep making it better.</p></div></div>
+            </div>
+          </div>
+        </li>
+          </ol>
+        </div>
       </div>
     </div>
   </section>
@@ -6107,9 +6271,8 @@
         <span class="nrtrack">
         <span class="nrcell" style="--h:39.7%;--w:31.43%"><svg width="38" height="48" viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#nr_clip0_97_3419)"> <mask id="nr_mask0_97_3419" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="37" height="48"> <path d="M36.3558 0H0V48H36.3558V0Z" fill="white"/> </mask> <g mask="url(#nr_mask0_97_3419)"> <path d="M36.2736 4.38746C36.2838 6.3873 36.262 8.38854 36.2724 10.3888C36.3194 19.4745 36.361 28.5654 36.3552 37.6564C36.1092 40.7102 32.9746 41.6814 30.4712 42.3358C26.5046 43.3726 21.3296 43.9174 18.6401 47.366C18.5625 47.4656 18.2325 48.0006 18.1581 48.0002C15.6629 43.6614 10.2345 43.2596 5.88408 42.0566C2.99886 41.2588 0.211968 40.0436 0 36.6198C0.00159525 25.9 0.0556342 15.1841 0.0817564 4.46722C0.417756 4.69094 0.719456 4.96274 1.05685 5.18588C5.25814 7.9642 10.6744 6.55938 14.5231 3.86182C15.9732 2.84544 17.3332 1.56207 18.198 0.00191837C18.2524 -0.00964718 18.2656 0.0334246 18.2911 0.0683206C18.6337 0.536726 18.8981 1.07153 19.278 1.5529C22.2964 5.3787 27.631 7.19588 32.415 6.32828C33.8278 6.07204 35.3304 5.50852 36.2736 4.38746ZM21.765 5.90274C19.0849 5.85448 16.3603 6.71652 14.781 8.98296C13.3137 11.0887 13.2029 13.8124 13.6065 16.2744C13.6806 16.7269 13.7981 17.1708 13.8733 17.6226C13.9762 17.6336 13.9369 17.6226 13.954 17.5644C14.1122 17.0272 14.2035 16.407 14.3544 15.8517C14.6964 14.5942 15.1291 13.3631 15.6673 12.1774C15.6771 12.1256 15.6613 12.0979 15.6272 12.061C15.567 11.9956 15.0641 11.8042 15.0316 11.7593L15.2338 11.2875C15.976 11.461 16.7856 11.67 17.3013 12.2586L17.0235 12.7814L16.2099 12.4454C15.4007 13.5821 14.978 15.02 14.6825 16.3789C14.643 16.5604 14.379 17.77 14.4308 17.8218C17.7025 17.6226 21.2596 15.8577 22.4836 12.6602C23.118 11.0027 23.0588 9.26912 22.6308 7.56778C22.5128 7.09838 22.3398 6.64414 22.2032 6.18092C21.564 6.45868 20.9354 6.81622 20.4292 7.29838C20.404 7.32232 20.3654 7.33468 20.3306 7.33786C20.2782 7.41184 20.8042 7.84634 20.8878 7.91514C20.7686 7.9977 20.6012 8.30398 20.4508 8.23538C20.3762 8.2015 20.0998 7.90178 19.9849 7.82222C19.6148 7.56618 19.2532 7.47266 18.8159 7.39708C18.9314 7.33528 19.2116 7.08122 19.3186 7.06906C19.4582 7.05312 19.7262 7.14364 19.8728 7.14164C20.0968 7.13886 20.3414 6.73766 20.5566 6.62618L21.765 5.90274ZM3.32988 9.56982H1.55616L2.9869 10.6731L2.49318 12.4006L3.9606 11.3693L5.46192 12.4002L4.90938 10.6701L6.33912 9.56982H4.5654L3.9281 7.85532L3.32988 9.56982ZM9.6676 9.56982H7.89388L9.32442 10.6723L8.8309 12.4008L10.2983 11.3695L11.8 12.4L11.2471 10.6703L12.6768 9.57002H10.9031L10.3049 7.85552L9.6676 9.56982ZM25.492 9.56982H23.7184L25.148 10.6743L24.6554 12.4006L26.1298 11.3768L27.6242 12.4002L27.0716 10.6701L28.5012 9.56982H26.7076L26.0902 7.85532L25.492 9.56982ZM31.8296 9.56982H30.0558L31.4866 10.6731L30.9928 12.4006L32.4602 11.3693L33.9616 12.4002L33.409 10.6701L34.8388 9.56982H33.065L32.4278 7.85532L31.8296 9.56982ZM6.33932 15.151H4.5656C4.2992 14.6499 4.22042 13.9972 3.9915 13.4927C3.97018 13.4459 4.01046 13.4207 3.90836 13.4367L3.38592 15.1468L1.55656 15.1911L2.99388 16.2547L2.47344 18.021L3.96778 16.9564L5.46252 17.9808L4.90738 16.232L6.33932 15.151ZM12.677 15.151H10.9033L10.2461 13.4369L9.72582 15.1494L7.89388 15.1915L9.3314 16.2551L8.81116 18.0216L10.3059 16.9554L11.8 17.9816L11.2391 16.2539L12.677 15.151ZM28.5012 15.151H26.7276C26.4614 14.6497 26.3822 13.9976 26.1534 13.4927C26.1322 13.4459 26.1724 13.4207 26.0704 13.4367L25.5478 15.1468L23.7186 15.1911C23.8712 15.3831 25.1098 16.1406 25.1482 16.2541C25.2106 16.4382 24.6632 17.7295 24.6356 18.021L26.13 16.9564L27.6246 17.981L27.0802 16.286L28.5012 15.151ZM34.839 15.151H33.0652C32.7988 14.6499 32.7202 13.9972 32.4912 13.4927C32.4698 13.4459 32.5102 13.4207 32.408 13.4367L31.8856 15.1468L30.056 15.1911L31.4936 16.2547L30.9732 18.021L32.4674 16.9564L33.9622 17.9808L33.407 16.232L34.839 15.151ZM34.7196 19.4962H1.63593C1.61499 24.2894 1.62556 29.0756 1.59804 33.8694C1.59485 34.4352 1.52605 35.0102 1.55457 35.5834C1.7103 38.6956 3.77356 39.786 6.48208 40.5418C10.2602 41.596 14.7668 41.7314 17.5206 44.8896L18.1972 45.8072C19.7902 43.3208 22.7834 42.4092 25.5114 41.7602C27.8956 41.193 32.212 40.6996 33.8834 38.8516C34.9416 37.6816 34.8114 36.2582 34.801 34.7828C34.7806 31.935 34.7312 29.063 34.7176 26.2152C34.707 23.9756 34.7296 21.7354 34.7196 19.4962Z" fill="white"/> <path d="M14.2288 23.2217L13.3915 23.9389C13.373 27.1023 13.3804 30.2655 13.3536 33.4287C13.3528 33.5323 13.3112 33.6303 13.3102 33.7441C13.2934 35.7723 13.3584 37.8049 13.2517 39.8259L10.758 39.0411L7.4921 29.5805C7.4227 29.5711 7.45462 29.6711 7.45262 29.7193C7.37984 31.6161 7.5601 33.5199 7.4933 35.4195L8.44088 36.4649L8.48874 38.5497L3.58794 37.3519L3.60448 35.5979L4.91776 35.0859L4.9441 35.0231L4.86334 23.9061L3.6326 23.3547L3.58594 21.0487L7.3938 21.0479L10.6417 31.1345C10.7111 31.1439 10.6792 31.0439 10.6812 30.9957C10.7719 28.6371 10.615 26.2559 10.6417 23.8991C10.6278 23.8095 10.5263 23.7739 10.4541 23.7279C10.1717 23.5489 9.86104 23.3973 9.56532 23.2415V21.0491H14.2288V23.2217Z" fill="white"/> <path d="M23.557 21.1294L23.5126 25.311L21.67 25.3488L20.9604 23.766L19.0128 23.6808V28.4048C19.0128 28.5186 19.3183 28.4252 19.3899 28.423C19.7728 28.411 20.158 28.4412 20.5408 28.4182L21.1536 27.4674L22.5606 27.5076L22.5184 31.8512L21.2446 31.8734C21.086 31.7226 20.6076 30.9362 20.4278 30.9362H18.973V38.8894L20.0092 40.0056V42.0588L15.2315 40.2792L15.1918 38.5774L16.3037 38.0054C16.2932 36.7584 16.3121 35.5106 16.3037 34.2634C16.2836 31.183 16.2908 28.0548 16.1809 24.9782C16.1739 24.7806 16.2248 24.039 16.1424 23.9404L15.1055 23.2542L15.0664 21.1294H23.557Z" fill="white"/> <path d="M24.3947 21.0918L29.3773 21.0518L29.4105 23.0984L28.4371 23.8792L28.3785 24.02L28.3409 35.722L30.3693 35.0804L30.6521 31.935L32.6855 31.9748L32.7467 37.1988L24.4743 39.5494L24.4031 37.6642L25.3913 36.4592C25.3001 35.1128 25.3743 33.7458 25.3527 32.392C25.1479 29.7282 25.4557 26.872 25.2711 24.2218C25.2615 24.0858 25.2205 23.9408 25.2115 23.8028L24.3945 23.3044L24.3947 21.0918Z" fill="white"/> <path d="M18.581 10.6047C18.2727 10.3878 18.0045 10.1291 17.6773 9.93471C17.3395 9.73391 16.9704 9.59293 16.6055 9.45057L16.7905 8.97119C17.5383 9.19553 18.4396 9.41507 18.9353 10.0594L18.581 10.6047Z" fill="white"/> <path d="M17.9013 7.77637C18.4195 7.91755 18.9857 8.08227 19.4529 8.35087C19.5932 8.43163 19.9657 8.67889 20.0328 8.81089C20.0574 8.85935 19.7653 9.29107 19.7127 9.33175C19.6692 9.36543 19.6646 9.36803 19.6104 9.35287C19.548 9.33553 19.016 8.87111 18.8662 8.77779C18.5053 8.55287 18.1113 8.40411 17.7148 8.25355L17.9013 7.77637Z" fill="white"/> <path d="M18.0448 10.9753C18.0682 11.0028 18.0825 11.0325 18.0873 11.0686L17.7184 11.6411C17.1581 11.0844 16.4785 10.7412 15.7461 10.4656L15.9648 10.0455L16.036 10.0132C16.5501 10.1884 17.0821 10.33 17.5511 10.6128C17.671 10.685 17.9635 10.8792 18.0448 10.9753Z" fill="white"/> </g> </g> <defs> <clipPath id="nr_clip0_97_3419"> <rect width="38" height="48" fill="white"/> </clipPath> </defs> </svg></span>
         <span class="nrcell" style="--h:25.35%;--w:46.89%"><svg width="45" height="24" viewBox="0 0 45 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#nr_clip0_97_3388)"> <mask id="nr_mask0_97_3388" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="44" height="24"> <path d="M43.4569 0H0.210938V24H43.4569V0Z" fill="white"/> </mask> <g mask="url(#nr_mask0_97_3388)"> <path d="M17.1836 0.000928822L25.1596 0C27.1666 0.141367 28.6323 1.70068 28.7155 3.70321C28.7786 5.22444 28.6812 6.8012 28.6958 8.32577C28.6016 9.244 28.0342 10.043 27.2983 10.5668C27.1203 10.6935 26.9244 10.7896 26.7464 10.9151C27.768 11.2783 28.5524 12.2299 28.8496 13.2586C28.9513 13.6104 28.9989 13.973 29.0127 14.3392C29.0791 16.119 28.9605 17.9396 29.0127 19.7237C28.928 21.8947 27.3454 23.4798 25.16 23.5013H17.2479L17.1838 23.4725L17.1836 0.000928822ZM20.9715 9.91313H23.469C24.0138 9.91313 24.6618 9.30381 24.7353 8.76604C24.776 7.0113 24.7746 5.24171 24.7359 3.48642C24.6136 2.7311 24.0056 2.12812 23.244 2.0265C23.0253 1.99734 22.8418 2.02409 22.6341 2.02501C22.08 2.02744 21.5254 2.02168 20.9715 2.02427V9.91313ZM20.9715 21.3473L23.4697 21.348C24.2415 21.3019 24.823 20.7971 24.9088 20.0209C24.8916 17.8512 24.9394 15.6768 24.8842 13.5098C24.836 12.8308 24.0398 12.0292 23.3575 12.0292H20.9715V21.3473Z" fill="white"/> <path d="M35.864 0.0381076V20.1129C35.864 20.2166 35.9678 20.5077 36.0152 20.6115C36.7458 22.2134 39.5428 21.8959 39.6889 20.057C39.7783 18.9303 39.6261 17.6881 39.6883 16.5481C39.6916 16.4881 39.7096 16.4325 39.7078 16.3725H43.4586V23.4818H31.9648V0.0195312L35.864 0.0381076Z" fill="white"/> <path d="M9.97521 0.0381076L13.8748 0.0195312L13.8755 19.6312C13.7426 21.9481 11.8394 23.8514 9.5212 23.984C8.17756 23.8992 6.67381 24.1764 5.37941 23.7794C3.55056 23.2188 2.24297 21.5414 2.12109 19.6303V16.3729H6.13174L6.15069 20.5213C6.35857 22.4842 9.4402 22.6473 9.92505 20.7681C9.93675 20.7226 9.97558 20.5738 9.97558 20.5401L9.97521 0.0381076Z" fill="white"/> <path d="M7.61977 0.00146484L3.90634 8.42848L0.210938 0.00146484H7.61977Z" fill="white"/> <path d="M3.69871 9.15751C5.59852 9.00128 6.89998 11.0086 5.9524 12.6727C5.06686 14.2278 2.78605 14.2291 1.88639 12.6845C0.986737 11.1398 1.99879 9.29738 3.69871 9.15751Z" fill="white"/> </g> </g> <defs> <clipPath id="nr_clip0_97_3388"> <rect width="44.4" height="24" fill="white"/> </clipPath> </defs> </svg></span>
-        <span class="nrcell" style="--h:7.84%;--w:70.0%"><svg width="134" height="15" viewBox="0 0 134 15" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M122.882 0.00879749C128.574 -0.181387 135.489 2.70398 133.563 9.44463C132.159 14.3677 125.892 15.2806 121.45 14.8405C110.249 13.7292 110.569 0.419052 122.879 0.00879749H122.882ZM122.863 2.44044C119.008 3.22291 119.052 13.0282 123.87 12.6886C128.279 12.3789 128.541 1.28846 122.863 2.44044Z" fill="white"/> <path d="M41.8734 0.00661447C46.8182 -0.131948 52.8253 1.88944 52.7039 7.68189C52.5025 17.3025 33.4739 17.2101 32.2901 8.7415C31.4651 2.84851 36.6499 0.153328 41.8734 0.00661447ZM44.5887 11.798C46.832 9.57288 46.6057 2.48172 42.6157 2.35674C37.2625 2.19101 37.9275 13.8031 43.1041 12.6511C43.4242 12.5805 44.3513 12.0317 44.5914 11.7953L44.5887 11.798Z" fill="white"/> <path d="M26.352 0.0410208C28.1069 0.114378 28.1952 0.356186 27.5523 2.17651L24.3376 2.27161L17.8917 14.1255L9.90339 14.0006L3.54303 2.25802L0.256621 2.09501L0 0.0410208H14.6246L14.3653 2.09501C13.9044 2.41289 12.4006 2.12489 11.7218 2.21184C11.3383 2.26074 11.2417 2.06512 11.3189 2.61122L15.8664 10.6288L20.4138 2.61122C20.6649 1.78257 18.496 2.48896 17.9193 2.09229L17.6599 0.0383043C20.5463 0.125246 23.4656 -0.0812404 26.352 0.0383043V0.0410208Z" fill="white"/> <path d="M108.366 0.289442C108.485 0.275857 108.747 -0.0827751 109.054 0.017751V2.46298L105.61 2.73466L99.1199 14.2761L91.3907 14.2815L84.9114 2.72923L81.457 2.46298V0.286726L95.8056 0.0150337V2.46298L92.4974 2.5961C92.9994 3.19382 96.987 11.2305 97.4586 10.8827C98.237 8.07338 100.966 5.20162 101.873 2.59067C102.116 1.88971 101.564 2.38146 101.396 2.39233C100.635 2.44395 99.8785 2.51188 99.1145 2.46298V0.289442C102.047 0.0449199 105.491 0.618189 108.358 0.289442H108.366Z" fill="white"/> <path d="M70.5498 0L70.2901 2.05399L67.2386 2.17353V11.6827H71.7914C71.9133 11.6827 73.6539 10.6177 73.8664 10.3895C74.5344 9.65593 74.9541 8.33278 74.9785 7.34922C75.7235 7.34922 76.665 7.09654 77.1723 7.7432V13.7204L76.7587 14.128H57.4429C56.7916 13.6307 57.0346 12.7016 57.0453 11.9707L60.6162 11.6827V2.17353L57.2882 2.05399L57.0293 0H70.5498Z" fill="white"/> </svg></span>
         <span class="nrcell" style="--h:44%;--w:44%"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250"> <path d="M112.8,134.5h30.3v-10.1h-3.3c0,3.9-2.8,6.7-7.2,6.7H128v-15.1h5v-3.4h-20.2v3.4h5.1l0,15.1h-5.1L112.8,134.5L112.8,134.5 z"/> <polygon points="157.7,134.5 169.5,134.5 179.6,116 184.6,116 184.6,112.6 169.5,112.6 169.5,116 173.9,116 166.5,129.5 159.2,116 164.5,116 164.5,112.6 142.5,112.6 142.5,116 147.5,116"/> <polygon points="52.4,112.6 30.5,112.6 30.5,116 35.5,116 45.7,134.5 57.5,134.5 67.5,116 72.5,116 72.5,112.6 57.4,112.6 57.4,116 61.8,116 54.5,129.5 47.1,116 52.4,116"/> <path d="M75.5,123.6c0,6.4,5.2,11.6,15.6,11.6c10.4,0,15.5-5.1,15.5-11.6c0-6.4-5.4-11.4-15.6-11.4 C80.9,112.1,75.5,117.2,75.5,123.6z M96.4,123.6c-0.1,4-1.7,8.1-5.5,8c-3.7-0.1-5.3-4.2-5.3-8.2c0.1-4.2,2.1-7.9,5.6-7.8 C94.7,115.6,96.5,119.4,96.4,123.6z"/> <path d="M187.5,123.6c0,6.4,5.2,11.6,15.6,11.6c10.4,0,15.5-5.1,15.5-11.6c0-6.4-5.4-11.4-15.6-11.4 C192.9,112.1,187.5,117.2,187.5,123.6z M203.2,115.6c3.5,0.1,5.3,3.8,5.2,8c-0.1,4-1.7,8.1-5.5,8c-3.7-0.1-5.3-4.2-5.3-8.2 C197.7,119.2,199.7,115.5,203.2,115.6z"/> <path d="M227.9,54l-12.7,12.7c10.9,16.8,17.2,36.8,17.2,58.3c0,59.3-48.1,107.4-107.4,107.4S17.6,184.3,17.6,125 S65.7,17.6,125,17.6c21.6,0,41.6,6.4,58.4,17.3l12.7-12.7C176,8.2,151.4,0,125,0C56,0,0,56,0,125s56,125,125,125s125-56,125-125 C250,98.6,241.8,74.1,227.9,54z"/> <path d="M187.9,4.9v3.5c7.6,4.1,14.7,9,21.3,14.4l-17.8,17.8c6.7,5.3,12.8,11.3,18.1,18l17.8-17.8c5.5,6.6,10.3,13.8,14.4,21.2h3.4 V4.9H187.9z"/> </svg></span>
-        <span class="nrcell" style="--h:39.7%;--w:31.43%"><svg width="38" height="48" viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#nr_clip0_97_3419)"> <mask id="nr_mask0_97_3419" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="37" height="48"> <path d="M36.3558 0H0V48H36.3558V0Z" fill="white"/> </mask> <g mask="url(#nr_mask0_97_3419)"> <path d="M36.2736 4.38746C36.2838 6.3873 36.262 8.38854 36.2724 10.3888C36.3194 19.4745 36.361 28.5654 36.3552 37.6564C36.1092 40.7102 32.9746 41.6814 30.4712 42.3358C26.5046 43.3726 21.3296 43.9174 18.6401 47.366C18.5625 47.4656 18.2325 48.0006 18.1581 48.0002C15.6629 43.6614 10.2345 43.2596 5.88408 42.0566C2.99886 41.2588 0.211968 40.0436 0 36.6198C0.00159525 25.9 0.0556342 15.1841 0.0817564 4.46722C0.417756 4.69094 0.719456 4.96274 1.05685 5.18588C5.25814 7.9642 10.6744 6.55938 14.5231 3.86182C15.9732 2.84544 17.3332 1.56207 18.198 0.00191837C18.2524 -0.00964718 18.2656 0.0334246 18.2911 0.0683206C18.6337 0.536726 18.8981 1.07153 19.278 1.5529C22.2964 5.3787 27.631 7.19588 32.415 6.32828C33.8278 6.07204 35.3304 5.50852 36.2736 4.38746ZM21.765 5.90274C19.0849 5.85448 16.3603 6.71652 14.781 8.98296C13.3137 11.0887 13.2029 13.8124 13.6065 16.2744C13.6806 16.7269 13.7981 17.1708 13.8733 17.6226C13.9762 17.6336 13.9369 17.6226 13.954 17.5644C14.1122 17.0272 14.2035 16.407 14.3544 15.8517C14.6964 14.5942 15.1291 13.3631 15.6673 12.1774C15.6771 12.1256 15.6613 12.0979 15.6272 12.061C15.567 11.9956 15.0641 11.8042 15.0316 11.7593L15.2338 11.2875C15.976 11.461 16.7856 11.67 17.3013 12.2586L17.0235 12.7814L16.2099 12.4454C15.4007 13.5821 14.978 15.02 14.6825 16.3789C14.643 16.5604 14.379 17.77 14.4308 17.8218C17.7025 17.6226 21.2596 15.8577 22.4836 12.6602C23.118 11.0027 23.0588 9.26912 22.6308 7.56778C22.5128 7.09838 22.3398 6.64414 22.2032 6.18092C21.564 6.45868 20.9354 6.81622 20.4292 7.29838C20.404 7.32232 20.3654 7.33468 20.3306 7.33786C20.2782 7.41184 20.8042 7.84634 20.8878 7.91514C20.7686 7.9977 20.6012 8.30398 20.4508 8.23538C20.3762 8.2015 20.0998 7.90178 19.9849 7.82222C19.6148 7.56618 19.2532 7.47266 18.8159 7.39708C18.9314 7.33528 19.2116 7.08122 19.3186 7.06906C19.4582 7.05312 19.7262 7.14364 19.8728 7.14164C20.0968 7.13886 20.3414 6.73766 20.5566 6.62618L21.765 5.90274ZM3.32988 9.56982H1.55616L2.9869 10.6731L2.49318 12.4006L3.9606 11.3693L5.46192 12.4002L4.90938 10.6701L6.33912 9.56982H4.5654L3.9281 7.85532L3.32988 9.56982ZM9.6676 9.56982H7.89388L9.32442 10.6723L8.8309 12.4008L10.2983 11.3695L11.8 12.4L11.2471 10.6703L12.6768 9.57002H10.9031L10.3049 7.85552L9.6676 9.56982ZM25.492 9.56982H23.7184L25.148 10.6743L24.6554 12.4006L26.1298 11.3768L27.6242 12.4002L27.0716 10.6701L28.5012 9.56982H26.7076L26.0902 7.85532L25.492 9.56982ZM31.8296 9.56982H30.0558L31.4866 10.6731L30.9928 12.4006L32.4602 11.3693L33.9616 12.4002L33.409 10.6701L34.8388 9.56982H33.065L32.4278 7.85532L31.8296 9.56982ZM6.33932 15.151H4.5656C4.2992 14.6499 4.22042 13.9972 3.9915 13.4927C3.97018 13.4459 4.01046 13.4207 3.90836 13.4367L3.38592 15.1468L1.55656 15.1911L2.99388 16.2547L2.47344 18.021L3.96778 16.9564L5.46252 17.9808L4.90738 16.232L6.33932 15.151ZM12.677 15.151H10.9033L10.2461 13.4369L9.72582 15.1494L7.89388 15.1915L9.3314 16.2551L8.81116 18.0216L10.3059 16.9554L11.8 17.9816L11.2391 16.2539L12.677 15.151ZM28.5012 15.151H26.7276C26.4614 14.6497 26.3822 13.9976 26.1534 13.4927C26.1322 13.4459 26.1724 13.4207 26.0704 13.4367L25.5478 15.1468L23.7186 15.1911C23.8712 15.3831 25.1098 16.1406 25.1482 16.2541C25.2106 16.4382 24.6632 17.7295 24.6356 18.021L26.13 16.9564L27.6246 17.981L27.0802 16.286L28.5012 15.151ZM34.839 15.151H33.0652C32.7988 14.6499 32.7202 13.9972 32.4912 13.4927C32.4698 13.4459 32.5102 13.4207 32.408 13.4367L31.8856 15.1468L30.056 15.1911L31.4936 16.2547L30.9732 18.021L32.4674 16.9564L33.9622 17.9808L33.407 16.232L34.839 15.151ZM34.7196 19.4962H1.63593C1.61499 24.2894 1.62556 29.0756 1.59804 33.8694C1.59485 34.4352 1.52605 35.0102 1.55457 35.5834C1.7103 38.6956 3.77356 39.786 6.48208 40.5418C10.2602 41.596 14.7668 41.7314 17.5206 44.8896L18.1972 45.8072C19.7902 43.3208 22.7834 42.4092 25.5114 41.7602C27.8956 41.193 32.212 40.6996 33.8834 38.8516C34.9416 37.6816 34.8114 36.2582 34.801 34.7828C34.7806 31.935 34.7312 29.063 34.7176 26.2152C34.707 23.9756 34.7296 21.7354 34.7196 19.4962Z" fill="white"/> <path d="M14.2288 23.2217L13.3915 23.9389C13.373 27.1023 13.3804 30.2655 13.3536 33.4287C13.3528 33.5323 13.3112 33.6303 13.3102 33.7441C13.2934 35.7723 13.3584 37.8049 13.2517 39.8259L10.758 39.0411L7.4921 29.5805C7.4227 29.5711 7.45462 29.6711 7.45262 29.7193C7.37984 31.6161 7.5601 33.5199 7.4933 35.4195L8.44088 36.4649L8.48874 38.5497L3.58794 37.3519L3.60448 35.5979L4.91776 35.0859L4.9441 35.0231L4.86334 23.9061L3.6326 23.3547L3.58594 21.0487L7.3938 21.0479L10.6417 31.1345C10.7111 31.1439 10.6792 31.0439 10.6812 30.9957C10.7719 28.6371 10.615 26.2559 10.6417 23.8991C10.6278 23.8095 10.5263 23.7739 10.4541 23.7279C10.1717 23.5489 9.86104 23.3973 9.56532 23.2415V21.0491H14.2288V23.2217Z" fill="white"/> <path d="M23.557 21.1294L23.5126 25.311L21.67 25.3488L20.9604 23.766L19.0128 23.6808V28.4048C19.0128 28.5186 19.3183 28.4252 19.3899 28.423C19.7728 28.411 20.158 28.4412 20.5408 28.4182L21.1536 27.4674L22.5606 27.5076L22.5184 31.8512L21.2446 31.8734C21.086 31.7226 20.6076 30.9362 20.4278 30.9362H18.973V38.8894L20.0092 40.0056V42.0588L15.2315 40.2792L15.1918 38.5774L16.3037 38.0054C16.2932 36.7584 16.3121 35.5106 16.3037 34.2634C16.2836 31.183 16.2908 28.0548 16.1809 24.9782C16.1739 24.7806 16.2248 24.039 16.1424 23.9404L15.1055 23.2542L15.0664 21.1294H23.557Z" fill="white"/> <path d="M24.3947 21.0918L29.3773 21.0518L29.4105 23.0984L28.4371 23.8792L28.3785 24.02L28.3409 35.722L30.3693 35.0804L30.6521 31.935L32.6855 31.9748L32.7467 37.1988L24.4743 39.5494L24.4031 37.6642L25.3913 36.4592C25.3001 35.1128 25.3743 33.7458 25.3527 32.392C25.1479 29.7282 25.4557 26.872 25.2711 24.2218C25.2615 24.0858 25.2205 23.9408 25.2115 23.8028L24.3945 23.3044L24.3947 21.0918Z" fill="white"/> <path d="M18.581 10.6047C18.2727 10.3878 18.0045 10.1291 17.6773 9.93471C17.3395 9.73391 16.9704 9.59293 16.6055 9.45057L16.7905 8.97119C17.5383 9.19553 18.4396 9.41507 18.9353 10.0594L18.581 10.6047Z" fill="white"/> <path d="M17.9013 7.77637C18.4195 7.91755 18.9857 8.08227 19.4529 8.35087C19.5932 8.43163 19.9657 8.67889 20.0328 8.81089C20.0574 8.85935 19.7653 9.29107 19.7127 9.33175C19.6692 9.36543 19.6646 9.36803 19.6104 9.35287C19.548 9.33553 19.016 8.87111 18.8662 8.77779C18.5053 8.55287 18.1113 8.40411 17.7148 8.25355L17.9013 7.77637Z" fill="white"/> <path d="M18.0448 10.9753C18.0682 11.0028 18.0825 11.0325 18.0873 11.0686L17.7184 11.6411C17.1581 11.0844 16.4785 10.7412 15.7461 10.4656L15.9648 10.0455L16.036 10.0132C16.5501 10.1884 17.0821 10.33 17.5511 10.6128C17.671 10.685 17.9635 10.8792 18.0448 10.9753Z" fill="white"/> </g> </g> <defs> <clipPath id="nr_clip0_97_3419"> <rect width="38" height="48" fill="white"/> </clipPath> </defs> </svg></span>
+        <span class="nrcell nrets" style="--h:26%;--w:64%"><b aria-hidden="true">*ets</b></span><span class="nrcell" style="--h:39.7%;--w:31.43%"><svg width="38" height="48" viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#nr_clip0_97_3419)"> <mask id="nr_mask0_97_3419" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="37" height="48"> <path d="M36.3558 0H0V48H36.3558V0Z" fill="white"/> </mask> <g mask="url(#nr_mask0_97_3419)"> <path d="M36.2736 4.38746C36.2838 6.3873 36.262 8.38854 36.2724 10.3888C36.3194 19.4745 36.361 28.5654 36.3552 37.6564C36.1092 40.7102 32.9746 41.6814 30.4712 42.3358C26.5046 43.3726 21.3296 43.9174 18.6401 47.366C18.5625 47.4656 18.2325 48.0006 18.1581 48.0002C15.6629 43.6614 10.2345 43.2596 5.88408 42.0566C2.99886 41.2588 0.211968 40.0436 0 36.6198C0.00159525 25.9 0.0556342 15.1841 0.0817564 4.46722C0.417756 4.69094 0.719456 4.96274 1.05685 5.18588C5.25814 7.9642 10.6744 6.55938 14.5231 3.86182C15.9732 2.84544 17.3332 1.56207 18.198 0.00191837C18.2524 -0.00964718 18.2656 0.0334246 18.2911 0.0683206C18.6337 0.536726 18.8981 1.07153 19.278 1.5529C22.2964 5.3787 27.631 7.19588 32.415 6.32828C33.8278 6.07204 35.3304 5.50852 36.2736 4.38746ZM21.765 5.90274C19.0849 5.85448 16.3603 6.71652 14.781 8.98296C13.3137 11.0887 13.2029 13.8124 13.6065 16.2744C13.6806 16.7269 13.7981 17.1708 13.8733 17.6226C13.9762 17.6336 13.9369 17.6226 13.954 17.5644C14.1122 17.0272 14.2035 16.407 14.3544 15.8517C14.6964 14.5942 15.1291 13.3631 15.6673 12.1774C15.6771 12.1256 15.6613 12.0979 15.6272 12.061C15.567 11.9956 15.0641 11.8042 15.0316 11.7593L15.2338 11.2875C15.976 11.461 16.7856 11.67 17.3013 12.2586L17.0235 12.7814L16.2099 12.4454C15.4007 13.5821 14.978 15.02 14.6825 16.3789C14.643 16.5604 14.379 17.77 14.4308 17.8218C17.7025 17.6226 21.2596 15.8577 22.4836 12.6602C23.118 11.0027 23.0588 9.26912 22.6308 7.56778C22.5128 7.09838 22.3398 6.64414 22.2032 6.18092C21.564 6.45868 20.9354 6.81622 20.4292 7.29838C20.404 7.32232 20.3654 7.33468 20.3306 7.33786C20.2782 7.41184 20.8042 7.84634 20.8878 7.91514C20.7686 7.9977 20.6012 8.30398 20.4508 8.23538C20.3762 8.2015 20.0998 7.90178 19.9849 7.82222C19.6148 7.56618 19.2532 7.47266 18.8159 7.39708C18.9314 7.33528 19.2116 7.08122 19.3186 7.06906C19.4582 7.05312 19.7262 7.14364 19.8728 7.14164C20.0968 7.13886 20.3414 6.73766 20.5566 6.62618L21.765 5.90274ZM3.32988 9.56982H1.55616L2.9869 10.6731L2.49318 12.4006L3.9606 11.3693L5.46192 12.4002L4.90938 10.6701L6.33912 9.56982H4.5654L3.9281 7.85532L3.32988 9.56982ZM9.6676 9.56982H7.89388L9.32442 10.6723L8.8309 12.4008L10.2983 11.3695L11.8 12.4L11.2471 10.6703L12.6768 9.57002H10.9031L10.3049 7.85552L9.6676 9.56982ZM25.492 9.56982H23.7184L25.148 10.6743L24.6554 12.4006L26.1298 11.3768L27.6242 12.4002L27.0716 10.6701L28.5012 9.56982H26.7076L26.0902 7.85532L25.492 9.56982ZM31.8296 9.56982H30.0558L31.4866 10.6731L30.9928 12.4006L32.4602 11.3693L33.9616 12.4002L33.409 10.6701L34.8388 9.56982H33.065L32.4278 7.85532L31.8296 9.56982ZM6.33932 15.151H4.5656C4.2992 14.6499 4.22042 13.9972 3.9915 13.4927C3.97018 13.4459 4.01046 13.4207 3.90836 13.4367L3.38592 15.1468L1.55656 15.1911L2.99388 16.2547L2.47344 18.021L3.96778 16.9564L5.46252 17.9808L4.90738 16.232L6.33932 15.151ZM12.677 15.151H10.9033L10.2461 13.4369L9.72582 15.1494L7.89388 15.1915L9.3314 16.2551L8.81116 18.0216L10.3059 16.9554L11.8 17.9816L11.2391 16.2539L12.677 15.151ZM28.5012 15.151H26.7276C26.4614 14.6497 26.3822 13.9976 26.1534 13.4927C26.1322 13.4459 26.1724 13.4207 26.0704 13.4367L25.5478 15.1468L23.7186 15.1911C23.8712 15.3831 25.1098 16.1406 25.1482 16.2541C25.2106 16.4382 24.6632 17.7295 24.6356 18.021L26.13 16.9564L27.6246 17.981L27.0802 16.286L28.5012 15.151ZM34.839 15.151H33.0652C32.7988 14.6499 32.7202 13.9972 32.4912 13.4927C32.4698 13.4459 32.5102 13.4207 32.408 13.4367L31.8856 15.1468L30.056 15.1911L31.4936 16.2547L30.9732 18.021L32.4674 16.9564L33.9622 17.9808L33.407 16.232L34.839 15.151ZM34.7196 19.4962H1.63593C1.61499 24.2894 1.62556 29.0756 1.59804 33.8694C1.59485 34.4352 1.52605 35.0102 1.55457 35.5834C1.7103 38.6956 3.77356 39.786 6.48208 40.5418C10.2602 41.596 14.7668 41.7314 17.5206 44.8896L18.1972 45.8072C19.7902 43.3208 22.7834 42.4092 25.5114 41.7602C27.8956 41.193 32.212 40.6996 33.8834 38.8516C34.9416 37.6816 34.8114 36.2582 34.801 34.7828C34.7806 31.935 34.7312 29.063 34.7176 26.2152C34.707 23.9756 34.7296 21.7354 34.7196 19.4962Z" fill="white"/> <path d="M14.2288 23.2217L13.3915 23.9389C13.373 27.1023 13.3804 30.2655 13.3536 33.4287C13.3528 33.5323 13.3112 33.6303 13.3102 33.7441C13.2934 35.7723 13.3584 37.8049 13.2517 39.8259L10.758 39.0411L7.4921 29.5805C7.4227 29.5711 7.45462 29.6711 7.45262 29.7193C7.37984 31.6161 7.5601 33.5199 7.4933 35.4195L8.44088 36.4649L8.48874 38.5497L3.58794 37.3519L3.60448 35.5979L4.91776 35.0859L4.9441 35.0231L4.86334 23.9061L3.6326 23.3547L3.58594 21.0487L7.3938 21.0479L10.6417 31.1345C10.7111 31.1439 10.6792 31.0439 10.6812 30.9957C10.7719 28.6371 10.615 26.2559 10.6417 23.8991C10.6278 23.8095 10.5263 23.7739 10.4541 23.7279C10.1717 23.5489 9.86104 23.3973 9.56532 23.2415V21.0491H14.2288V23.2217Z" fill="white"/> <path d="M23.557 21.1294L23.5126 25.311L21.67 25.3488L20.9604 23.766L19.0128 23.6808V28.4048C19.0128 28.5186 19.3183 28.4252 19.3899 28.423C19.7728 28.411 20.158 28.4412 20.5408 28.4182L21.1536 27.4674L22.5606 27.5076L22.5184 31.8512L21.2446 31.8734C21.086 31.7226 20.6076 30.9362 20.4278 30.9362H18.973V38.8894L20.0092 40.0056V42.0588L15.2315 40.2792L15.1918 38.5774L16.3037 38.0054C16.2932 36.7584 16.3121 35.5106 16.3037 34.2634C16.2836 31.183 16.2908 28.0548 16.1809 24.9782C16.1739 24.7806 16.2248 24.039 16.1424 23.9404L15.1055 23.2542L15.0664 21.1294H23.557Z" fill="white"/> <path d="M24.3947 21.0918L29.3773 21.0518L29.4105 23.0984L28.4371 23.8792L28.3785 24.02L28.3409 35.722L30.3693 35.0804L30.6521 31.935L32.6855 31.9748L32.7467 37.1988L24.4743 39.5494L24.4031 37.6642L25.3913 36.4592C25.3001 35.1128 25.3743 33.7458 25.3527 32.392C25.1479 29.7282 25.4557 26.872 25.2711 24.2218C25.2615 24.0858 25.2205 23.9408 25.2115 23.8028L24.3945 23.3044L24.3947 21.0918Z" fill="white"/> <path d="M18.581 10.6047C18.2727 10.3878 18.0045 10.1291 17.6773 9.93471C17.3395 9.73391 16.9704 9.59293 16.6055 9.45057L16.7905 8.97119C17.5383 9.19553 18.4396 9.41507 18.9353 10.0594L18.581 10.6047Z" fill="white"/> <path d="M17.9013 7.77637C18.4195 7.91755 18.9857 8.08227 19.4529 8.35087C19.5932 8.43163 19.9657 8.67889 20.0328 8.81089C20.0574 8.85935 19.7653 9.29107 19.7127 9.33175C19.6692 9.36543 19.6646 9.36803 19.6104 9.35287C19.548 9.33553 19.016 8.87111 18.8662 8.77779C18.5053 8.55287 18.1113 8.40411 17.7148 8.25355L17.9013 7.77637Z" fill="white"/> <path d="M18.0448 10.9753C18.0682 11.0028 18.0825 11.0325 18.0873 11.0686L17.7184 11.6411C17.1581 11.0844 16.4785 10.7412 15.7461 10.4656L15.9648 10.0455L16.036 10.0132C16.5501 10.1884 17.0821 10.33 17.5511 10.6128C17.671 10.685 17.9635 10.8792 18.0448 10.9753Z" fill="white"/> </g> </g> <defs> <clipPath id="nr_clip0_97_3419"> <rect width="38" height="48" fill="white"/> </clipPath> </defs> </svg></span>
         </span>
       </span>
     </button>
@@ -7362,7 +7525,7 @@
     }
 
     /* the copy — the classic one, deliberately much smaller than the reveal */
-    const paras=[...sec.querySelectorAll('.stcopy p')];
+    const paras=[...sec.querySelectorAll('.stlede p')];
     /* The copy waits for the title: it starts at the title's own finish line,
        .47, which is "once the title has landed" without a timer and stays true
        at any window height.
