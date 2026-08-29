@@ -2694,25 +2694,43 @@
      top edge, which read as the copy floating off the top of the mockup
      rather than sitting against it. */
   .card-body{position:absolute;top:calc(50% + 32px);transform:translateY(var(--body-base,-50%));
-             width:30.4167%;                                   /* 438/1440 */
+             width:var(--copy-w);                              /* 438/1440 */
              display:flex;flex-direction:column;align-items:flex-start}
-  .card[data-side="right"] .card-body{left:10.7639%}   /* 155  */
-  /* ── the gap between the copy and the mockup ───────────────────────
-     It was never a gap: both blocks were pinned by their own percentage of
-     the window, so what sat between them was whatever was left — 31.6% of
-     the width, which is 300 at 1440 and grows from there. It is a stated
-     number now, and the copy is the one that holds still: it keeps the left
-     margin the frame draws and the mockup comes to meet it.
+  /* ── the pair, as one block ────────────────────────────────────────
+     Neither of these was ever placed against the other. The copy sat at its
+     own 10.76% and the mockup at its own 62.01%, so what stood between them
+     was arithmetic left over from two unrelated numbers — 31.6% of the
+     window, which drifts wider the wider the screen — and the two outer
+     margins came out unequal by 150 at 1440 and by more above it.
 
-     The min() is the safety. The phone's WIDTH comes off the viewport height
-     (104svh) while its position came off the width, so a short-and-wide or a
-     tall-and-narrow window used to push it off the right edge — at 1100x900
-     it hung 28px past it. Now it gives up gap rather than falling off: 40 of
-     clearance is the floor, whatever the two axes do. */
-  .card{--card-gap:240px}
+     They are one block now. The GAP is stated, the block is centred, and the
+     two outer margins are therefore the same number by construction — the
+     copy is as far from the left edge as the mockup is from the right, at
+     every size, on both sides of the card.
+
+     max(40px, ...) is the floor: the phone's width comes off the viewport
+     HEIGHT, so on a tall narrow window the block can want more room than
+     there is. There it keeps 40 of edge and gives up the gap instead. */
+  /* The copy box was 438 while the copy's INK is 340 — the paragraph's own
+     measure plus what the CTA row needs. Centring on the box therefore put
+     100 of empty air on the gap's side and read as a gap 100 wider than the
+     number said. The box is the measure now, so the block that gets centred
+     is the one you can actually see. max(_, 300) is for the narrow end,
+     where the CTA row rather than the paragraph is the widest thing in it. */
+  .card{--card-gap:160px;
+        --copy-w:max(24.0278%, 300px);                     /* 346/1440 */
+        --phone-w:49.5068svh;                              /* 104svh x .476027 */
+        --card-m:max(40px, calc((100% - var(--copy-w)
+                                      - var(--phone-w)
+                                      - var(--card-gap)) / 2))}
+  /* NFL's paragraph is drawn on its own narrower measure (314, not 346), so
+     it gets its own box. Its copy sits on the RIGHT of that card, which puts
+     any slack against the outer edge where it shows up as an unequal margin
+     rather than as a wider gap — 70 of it before this line. */
+  .card[data-study="nfl"]{--copy-w:max(21.8056%, 280px)}   /* 314/1440 */
+  .card[data-side="right"] .card-body{left:var(--card-m)}
   .card[data-side="left"]  .card-body{
-        left:min(calc(11.25% + 49.5068svh + var(--card-gap)),
-                 calc(100% - 30.4167% - 40px))}   /* 848 @1440 */
+        left:calc(var(--card-m) + var(--phone-w) + var(--card-gap))}
 
 
   .idx b{font-weight:500}
@@ -2883,9 +2901,8 @@
                    top:calc(100svh - var(--ph) * .70);         /* 70% visible */
                    will-change:transform}
   .card[data-side="right"] .card-phone-wrap{
-        left:min(calc(10.7639% + 30.4167% + var(--card-gap)),
-                 calc(100% - 49.5068svh - 40px))}   /* 893 @1440 */
-  .card[data-side="left"]  .card-phone-wrap{left:11.2500%}
+        left:calc(var(--card-m) + var(--copy-w) + var(--card-gap))}
+  .card[data-side="left"]  .card-phone-wrap{left:var(--card-m)}
 
   /* Mockup.svg is two rounded rects and two inner shadows, so it is CSS here
      rather than an <img>: a 417×876 shell at radius 48 holding a 393×852
@@ -2917,7 +2934,20 @@
      corners, so the CSS phone underneath it gets out of the way entirely.
      contain, not cover: the art is 1179x2477 and the wrap is 417x876, which
      agree to 0.01% — contain guarantees no crop if a future export does not. */
-  .card-phone.art{background:none;box-shadow:none;border-radius:0}
+  /* The still is the FLOOR, not the poster. media/venmo-phone.mp4 is
+     referenced here and is not in the folder — it is the one source on the
+     site that points at a file that does not exist — so this element has no
+     playable source at all. Chromium holds the poster frame forever, which
+     is why it looked fine in every check; Safari drops the poster the moment
+     the media element errors, and since .art switches the white plate off,
+     what is left is nothing. That is the mock disappearing.
+
+     A poster is a courtesy the browser can withdraw. A background is paint.
+     The art is 1179x2477 against the wrap's 417x876 — 0.47598 against
+     0.47603 — so `contain` lands it on the box to within a rounding, and the
+     video sits exactly on top of it the day the mp4 arrives. */
+  .card-phone.art{background:url("media/venmo-phone.webp") center/contain no-repeat;
+                  box-shadow:none;border-radius:0}
   /* the device art carries its own corners, so the prototype clip-path and
      white plate above must not apply to it */
   .card-phone.art > video.phoneart{clip-path:none;background:none;
