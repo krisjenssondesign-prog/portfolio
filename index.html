@@ -2618,11 +2618,24 @@
      16px larger, and running a third wider than the frame draws it. */
   /* 410:47427 — 48 Regular on 1.15, wrapping at 590, and "and" is the one
      word set in White 2 rather than White 1. */
-  .work h2{max-width:40.9722vw;                         /* 590 @1440 */
-           font-family:var(--font-ui);
-           font-size:clamp(24px,2.7778vw,60px);         /* 40  @1440 */
+  /* TWO LINES, ALWAYS. The break after "of," is drawn, so a wrap is never
+     something this line wants — it is only ever the measure failing. And it
+     was failing: the drawn 590 clears the second line by 16px in Saans and
+     by nothing at all in Inter, which is the face the live build ships. Any
+     rounding either way and "it" falls to a third line.
+
+     So the measure stops deciding. `nowrap` makes the <br> the only break
+     there is, and the SIZE takes over the job the measure was doing badly:
+     the second line is 14.96 times the font size at its widest (Inter, the
+     wider of the two faces), so a size of column/15.6 cannot overflow the
+     column whatever the face does. Above about 460 the drawn size is far
+     under that ceiling and nothing changes; below it, the line gives up
+     size rather than shape. */
+  .work h2{font-family:var(--font-ui);
+           font-size:min(clamp(24px,2.7778vw,60px),      /* 40 @1440 */
+                         calc((100vw - 80px) / 15.6));
            font-weight:500;letter-spacing:0;line-height:1.1;
-           color:var(--w-1);
+           color:var(--w-1);white-space:nowrap;
            text-box:trim-both cap alphabetic;
            text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .work h2 .w2{color:var(--c-2)}
@@ -2684,7 +2697,22 @@
              width:30.4167%;                                   /* 438/1440 */
              display:flex;flex-direction:column;align-items:flex-start}
   .card[data-side="right"] .card-body{left:10.7639%}   /* 155  */
-  .card[data-side="left"]  .card-body{left:58.8889%}   /* 848  */
+  /* ── the gap between the copy and the mockup ───────────────────────
+     It was never a gap: both blocks were pinned by their own percentage of
+     the window, so what sat between them was whatever was left — 31.6% of
+     the width, which is 300 at 1440 and grows from there. It is a stated
+     number now, and the copy is the one that holds still: it keeps the left
+     margin the frame draws and the mockup comes to meet it.
+
+     The min() is the safety. The phone's WIDTH comes off the viewport height
+     (104svh) while its position came off the width, so a short-and-wide or a
+     tall-and-narrow window used to push it off the right edge — at 1100x900
+     it hung 28px past it. Now it gives up gap rather than falling off: 40 of
+     clearance is the floor, whatever the two axes do. */
+  .card{--card-gap:240px}
+  .card[data-side="left"]  .card-body{
+        left:min(calc(11.25% + 49.5068svh + var(--card-gap)),
+                 calc(100% - 30.4167% - 40px))}   /* 848 @1440 */
 
 
   .idx b{font-weight:500}
@@ -2854,7 +2882,9 @@
                    position:absolute;width:var(--pw);height:var(--ph);
                    top:calc(100svh - var(--ph) * .70);         /* 70% visible */
                    will-change:transform}
-  .card[data-side="right"] .card-phone-wrap{left:62.0139%}
+  .card[data-side="right"] .card-phone-wrap{
+        left:min(calc(10.7639% + 30.4167% + var(--card-gap)),
+                 calc(100% - 49.5068svh - 40px))}   /* 893 @1440 */
   .card[data-side="left"]  .card-phone-wrap{left:11.2500%}
 
   /* Mockup.svg is two rounded rects and two inner shadows, so it is CSS here
@@ -4757,7 +4787,6 @@
 
     /* 40 between the copy and the button, 5 inside the title block, and 24
        from the paragraph down to the stat — 5 of gap plus the stat's 19. */
-    .work h2{max-width:none}
     .work-in{gap:24px}
     .card-main{gap:clamp(28px,10.178vw,48px)}
     .tblock{gap:16px}
