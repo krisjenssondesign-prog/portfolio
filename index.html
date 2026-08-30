@@ -398,13 +398,18 @@
            transform:translateY(calc(1em * var(--sl-y, 0) * -1))
                      scale(var(--sl-s, 1))}
   /* 11:1139 — the slash is an arrow now. It is a drawing, not a glyph, so it
-     takes its size from the em rather than from a face's ink: 97.657 wide and
-     118.782 tall against the drawn 166.469 line. Cap-trimmed boxes either side
-     put their baseline at the box bottom, so the arrow sits on that same
-     bottom edge and hangs its head into the cap height. */
+     takes its size from the em rather than from a face's ink. Cap-trimmed
+     boxes either side put their baseline at the box bottom, so the arrow
+     sits on that same bottom edge and hangs its head into the cap height.
+
+     Arrow Update.svg is 134.814 x 141 where the old one was 97.657 x 118.782
+     — a different aspect, not a rescale. The HEIGHT is held at the .7135em it
+     has always rendered at, and only the width follows the new ratio, so the
+     swap changes the drawing and nothing about how much line it occupies.
+     Sized off its own export instead it would be .8099 x .8470. */
   .mqtrack .ar{flex:none;display:block;
-           width:.5866em;height:.7135em;                       /* 97.66 / 118.78 */
-           transform:none;color:#EBEBEB}                       /* Black 5, as exported */
+           width:.6821em;height:.7135em;                       /* 134.81 / 141 */
+           transform:none;color:#E7E7E7}                       /* as exported */
   .mqtrack .ar svg{display:block;width:100%;height:100%}
   @media (prefers-reduced-motion:reduce){ .mqtrack{animation:none} }
 
@@ -1264,49 +1269,92 @@
   .testi.css-timeline .tfoot{opacity:0;
        animation:tFootIn linear(0, .38 25%, .70 50%, .89 75%, 1) both;
        animation-timeline:--testiTL;animation-range:contain 92% contain 99%}
-  /* 506:81910 - Divider Light, 1px, the full 40-guide span */
+  /* ── the footer — 506:81923 ─────────────────────────────────────────
+     Down to three things on the left: the name, where I am, and the one way
+     to reach me. The title left with the phone number — the title is already
+     in the hero byline a screen up, and a public phone number on a portfolio
+     is unclickable on desktop and a spam magnet everywhere.
+
+     The component set draws light and dark. Every footer in the build today
+     sits on a light section, so the dark tokens are declared and unused —
+     they cost six lines and mean a dark section needs no new CSS.
+
+     506:81910 — the rule is 1.4, which --stroke-k already scales a 1px box
+     to, so it is left alone. */
+  .tfoot{--tf-ink:#1A1A1A;      /* Text Dark 1   */
+         --tf-sl:#9CA1A4;       /* the slashes   */
+         --tf-by:#71747B;       /* the byline    */
+         --tf-pill:#E7E7E7;     /* Divider Light */
+         --tf-glyph:#1A1A1A}
+  [data-surface="dark"] .tfoot,
+  .tfoot[data-surface="dark"]{--tf-ink:#F8F8F8;--tf-sl:#515151;
+         --tf-by:#9CA1A4;--tf-pill:#1C1C1C;--tf-glyph:#F8F8F8}
+  /* three of these sit inside a section that already reserves the space for
+     them, which is why .tfoot is absolute. The four on the case studies and
+     the resume have no such host — they close the page themselves, so they
+     stand in flow and bring their own air above the rule. */
+  .tfend{position:static;padding:96px 40px 40px;background:var(--w-sur)}
   .tfrule{--rule-c:#E7E7E7;width:100%;height:1px}
+  [data-surface="dark"] .tfrule,
+  .tfoot[data-surface="dark"] .tfrule{--rule-c:#1E1E1E}
+
+  /* 512:23701 — 1360 on a 40 row, the two halves pushed apart */
   .tfrow{display:flex;align-items:center;justify-content:space-between;
          width:100%;height:40px}
-  /* 512:23703 - one 16 gap between every item, slashes included */
+  /* 608:49944 — one 16 gap between every item, slashes included. tfpair is
+     transparent to that gap here; it only becomes a box on the phone. */
   .tflinks{display:flex;align-items:center;gap:16px;white-space:nowrap}
-  /* 512:23706 - 14 Medium, uppercase, Text Dark 1, cap-trimmed */
+  .tfpair{display:contents}
+  /* 608:49947 — 16 Regular, Text Dark 1, sentence case, cap-trimmed */
   .tfoot .tflinks span,.tfoot .tflinks a{font-family:var(--font-ui);
-              font-size:14px;font-weight:500;letter-spacing:0;
-              line-height:1;text-transform:uppercase;white-space:nowrap;
-              color:#1A1A1A;text-decoration:none;
+              font-size:16px;font-weight:400;letter-spacing:0;
+              line-height:1;text-transform:none;white-space:nowrap;
+              color:var(--tf-ink);text-decoration:none;
               text-box:trim-both cap alphabetic;
               text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  /* 513:23917 - the wordmark is 18 Bold at -.02em, and the (c) is Heavy */
-  .tfoot .tflinks .tfmark{font-size:18px;font-weight:700;letter-spacing:-.02em;
-              line-height:1.45}
-  .tfoot .tflinks .tfmark b{font-weight:900}
-  /* 512:23705 - the slashes are their own thing: 16 Medium, Secondary Light,
-     -.06em, and NOT cap-trimmed - they run the full 16 line the frame draws */
+  .tfoot .tflinks a{transition:opacity .25s ease}
+  .tfoot .tflinks a:hover{opacity:.62}
+  /* 608:49945 — the mark is 16 Bold at -2%, on the 145 line, uppercased */
+  .tfoot .tflinks .tfmark{font-weight:700;letter-spacing:-.02em;
+              line-height:1.45;text-transform:uppercase}
+  /* 608:49946 — the slashes are their own thing: 16 Medium, -6%, and NOT
+     cap-trimmed — they run the full 16 line the frame draws */
   .tfoot .tfsl{font-family:var(--font-ui);font-size:16px;font-weight:500;
               font-style:normal;letter-spacing:-.06em;line-height:1;
-              color:#9F9F9F}
-  /* 512:23712 - 24 from the line to the icon pair, 10 between the icons */
+              color:var(--tf-sl)}
+  /* 608:49973 — 24 from the byline to the icon pair, 8 between the icons */
   .tfright{display:flex;align-items:center;gap:24px}
-  /* 512:23713 - 16 Regular, Text Dark 1, sentence case, cap-trimmed */
   .tfoot .tfby{font-family:var(--font-ui);font-size:16px;font-weight:400;
               letter-spacing:0;line-height:1;text-transform:none;
-              white-space:nowrap;color:#1A1A1A;
+              white-space:nowrap;color:var(--tf-by);
               text-box:trim-both cap alphabetic;
               text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .tficons{display:flex;align-items:center;gap:10px}
-  /* 512:23715 / 512:23718 - 40 square on Container-on-light */
-  .tfic{flex:none;display:grid;place-items:center;width:40px;height:40px;
-              border-radius:999px;background:#E7E7E7;color:#1A1A1A;
+  .tficons{display:flex;align-items:center;gap:8px}
+  /* 608:49976 — a 56 x 40 pill, not the 40 circle it was. The mail glyph's
+     fold lines are stroked in the PILL's own colour rather than knocked out,
+     which is why --tf-pill has to reach inside the svg. */
+  .tfic{flex:none;display:grid;place-items:center;width:56px;height:40px;
+              border-radius:999px;background:var(--tf-pill);
+              color:var(--tf-glyph);
               transition:background-color .25s ease, color .25s ease}
-  .tfic svg{display:block;width:40px;height:40px}
-  .tfic:hover{background:#1A1A1A;color:#FFFFFF}
-  /* the two halves collide at about 960: the line alone is ~600 and the right
-     group 277 against 738 of column. It stacks rather than running off. */
-  @media (max-width:1000px){
-    .tfrow{height:auto;flex-direction:column;align-items:flex-start;gap:24px}
-    .tflinks{flex-wrap:wrap;white-space:normal;gap:12px 16px}
-    .tfright{flex-wrap:wrap;gap:16px 24px}
+  .tfic svg{display:block}
+  .tfic:first-child svg{width:13px;height:13px}
+  .tfic:last-child svg{width:16px;height:13px}
+
+  /* 513:23936 — the phone stacks. The name goes to 24, the place and the
+     address become their own column 28 below it, and the byline keeps the
+     icons company on a row of its own. The slashes have nothing to separate
+     once the line is a column, so they go. */
+  @media (max-width:720px){
+    .tfoot{padding:0 16px 16px}
+    .tfrow{height:auto;flex-direction:column;align-items:stretch;gap:16px}
+    .tflinks{flex-direction:column;align-items:flex-start;gap:28px;
+             white-space:normal}
+    .tfpair{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+    .tfoot .tfsl{display:none}
+    .tfoot .tflinks .tfmark{font-size:24px}
+    .tfright{justify-content:space-between;gap:24px}
+    .tficons{gap:4px}
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -5316,7 +5364,7 @@
     <nav class="navr">
       <a class="u" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
       <span class="sep">/</span>
-      <a class="u" href="mailto:kris.jensson@gmail.com">Get in touch</a>
+      <a class="u" href="mailto:hello@krisjensson.design">Get in touch</a>
     </nav>
   </div>
 
@@ -5666,28 +5714,7 @@
           <p class="tquote">Kris has a rare ability to turn complex product problems into experiences that feel simple, beautiful, and intuitive</p></div>
       </article></div>
     </div>
-    <footer class="tfoot">
-      <div class="tfrule ruleh"></div>
-      <div class="tfrow">
-        <div class="tflinks">
-          <span class="tfmark"><b>&copy;</b>KRIS JENSSON</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>Staff Experience Designer</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>San Francisco</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>415-439-9394</span>
-        </div>
-        <div class="tfright">
-          <span class="tfby">Designed &amp; built by me</span>
-          <span class="tficons">
-            <a class="tfic" href="https://www.linkedin.com/in/krisjensson/" target="_blank"
-               rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M13.2 15.1a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8Zm-1.6 1.8h3.2v11.8h-3.2V16.9Zm6 0h3.06v1.62h.04c.43-.8 1.47-1.65 3.02-1.65 3.23 0 3.83 2.1 3.83 4.84v6h-3.2v-5.32c0-1.27-.02-2.9-1.78-2.9-1.79 0-2.06 1.38-2.06 2.8v5.42h-3.2V16.9Z" fill="currentColor"/></svg></a>
-            <a class="tfic" href="mailto:kris.jensson@gmail.com" aria-label="Email Kris"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="11.5" y="13.8" width="17" height="12.4" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m12.4 15.2 6.6 5.1a1.6 1.6 0 0 0 2 0l6.6-5.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </span>
-        </div>
-      </div>
-    </footer>
+    <footer class="tfoot" data-tfoot></footer>
   </div>
 </section>
 
@@ -5947,28 +5974,7 @@
         </figure>
     </div>
 
-    <footer class="tfoot">
-      <div class="tfrule ruleh"></div>
-      <div class="tfrow">
-        <div class="tflinks">
-          <span class="tfmark"><b>&copy;</b>KRIS JENSSON</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>Staff Experience Designer</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>San Francisco</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>415-439-9394</span>
-        </div>
-        <div class="tfright">
-          <span class="tfby">Designed &amp; built by me</span>
-          <span class="tficons">
-            <a class="tfic" href="https://www.linkedin.com/in/krisjensson/" target="_blank"
-               rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M13.2 15.1a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8Zm-1.6 1.8h3.2v11.8h-3.2V16.9Zm6 0h3.06v1.62h.04c.43-.8 1.47-1.65 3.02-1.65 3.23 0 3.83 2.1 3.83 4.84v6h-3.2v-5.32c0-1.27-.02-2.9-1.78-2.9-1.79 0-2.06 1.38-2.06 2.8v5.42h-3.2V16.9Z" fill="currentColor"/></svg></a>
-            <a class="tfic" href="mailto:kris.jensson@gmail.com" aria-label="Email Kris"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="11.5" y="13.8" width="17" height="12.4" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m12.4 15.2 6.6 5.1a1.6 1.6 0 0 0 2 0l6.6-5.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </span>
-        </div>
-      </div>
-    </footer>
+    <footer class="tfoot" data-tfoot></footer>
   </section>
 </main>
 
@@ -5987,7 +5993,7 @@
       <nav class="gwlinks">
         <a class="u" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
         <span class="sep">/</span>
-        <a class="u" href="mailto:kris.jensson@gmail.com">Get in touch</a>
+        <a class="u" href="mailto:hello@krisjensson.design">Get in touch</a>
       </nav>
     </div>
 
@@ -6006,7 +6012,7 @@
           <div class="gwinfo">
             <div><b>Location</b><span>San Francisco</span></div>
             <div><b>Phone</b><span>415-439-9394</span></div>
-            <div><b>Email</b><span>kris.jensson@gmail.com</span></div>
+            <div><b>Email</b><span>hello@krisjensson.design</span></div>
           </div>
         </div>
       </div>
@@ -6083,6 +6089,7 @@
         </div>
     </div>
   </section>
+  <footer class="tfoot tfend" data-tfoot data-surface="dark"></footer>
 </main>
 
 <!-- ── navigation — 226:7888 ────────────────────────────────────────────
@@ -6422,28 +6429,7 @@
         </span>
       </button>
     </div>
-    <footer class="tfoot">
-      <div class="tfrule ruleh"></div>
-      <div class="tfrow">
-        <div class="tflinks">
-          <span class="tfmark"><b>&copy;</b>KRIS JENSSON</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>Staff Experience Designer</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>San Francisco</span>
-          <i class="tfsl" aria-hidden="true">/</i>
-          <span>415-439-9394</span>
-        </div>
-        <div class="tfright">
-          <span class="tfby">Designed &amp; built by me</span>
-          <span class="tficons">
-            <a class="tfic" href="https://www.linkedin.com/in/krisjensson/" target="_blank"
-               rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M13.2 15.1a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8Zm-1.6 1.8h3.2v11.8h-3.2V16.9Zm6 0h3.06v1.62h.04c.43-.8 1.47-1.65 3.02-1.65 3.23 0 3.83 2.1 3.83 4.84v6h-3.2v-5.32c0-1.27-.02-2.9-1.78-2.9-1.79 0-2.06 1.38-2.06 2.8v5.42h-3.2V16.9Z" fill="currentColor"/></svg></a>
-            <a class="tfic" href="mailto:kris.jensson@gmail.com" aria-label="Email Kris"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="11.5" y="13.8" width="17" height="12.4" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m12.4 15.2 6.6 5.1a1.6 1.6 0 0 0 2 0l6.6-5.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </span>
-        </div>
-      </div>
-    </footer>
+    <footer class="tfoot" data-tfoot></footer>
   </section>
 </main>
 
@@ -6530,6 +6516,7 @@
       </div>
     </section>
   </section>
+  <footer class="tfoot tfend" data-tfoot data-surface="dark"></footer>
 </main>
 
 <!-- ── 318:17022 · NFL / Intro ─────────────────────────────────────────
@@ -6612,6 +6599,7 @@
       </div>
     </section>
   </section>
+  <footer class="tfoot tfend" data-tfoot data-surface="dark"></footer>
 </main>
 
 <main class="page" id="pgEts" data-page="ets" data-logo="ets" hidden>
@@ -6688,6 +6676,7 @@
       </div>
     </section>
   </section>
+  <footer class="tfoot tfend" data-tfoot data-surface="dark"></footer>
 </main>
 
 <div class="nav-wrap">
@@ -6826,14 +6815,56 @@
     <div class="pgacts">
       <button class="pgbtn pgback" id="pgBack" type="button">Go back</button>
       <a class="pgbtn pgcode" id="pgCode"
-         href="mailto:kris.jensson@gmail.com?subject=Case%20study%20passcode">Get code</a>
+         href="mailto:hello@krisjensson.design?subject=Case%20study%20passcode">Get code</a>
     </div>
   </div>
 </div>
 
+<!-- ── the footer — 506:81923 ────────────────────────────────────────
+     ONE definition. It is a global component in the file and it is one
+     here too: this template is the only copy of the markup, and every
+     <footer data-tfoot> on every page is filled from it at load. Editing
+     the footer means editing this block and nothing else. -->
+<template id="tfootTpl">
+      <div class="tfrule ruleh"></div>
+      <div class="tfrow">
+        <div class="tflinks">
+          <span class="tfmark">Kris Jensson</span>
+          <i class="tfsl" aria-hidden="true">/</i>
+          <span class="tfpair">
+            <span>San Francisco</span>
+            <i class="tfsl" aria-hidden="true">/</i>
+            <a href="mailto:hello@krisjensson.design">hello@krisjensson.design</a>
+          </span>
+        </div>
+        <div class="tfright">
+          <span class="tfby">Designed &amp; built by me</span>
+          <span class="tficons">
+            <a class="tfic" href="https://www.linkedin.com/in/krisjensson/" target="_blank"
+               rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 13 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 13H10.329V8.45054C10.329 7.20324 9.85499 6.50616 8.86764 6.50616C7.79361 6.50616 7.23248 7.23156 7.23248 8.45054V13H4.65834V4.33333H7.23248V5.50073C7.23248 5.50073 8.00648 4.06855 9.84561 4.06855C11.6839 4.06855 13 5.19112 13 7.51284V13ZM1.58734 3.1985C0.710508 3.1985 0 2.48241 0 1.59924C0 0.716088 0.710508 0 1.58734 0C2.46415 0 3.17425 0.716088 3.17425 1.59924C3.17425 2.48241 2.46415 3.1985 1.58734 3.1985ZM0.25813 13H2.94235V4.33333H0.25813V13Z" fill="currentColor"/></svg></a>
+            <a class="tfic" href="mailto:hello@krisjensson.design"
+               aria-label="Email Kris"><svg viewBox="0 0 16 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.739258 4.18926C0.739258 2.98164 0.739258 2.37784 0.974275 1.91659C1.181 1.51087 1.51087 1.181 1.91659 0.974275C2.37784 0.739258 2.98164 0.739258 4.18926 0.739258H11.6643C12.8719 0.739258 13.4757 0.739258 13.9369 0.974275C14.3426 1.181 14.6725 1.51087 14.8792 1.91659C15.1143 2.37784 15.1143 2.98164 15.1143 4.18926V8.78926C15.1143 9.99687 15.1143 10.6007 14.8792 11.0619C14.6725 11.4676 14.3426 11.7975 13.9369 12.0042C13.4757 12.2393 12.8719 12.2393 11.6643 12.2393H4.18926C2.98164 12.2393 2.37784 12.2393 1.91659 12.0042C1.51087 11.7975 1.181 11.4676 0.974275 11.0619C0.739258 10.6007 0.739258 9.99687 0.739258 8.78926V4.18926Z" fill="currentColor"/><path d="M0.739258 2.89551L6.60779 7.00348C7.08301 7.33613 7.32062 7.50246 7.57907 7.56689C7.80737 7.62379 8.04615 7.62379 8.27444 7.56689C8.5329 7.50246 8.77051 7.33613 9.24572 7.00348L15.1143 2.89551M4.18926 12.2393H11.6643C12.8719 12.2393 13.4757 12.2393 13.9369 12.0042C14.3426 11.7975 14.6725 11.4676 14.8792 11.0619C15.1143 10.6007 15.1143 9.99687 15.1143 8.78926V4.18926C15.1143 2.98164 15.1143 2.37784 14.8792 1.91659C14.6725 1.51087 14.3426 1.181 13.9369 0.974275C13.4757 0.739258 12.8719 0.739258 11.6643 0.739258H4.18926C2.98164 0.739258 2.37784 0.739258 1.91659 0.974275C1.51087 1.181 1.181 1.51087 0.974275 1.91659C0.739258 2.37784 0.739258 2.98164 0.739258 4.18926V8.78926C0.739258 9.99687 0.739258 10.6007 0.974275 11.0619C1.181 11.4676 1.51087 11.7975 1.91659 12.0042C2.37784 12.2393 2.98164 12.2393 4.18926 12.2393Z" stroke="var(--tf-pill)" stroke-width="1.47857" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </span>
+        </div>
+      </div>
+    </template>
+
 
 
 <script>
+/* ── the footer, filled from its one template — 506:81923 ─────────────
+   The component is global in the file, so it is global here: seven slots
+   across the landing, About, the resume and the four case studies, and one
+   <template> feeding all of them. Cloning rather than writing innerHTML
+   seven times keeps the two mailto links and the two SVGs identical by
+   construction — there is no second copy to drift. */
+(function(){
+  const tpl=document.getElementById('tfootTpl');
+  if(!tpl) return;
+  const slots=document.querySelectorAll('footer[data-tfoot]');
+  slots.forEach(f=>f.appendChild(tpl.content.cloneNode(true)));
+  window.__tfootCount=slots.length;
+})();
 (function(){
   const root=document.documentElement;
   const nav=document.getElementById('nav');
@@ -8383,9 +8414,12 @@
     /* 11:1139 — the separator is a drawn arrow, so it is markup rather than a
        character. Same box either way: the builder just appends a different
        child between the words. */
-    const MQ_ARROW='<svg viewBox="0 0 98 119" fill="none" aria-hidden="true">'
-      +'<path d="M48.8285 118.782L0 75.1131L11.2623 62.5201L40.3804 88.5586L40.3804 0'
-      +'L57.2765 0L57.2765 88.5586L86.3947 62.5201L97.657 75.1131L48.8285 118.782Z"'
+    /* Arrow Update.svg — 134.814 x 141, a heavier draw than the one it
+       replaces: the stem is 29.1 wide against the old 16.9, so it holds its
+       weight beside the display face instead of thinning out next to it. */
+    const MQ_ARROW='<svg viewBox="0 0 135 141" fill="none" aria-hidden="true">'
+      +'<path d="M69.0487 141L0 82.2002L19.4072 60.5L54.491 88.9184L54.491 0'
+      +'L83.6063 0L83.6063 88.9184L115.407 60.5L134.814 82.2002L69.0487 141Z"'
       +' fill="currentColor"/></svg>';
     /* One line carrying three words and a slash after each, or THREE lines
        carrying one word apiece and no slash at all — 421:55491. Same builder
@@ -9280,9 +9314,22 @@
       clear();
       if(typeof window.__railHideChip==='function') window.__railHideChip();
       root.classList.add('pin-open');
-      /* after the fade, not during it — Safari scrolls to a field focused
-         while its own layer is still transparent */
-      setTimeout(()=>ins[0].focus({preventScroll:true}),120);
+      /* The focus has to happen INSIDE the tap. iOS only raises the keyboard
+         for a programmatic focus that runs in the same task as the gesture
+         that asked for it — a setTimeout, a rAF, or anything after an await
+         has already left the gesture behind, and the field lights up with no
+         keypad under it. That is the double tap: the first one opens the
+         gate, the second one is the tap the keyboard actually wanted.
+
+         Two things have to be true first. The gate cannot be visibility:
+         hidden at the moment of the call, because a hidden element refuses
+         focus outright — so the class goes on first. And the style has to
+         have been recalculated by then, which adding a class alone does not
+         force, so the offsetWidth read flushes it. preventScroll keeps the
+         page from jumping to the field while the layer is still transparent,
+         which is what the old delay was really protecting against. */
+      void gate.offsetWidth;
+      try{ ins[0].focus({preventScroll:true}); }catch(_){}
       return true;
     }
     function close(restore){
