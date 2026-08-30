@@ -11506,8 +11506,7 @@
    sheet; and the passcode scrim. Each covers the top of the window whatever
    is scrolled underneath it. */
 (function(){
-  var meta=document.querySelector('meta[name="theme-color"]');
-  if(!meta) return;
+  if(!document.querySelector('meta[name="theme-color"]')) return;
   var root=document.documentElement, last=null;
 
   function flowTop(el){ var y=0; for(var n=el;n;n=n.offsetParent) y+=n.offsetTop; return y; }
@@ -11549,17 +11548,47 @@
         || (el2.getAttribute('data-surface')==='dark' ? '#101010' : '#F6F6F6');
   }
 
+  /* TWO writes, because Safari tints from two places and both of them were
+     wrong.
+
+     1. The META IS REPLACED, not edited. Safari does not re-read a
+        theme-color meta whose `content` attribute changed under it — it
+        takes the value it parsed and keeps it. Swapping the element for a
+        fresh one is what makes the toolbar follow the page.
+
+     2. The CANVAS. `body` carries --paper and `html` carries nothing, so the
+        page's background colour propagates to the canvas and is #F6F6F6 at
+        every scroll position, on every page. That is the colour Safari falls
+        back to, and it is why the bar stayed white over the black work
+        section. Setting it on `html` stops the propagation and hands the
+        canvas the same value the tag has. body still paints its own box, so
+        nothing on the page changes — only the chrome and the rubber-band
+        gutter, which are the two things that were disagreeing with it. */
   function paint(){
     var c=surfaceColour();
-    if(c!==last){ last=c; meta.setAttribute('content',c); }
+    if(c===last) return;
+    last=c;
+    var old=document.querySelector('meta[name="theme-color"]');
+    var m=document.createElement('meta');
+    m.setAttribute('name','theme-color');
+    m.setAttribute('content',c);
+    if(old && old.parentNode) old.parentNode.replaceChild(m,old);
+    else document.head.appendChild(m);
+    root.style.backgroundColor=c;
+  }
+
+  var queued=false;
+  function schedule(){
+    if(queued) return; queued=true;
+    requestAnimationFrame(function(){ queued=false; paint(); });
   }
 
   paint();
-  addEventListener('scroll',paint,{passive:true});
-  addEventListener('resize',paint);
+  addEventListener('scroll',schedule,{passive:true});
+  addEventListener('resize',schedule);
   /* the class flips that matter: the loader leaving, a route change, the
      sheet and the scrim opening and closing */
-  var mo=new MutationObserver(paint);
+  var mo=new MutationObserver(schedule);
   mo.observe(root,{attributes:true,attributeFilter:['class']});
   var ld=document.getElementById('loader');
   if(ld) mo.observe(ld,{attributes:true,attributeFilter:['class']});
