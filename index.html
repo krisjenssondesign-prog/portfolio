@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Safari tints its own chrome with this on iOS and on the Mac. It starts
+     on the loader's black and is repainted from whatever section is under
+     the top of the window from there on. -->
+<meta name="theme-color" content="#000000">
 <title>Kris Jensson</title>
 <style>
   /* ── swap the typeface here and nowhere else ──────────────────────── */
@@ -5205,6 +5209,56 @@
     .seg:hover .ic.lift .rlift,.seg:hover .ic.lift .rflame{transform:none}
     .seg:hover .ic.lift .rig{animation:none}
     .seg[aria-selected="false"]:hover .ic.flickcap svg{animation:none}
+  }
+
+  /* ══ the bar's SKIN on the phone — 616:50270 ═══════════════════════
+     Only the LAYOUT is different on a phone: the icon sits over the label
+     instead of beside it. The MATERIAL is the desktop's, exactly — white at
+     80% on a blur over a light section, black at 80% over a dark one, a 10%
+     tint under the selected stop, and the same two inks on both grounds.
+
+     It was coming out solid black because every one of those rules lived
+     inside the 1081 block, so below it the bar fell through to `.glass` —
+     the old bar's skin, which this design replaced everywhere else.
+
+     This sits AFTER the coarse-pointer block on purpose. That block restates
+     the stop's colours from --link-idle / --link-active, and --link-active is
+     WHITE — written for the black bar, invisible on a white pill. Same
+     specificity, so the later rule is the one that has to be this one. */
+  @media (max-width:1080px){
+    .nav-wrap{--nav-ink:#1A1A1A}
+    html.nav-dark .nav-wrap{--nav-ink:#F8F8F8}
+    /* the frame blurs at 20 on the phone where the desktop blurs at 10 —
+       the only number in here that is not the desktop's */
+    .nav-wrap .nav,.nav-wrap .navroll{
+          background:rgba(255,255,255,.8);background-image:none;
+          -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+          box-shadow:0 4px 16px rgba(26,26,26,.04)}
+    html.nav-dark .nav-wrap .nav,
+    html.nav-dark .nav-wrap .navroll{background:rgba(0,0,0,.8)}
+    /* the chip is a TINT on the pill's own blur — no backdrop of its own,
+       no rim, no shadow, or it reads as a second pill inside the first */
+    .nav-wrap .ind{background:rgba(26,26,26,.1);background-image:none;
+          -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+    html.nav-dark .nav-wrap .ind{background:rgba(249,249,249,.1)}
+    /* idle: Secondary dark on light, Secondary Light on dark. Selected goes
+       to full ink. :hover is restated to the same values — a tap on a phone
+       resolves as a hover and sticks there. */
+    .nav-wrap .seg,.nav-wrap .seg:hover,
+    .nav-wrap .navroll,.nav-wrap .nrcell,
+    .nav-wrap .navroll:hover .nrcell{color:#515151}
+    html.nav-dark .nav-wrap .seg,html.nav-dark .nav-wrap .seg:hover,
+    html.nav-dark .nav-wrap .navroll,html.nav-dark .nav-wrap .nrcell,
+    html.nav-dark .nav-wrap .navroll:hover .nrcell{color:#9F9F9F}
+    .nav-wrap .seg[aria-selected="true"],
+    .nav-wrap .seg[aria-selected="true"]:hover{color:#1A1A1A}
+    html.nav-dark .nav-wrap .seg[aria-selected="true"],
+    html.nav-dark .nav-wrap .seg[aria-selected="true"]:hover{color:#F8F8F8}
+    html.nav-held .nav-wrap .nrcell{color:var(--nav-ink)}
+    /* a white 60% ring on a white pill is nothing */
+    .nav-wrap .seg:focus-visible,
+    .nav-wrap .navroll:focus-visible{
+          outline:2px solid currentColor;outline-offset:2px}
   }
 
   /* ── the passcode scrim — 593:47962 / 593:48032 / 593:48112 at 1440,
@@ -11433,6 +11487,85 @@
   }
   paint(); addEventListener('scroll',paint,{passive:true}); addEventListener('resize',paint);
   setInterval(paint,600);
+})();
+</script>
+<script>
+/* ── the browser’s own chrome ────────────────────────────────────────
+   Safari 15+ paints its toolbar with the page’s theme-color rather than
+   guessing at the top edge. There was no tag, so it was sampling — which is
+   why the bar read as a slightly wrong grey on the hero and did nothing at
+   all on the black pages.
+
+   The value is READ off the section, not written twice: whichever top-level
+   [data-surface] block is under the top of the window hands over its own
+   computed background, so the chrome can never disagree with the page. Flow
+   position, not a rect — the hero is parallaxed and .nu is sticky, and a
+   rect reports where a section has been moved TO rather than where it lives.
+
+   Three things outrank the page: the loader, which is black; the case-study
+   sheet; and the passcode scrim. Each covers the top of the window whatever
+   is scrolled underneath it. */
+(function(){
+  var meta=document.querySelector('meta[name="theme-color"]');
+  if(!meta) return;
+  var root=document.documentElement, last=null;
+
+  function flowTop(el){ var y=0; for(var n=el;n;n=n.offsetParent) y+=n.offsetTop; return y; }
+
+  function hex(c){
+    var m=/^rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?\)/.exec(c||'');
+    if(!m) return null;
+    if(m[4]!==undefined && parseFloat(m[4])<.9) return null;   /* see-through */
+    return '#'+[m[1],m[2],m[3]].map(function(v){
+      return ('0'+Math.round(parseFloat(v)).toString(16)).slice(-2);
+    }).join('').toUpperCase();
+  }
+
+  function surfaceColour(){
+    var ld=document.getElementById('loader');
+    if(ld && getComputedStyle(ld).display!=='none' && !ld.classList.contains('out')) return '#000000';
+    if(root.classList.contains('pin-open')) return '#0A0A0A';   /* black at 90% */
+    if(root.classList.contains('nav-open')) return '#101010';   /* the sheet   */
+
+    var host=null, pages=document.querySelectorAll('.page');
+    for(var i=0;i<pages.length;i++) if(getComputedStyle(pages[i]).display!=='none'){ host=pages[i]; break; }
+    if(!host) return '#F6F6F6';
+
+    var y=(window.pageYOffset||root.scrollTop||0)+1, hit=null, first=null;
+    var secs=host.querySelectorAll('[data-surface]');
+    for(var j=0;j<secs.length;j++){
+      var el=secs[j];
+      if(el.parentElement!==host) continue;              /* top-level only    */
+      var pos=getComputedStyle(el).position;
+      if(pos==='sticky'||pos==='fixed') continue;        /* never a band      */
+      var h=el.offsetHeight; if(h<1) continue;
+      var top=flowTop(el);
+      if(!first) first=el;
+      if(y>=top && y<top+h) hit=el;                      /* last match wins   */
+    }
+    var el2=hit||first;
+    if(!el2) return '#F6F6F6';
+    return hex(getComputedStyle(el2).backgroundColor)
+        || (el2.getAttribute('data-surface')==='dark' ? '#101010' : '#F6F6F6');
+  }
+
+  function paint(){
+    var c=surfaceColour();
+    if(c!==last){ last=c; meta.setAttribute('content',c); }
+  }
+
+  paint();
+  addEventListener('scroll',paint,{passive:true});
+  addEventListener('resize',paint);
+  /* the class flips that matter: the loader leaving, a route change, the
+     sheet and the scrim opening and closing */
+  var mo=new MutationObserver(paint);
+  mo.observe(root,{attributes:true,attributeFilter:['class']});
+  var ld=document.getElementById('loader');
+  if(ld) mo.observe(ld,{attributes:true,attributeFilter:['class']});
+  document.querySelectorAll('.page').forEach(function(pg){
+    mo.observe(pg,{attributes:true,attributeFilter:['class','style']});
+  });
 })();
 </script>
 </body>
