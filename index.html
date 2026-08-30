@@ -4180,7 +4180,7 @@
   .navpanel{position:fixed;inset:0;z-index:60;
             background:var(--w-sur);
             display:flex;flex-direction:column;align-items:stretch;
-            padding:40px 40px 0;
+            padding:21px 40px 0;
             opacity:0;pointer-events:none;
             /* visibility, not just opacity. A full-screen fixed sheet holding
                56px type is one compositing bug away from painting over the
@@ -4194,31 +4194,41 @@
   html.nav-open .nav-wrap{opacity:0;pointer-events:none;
             transition:opacity .24s ease}
 
-  /* 561:43809 — 1360 wide, 56 tall on a 40 top pad, so the line is 16 */
-  .nphead{width:100%;height:16px;flex:none;
+  /* ── the head — 547:42865 ──────────────────────────────────────────
+     The wordmark is gone from this sheet. The line is "/ CASE STUDIES"
+     alone on the left and one CLOSE pill on the right, 50 tall, both
+     centred in the same band. LINKEDIN and GET IN TOUCH came out with the
+     wordmark — the bar behind the panel still carries them. */
+  .nphead{width:100%;height:50px;flex:none;
           display:flex;align-items:center;justify-content:space-between}
-  /* 561:43810 — 20 Bold, -2%, 8 apart. The name steps back to #9CA1A4. */
+  /* 547:42869 — 20 Bold, -2%, 8 apart, the slash a step back */
   .npmark{margin:0;display:flex;align-items:center;gap:8px;
           font-family:var(--font-ui);font-size:20px;font-weight:700;
           line-height:1.45;letter-spacing:-.02em;text-transform:uppercase;
-          color:#9CA1A4;white-space:nowrap}
-  .npmark i,.npmark b{font-style:normal;font-weight:700;color:#F8F8F8}
-  .npmark span,.npmark i,.npmark b{display:block;
+          color:#F8F8F8;white-space:nowrap}
+  .npmark i{font-style:normal;font-weight:700;color:#71747B}
+  .npmark i,.npmark b{display:block;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  /* 561:43816 — Linkedin / Get in touch / Close menu, 16 Medium, 16 apart */
-  .nplinks{display:flex;align-items:center;gap:16px;
+  /* 547:42876 — 50 tall on a 999 radius, a 1 hairline at #1E1E1E, the word
+     24 in and the cross 20 out, 12 between them */
+  .npclose{flex:none;display:flex;align-items:center;gap:12px;
+          height:50px;padding:0 20px 0 24px;box-sizing:border-box;
+          border:1px solid #1E1E1E;border-radius:999px;background:none;
+          cursor:pointer;font:inherit;
+          transition:border-color .3s ease}
+  .npclose:hover{border-color:#2E2E2E}
+  .npcw{display:block;
           font-family:var(--font-ui);font-size:16px;font-weight:500;
           line-height:1;letter-spacing:0;text-transform:uppercase;
-          white-space:nowrap}
-  .nplinks a,.nplinks .npclose{color:#F8F8F8;text-decoration:none;
-          border:0;background:none;padding:0;margin:0;cursor:pointer;
-          font:inherit;letter-spacing:inherit;text-transform:inherit;
-          transition:opacity .25s ease;display:block;
+          color:#9CA1A4;white-space:nowrap;
           text-box:trim-both cap alphabetic;
-          text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .nplinks a:hover,.nplinks .npclose:hover{opacity:.7}
-  .nplinks i{font-style:normal;color:#9CA1A4;letter-spacing:-.06em}
+          text-box-trim:trim-both;text-box-edge:cap alphabetic;
+          transition:color .3s ease}
+  .npclose:hover .npcw{color:#F8F8F8}
+  .npcx{flex:none;display:block;width:20px;height:20px;color:#71747B}
+  .npcx svg{display:block;width:100%;height:100%}
+  .npcx svg *{stroke:currentColor}
 
   /* ── the rows arrive the way 547:41526-547:43639 draw it ───────────
      Four frames of one row wiping in from the LEFT: the mask is 28 wide,
@@ -4232,12 +4242,13 @@
   html.nav-open .nprow:nth-child(2){animation-delay:.13s}
   html.nav-open .nprow:nth-child(3){animation-delay:.20s}
   html.nav-open .nprow:nth-child(4){animation-delay:.27s}
+  html.nav-open .nprow:nth-child(5){animation-delay:.34s}
   @media (prefers-reduced-motion:reduce){
     .nphead,.nprow{opacity:1}
     html.nav-open .nprow{animation:none} }
 
   /* 561:43823 — the list opens on 96 and runs the full 1360 */
-  .npfit{width:100%;flex:1 1 auto;min-height:0;margin-top:40px;
+  .npfit{width:100%;flex:1 1 auto;min-height:0;margin-top:48px;
          overflow-y:auto;overflow-x:clip;scrollbar-width:none}
   .npfit::-webkit-scrollbar{display:none}
   .nplist{position:relative;width:100%;padding-bottom:40px}
@@ -4250,7 +4261,7 @@
      animation — hold every row at one height through the whole wipe, so the
      band stays 88 here: a list that shuffles 8px under the pointer is not
      what those four frames show. */
-  .nprow{position:relative;display:block;width:100%;padding:28px 0 29px;border:0;
+  .nprow{position:relative;display:block;width:100%;padding:20px 0 20px;border:0;
          background:none;text-align:left;color:inherit;cursor:pointer;
          font:inherit;text-decoration:none;--ts:80px}
   .nprow::after,.nprow::before{content:'';position:absolute;left:0;right:0;
@@ -4311,7 +4322,7 @@
      lives beside the tile rather than inside its clip. */
   .nptw{position:relative;flex:none;width:var(--ts);height:var(--ts)}
   .nptile{position:absolute;inset:0;overflow:hidden;
-          border-radius:calc(var(--ts) * .16363);
+          border-radius:calc(var(--ts) * var(--tr,.16363));
           background:#1C1C1C}
   .nplit .nptile{background:var(--brand)}
   .tmk{position:absolute;left:50%;top:50%;translate:-50% -50%;
@@ -4339,7 +4350,7 @@
      change, which is why they are the only thing the lit copy repaints. */
   .npmeta{display:flex;align-items:center;gap:24px;
           font-family:var(--font-ui);font-size:18px;font-weight:400;
-          line-height:1;white-space:nowrap}
+          line-height:1;white-space:nowrap;text-transform:uppercase}
   .npmeta em{font-style:normal;color:#9CA1A4;
           display:flex;align-items:center;gap:12px}
   .npmeta em i{font-style:normal;flex:none;width:4px;height:4px;
@@ -4378,23 +4389,69 @@
      case study says on its own first screen. The row keeps its shape and
      never wraps — it is one line by design and it stays one. */
   @media (max-width:1080px){
-    .npmeta{display:none}
     .npend{gap:24px}
   }
+  /* ══ the 393 menu — 595:48386 "Updated Mobile" ═════════════════════
+     A different row, not the desktop row squeezed. 128 tall on a 72 tile,
+     the name drops to 40, and the meta moves OUT of the right-hand group
+     to sit under the name.
+
+     That regroup is the whole trick. On the desktop sheet the meta and the
+     button are one cluster pinned right; here the meta belongs to the name
+     and only the arrow stays right. Rather than ship two markups, both
+     wrappers go display:contents and the row becomes a three-column grid,
+     so the same six elements land in a different arrangement.
+
+     It is also drawn LIT — every tile carries its brand and every name is
+     white, at rest, in all five rows. So the hover wipe is not scaled down
+     here, it is removed: the second stacked copy leaves the document and
+     the first is painted awake. Nothing to reveal means nothing to
+     mistime on a device with no pointer to reveal it with. */
   @media (max-width:720px){
-    .nprow{--ts:64px;padding:20px 0 21px}
-    .npname{font-size:clamp(30px,7.2vw,56px)}
-    .npside{gap:18px}
-    .npfit{margin-top:28px}
-    .navpanel{padding:28px 20px 0}
-    .nplinks{gap:12px;font-size:14px}
-    .npmark{font-size:16px}
+    .navpanel{padding:21px 20px 0}
+    /* the head sits 12 from the edge and the rows 20 — 597:48410 against
+       597:48910 — so the head reaches back out by the difference */
+    .nphead{height:20px;margin:0 -8px}
+    .npmark{font-size:20px;gap:8px}
+    /* 597:48417 draws the cross alone; the word and the pill are desktop */
+    .npclose{height:20px;padding:0;border:0;gap:0}
+    .npcw{display:none}
+    .npfit{margin-top:59px}
+
+    /* awake at rest */
+    .nplit{display:none}
+    .nprow::before{display:none}
+    .nprow::after{background:#171717}
+    .nptile{background:var(--brand)}
+    .tmk svg *{fill:var(--mk,#F8F8F8)}
+    .npname{color:#F8F8F8}
+
+    /* 597:48627 — 28, a 72 band, 28 */
+    /* 597:48591 rounds 9.818 on a 72 tile, not the desktop 13.09 on 80 */
+    .nprow{--ts:72px;--tr:.13636;padding:28px 0 28px}
+    .nprowin{display:grid;
+             grid-template-columns:var(--ts) minmax(0,1fr) auto;
+             grid-template-rows:auto auto;
+             column-gap:16px;row-gap:16px;
+             align-items:center;min-height:var(--ts)}
+    .npside,.npend{display:contents}
+    .nptw{grid-column:1;grid-row:1 / 3;align-self:center}
+    .npname{grid-column:2;grid-row:1;align-self:end;
+            font-size:40px;margin:0}
+    /* 597:48644 — 16 Regular, platforms 6 apart, 8 out to the year */
+    .npmeta{grid-column:2;grid-row:2;align-self:start;
+            display:flex;gap:8px;font-size:16px}
+    .npmeta em{gap:6px}
+    /* 597:48886 — 40 round, riding 4 below the top of the tile band so it
+       sits level with the name rather than centred on the row */
+    .npbtn{grid-column:3;grid-row:1 / 3;align-self:start;margin-top:4px;
+           width:40px;height:40px}
+    .npbtn .npi{width:20px;height:20px}
   }
-  @media (max-width:420px){
-    .nprow{--ts:52px}
-    .npname{font-size:clamp(26px,8.4vw,40px)}
-    .npbtn{width:40px;height:40px}
-    .npend{height:40px}
+  /* the drawn phone IS 393, so nothing steps down before it. Below the
+     drawing the name is the only thing that cannot hold its width. */
+  @media (max-width:360px){
+    .npname{font-size:clamp(30px,11.1vw,40px)}
   }
 
   /* 521:38480 - a 40 row, 28 off the foot of the sheet, on no rule. The
@@ -6621,16 +6678,19 @@
   <div class="navpanel" id="navPanel" role="dialog" aria-modal="true"
        aria-label="Case studies">
     <div class="nphead">
-      <p class="npmark"><span>Kris Jensson</span><i aria-hidden="true">/</i><b>Case studies</b></p>
-      <nav class="nplinks">
-        <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
-        <i aria-hidden="true">/</i>
-        <a href="mailto:kris.jensson@gmail.com">Get in touch</a>
-        <i aria-hidden="true">/</i>
-        <button class="npclose" type="button">Close menu</button>
-      </nav>
+      <p class="npmark"><i aria-hidden="true">/</i><b>Case studies</b></p>
+      <button class="npclose" type="button" aria-label="Close the menu"><span class="npcw">Close</span><span class="npcx" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5 5 15M5 5l10 10" stroke-width="1.43" stroke-linecap="round"/></svg></span></button>
     </div>
     <div class="npfit"><div class="nplist" id="npList">
+      <div class="nprow" role="link" tabindex="0" data-page="venmo" data-soon
+           style="--brand:#0066FF;--mk:#FFFFFF;--mw:75%;--mh:14.2618%"
+           aria-label="Venmo case study">
+        <span class="npstack">
+          <span class="nprowin"><span class="npside"><span class="nptw"><span class="nptile"><span class="tmk" aria-hidden="true"><svg viewBox="0 0 60 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9.86211 0C10.2674 0.669341 10.4501 1.35802 10.4501 2.22869C10.4501 5.00539 8.08009 8.6121 6.15674 11.1448H1.75669L0 0.608007L3.84671 0.24267L4.77872 7.74075C5.6494 6.32274 6.72341 4.09405 6.72341 2.57403C6.72341 1.74202 6.58074 1.17601 6.35807 0.709341L9.86211 0ZM14.8488 4.64005C15.5568 4.64005 17.3389 4.31605 17.3389 3.30337C17.3389 2.8167 16.9949 2.57403 16.5895 2.57403C15.8802 2.57403 14.9495 3.42471 14.8482 4.64072L14.8488 4.64005ZM14.7675 6.64007C14.7675 7.87675 15.4555 8.36209 16.3675 8.36209C17.3675 8.36209 18.3109 8.11942 19.5476 7.49142L19.0822 10.6515C18.2115 11.0768 16.8555 11.3608 15.5375 11.3608C12.2041 11.3608 11.0008 9.3341 11.0008 6.80208C11.0008 3.51937 12.9455 0.0333332 16.9555 0.0333332C19.1555 0.0333332 20.3976 1.27001 20.3976 2.99337C20.3976 5.77006 16.8335 6.62007 14.7675 6.64007ZM31.501 2.47336C31.501 2.8787 31.4397 3.47337 31.3783 3.85071L30.223 11.1441H26.4763L27.5296 4.45738L27.611 3.70804C27.611 3.22137 27.307 3.10003 26.9416 3.10003C26.4563 3.10003 25.9696 3.3227 25.6456 3.48537L24.4509 11.1521H20.6842L22.4056 0.230002H25.6723L25.7136 1.10201C26.483 0.59534 27.4956 0.0486672 28.9337 0.0486672C30.8377 0.0486672 31.507 1.02201 31.507 2.48203L31.501 2.47336ZM42.6211 1.23601C43.6878 0.466672 44.7078 0.0406664 46.1038 0.0406664C48.0272 0.0406664 48.7039 1.01401 48.7039 2.47403C48.7039 2.87937 48.6425 3.47404 48.5812 3.85138L47.4279 11.1448H43.6672L44.7338 4.31605L44.7952 3.76938C44.7952 3.22137 44.4912 3.10003 44.1258 3.10003C43.6605 3.10003 43.1951 3.3027 42.8498 3.48537L41.6498 11.1521H37.9031L38.9698 4.32338L39.0364 3.77671C39.0364 3.2287 38.7324 3.10737 38.3684 3.10737C37.8818 3.10737 37.3964 3.33004 37.0724 3.49271L35.8771 11.1595H32.1104L33.8304 0.237335H37.0504L37.1517 1.14935C37.9011 0.602673 38.9131 0.0560004 40.2698 0.0560004C41.4445 0.0553337 42.2138 0.562672 42.5991 1.25135L42.6211 1.23601ZM56.152 4.41738C56.152 3.52604 55.9293 2.91737 55.2613 2.91737C53.7826 2.91737 53.4793 5.53073 53.4793 6.86808C53.4793 7.88275 53.7633 8.51009 54.4306 8.51009C55.828 8.51009 56.152 5.75406 56.152 4.41738ZM49.6719 6.70741C49.6719 3.2627 51.4939 0.0406664 55.6866 0.0406664C58.8467 0.0406664 60 1.90535 60 4.47938C60 7.88409 58.1973 11.4095 53.9039 11.4095C50.7239 11.4095 49.6706 9.32277 49.6706 6.70808L49.6719 6.70741Z" fill="currentColor"/></svg></span></span></span><span class="npname">Venmo</span></span><span class="npend"><span class="npmeta"><em>Web<i aria-hidden="true"></i>iOS</em><s>/</s><em>2026</em></span><span class="npbtn"><span class="npi" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h12M10.5 13.5 15 9l-4.5-4.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span></span>
+          <span class="nprowin nplit" aria-hidden="true"><span class="npside"><span class="nptw"><span class="nptile"><span class="tmk" aria-hidden="true"><svg viewBox="0 0 60 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9.86211 0C10.2674 0.669341 10.4501 1.35802 10.4501 2.22869C10.4501 5.00539 8.08009 8.6121 6.15674 11.1448H1.75669L0 0.608007L3.84671 0.24267L4.77872 7.74075C5.6494 6.32274 6.72341 4.09405 6.72341 2.57403C6.72341 1.74202 6.58074 1.17601 6.35807 0.709341L9.86211 0ZM14.8488 4.64005C15.5568 4.64005 17.3389 4.31605 17.3389 3.30337C17.3389 2.8167 16.9949 2.57403 16.5895 2.57403C15.8802 2.57403 14.9495 3.42471 14.8482 4.64072L14.8488 4.64005ZM14.7675 6.64007C14.7675 7.87675 15.4555 8.36209 16.3675 8.36209C17.3675 8.36209 18.3109 8.11942 19.5476 7.49142L19.0822 10.6515C18.2115 11.0768 16.8555 11.3608 15.5375 11.3608C12.2041 11.3608 11.0008 9.3341 11.0008 6.80208C11.0008 3.51937 12.9455 0.0333332 16.9555 0.0333332C19.1555 0.0333332 20.3976 1.27001 20.3976 2.99337C20.3976 5.77006 16.8335 6.62007 14.7675 6.64007ZM31.501 2.47336C31.501 2.8787 31.4397 3.47337 31.3783 3.85071L30.223 11.1441H26.4763L27.5296 4.45738L27.611 3.70804C27.611 3.22137 27.307 3.10003 26.9416 3.10003C26.4563 3.10003 25.9696 3.3227 25.6456 3.48537L24.4509 11.1521H20.6842L22.4056 0.230002H25.6723L25.7136 1.10201C26.483 0.59534 27.4956 0.0486672 28.9337 0.0486672C30.8377 0.0486672 31.507 1.02201 31.507 2.48203L31.501 2.47336ZM42.6211 1.23601C43.6878 0.466672 44.7078 0.0406664 46.1038 0.0406664C48.0272 0.0406664 48.7039 1.01401 48.7039 2.47403C48.7039 2.87937 48.6425 3.47404 48.5812 3.85138L47.4279 11.1448H43.6672L44.7338 4.31605L44.7952 3.76938C44.7952 3.22137 44.4912 3.10003 44.1258 3.10003C43.6605 3.10003 43.1951 3.3027 42.8498 3.48537L41.6498 11.1521H37.9031L38.9698 4.32338L39.0364 3.77671C39.0364 3.2287 38.7324 3.10737 38.3684 3.10737C37.8818 3.10737 37.3964 3.33004 37.0724 3.49271L35.8771 11.1595H32.1104L33.8304 0.237335H37.0504L37.1517 1.14935C37.9011 0.602673 38.9131 0.0560004 40.2698 0.0560004C41.4445 0.0553337 42.2138 0.562672 42.5991 1.25135L42.6211 1.23601ZM56.152 4.41738C56.152 3.52604 55.9293 2.91737 55.2613 2.91737C53.7826 2.91737 53.4793 5.53073 53.4793 6.86808C53.4793 7.88275 53.7633 8.51009 54.4306 8.51009C55.828 8.51009 56.152 5.75406 56.152 4.41738ZM49.6719 6.70741C49.6719 3.2627 51.4939 0.0406664 55.6866 0.0406664C58.8467 0.0406664 60 1.90535 60 4.47938C60 7.88409 58.1973 11.4095 53.9039 11.4095C50.7239 11.4095 49.6706 9.32277 49.6706 6.70808L49.6719 6.70741Z" fill="currentColor"/></svg></span></span></span><span class="npname">Venmo</span></span><span class="npend"><span class="npmeta"><em>Web<i aria-hidden="true"></i>iOS</em><s>/</s><em>2026</em></span><span class="npbtn"><span class="npi" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h12M10.5 13.5 15 9l-4.5-4.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span></span>
+          
+        </span>
+      </div>
       <div class="nprow" role="link" tabindex="0" data-page="nfl" data-lock
            style="--brand:#FFFFFF;--mk:#1A1A1A;--mw:35.5%;--mh:46.875%"
            aria-label="NFL case study">
@@ -6653,8 +6713,8 @@
            style="--brand:#FF3300;--mk:#F8F8F8;--mw:47.9%;--mh:25.9%"
            aria-label="JBL case study">
         <span class="npstack">
-          <span class="nprowin"><span class="npside"><span class="nptw"><span class="nptile"><span class="tmk" aria-hidden="true"><svg viewBox="0.2 0 43.3 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3388)"> <mask id="np_mask0_97_3388" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="44" height="24"> <path d="M43.4569 0H0.210938V24H43.4569V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3388)"> <path d="M17.1836 0.000928822L25.1596 0C27.1666 0.141367 28.6323 1.70068 28.7155 3.70321C28.7786 5.22444 28.6812 6.8012 28.6958 8.32577C28.6016 9.244 28.0342 10.043 27.2983 10.5668C27.1203 10.6935 26.9244 10.7896 26.7464 10.9151C27.768 11.2783 28.5524 12.2299 28.8496 13.2586C28.9513 13.6104 28.9989 13.973 29.0127 14.3392C29.0791 16.119 28.9605 17.9396 29.0127 19.7237C28.928 21.8947 27.3454 23.4798 25.16 23.5013H17.2479L17.1838 23.4725L17.1836 0.000928822ZM20.9715 9.91313H23.469C24.0138 9.91313 24.6618 9.30381 24.7353 8.76604C24.776 7.0113 24.7746 5.24171 24.7359 3.48642C24.6136 2.7311 24.0056 2.12812 23.244 2.0265C23.0253 1.99734 22.8418 2.02409 22.6341 2.02501C22.08 2.02744 21.5254 2.02168 20.9715 2.02427V9.91313ZM20.9715 21.3473L23.4697 21.348C24.2415 21.3019 24.823 20.7971 24.9088 20.0209C24.8916 17.8512 24.9394 15.6768 24.8842 13.5098C24.836 12.8308 24.0398 12.0292 23.3575 12.0292H20.9715V21.3473Z" fill="white"/> <path d="M35.864 0.0381076V20.1129C35.864 20.2166 35.9678 20.5077 36.0152 20.6115C36.7458 22.2134 39.5428 21.8959 39.6889 20.057C39.7783 18.9303 39.6261 17.6881 39.6883 16.5481C39.6916 16.4881 39.7096 16.4325 39.7078 16.3725H43.4586V23.4818H31.9648V0.0195312L35.864 0.0381076Z" fill="white"/> <path d="M9.97521 0.0381076L13.8748 0.0195312L13.8755 19.6312C13.7426 21.9481 11.8394 23.8514 9.5212 23.984C8.17756 23.8992 6.67381 24.1764 5.37941 23.7794C3.55056 23.2188 2.24297 21.5414 2.12109 19.6303V16.3729H6.13174L6.15069 20.5213C6.35857 22.4842 9.4402 22.6473 9.92505 20.7681C9.93675 20.7226 9.97558 20.5738 9.97558 20.5401L9.97521 0.0381076Z" fill="white"/> <path d="M7.61977 0.00146484L3.90634 8.42848L0.210938 0.00146484H7.61977Z" fill="white"/> <path d="M3.69871 9.15751C5.59852 9.00128 6.89998 11.0086 5.9524 12.6727C5.06686 14.2278 2.78605 14.2291 1.88639 12.6845C0.986737 11.1398 1.99879 9.29738 3.69871 9.15751Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3388"> <rect width="44.4" height="24" fill="white"/> </clipPath> </defs> </svg></span></span></span><span class="npname">JBL</span></span><span class="npend"><span class="npmeta"><em>Web</em><s>/</s><em>2023</em></span><span class="npbtn"><span class="npi" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h12M10.5 13.5 15 9l-4.5-4.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span></span>
-          <span class="nprowin nplit" aria-hidden="true"><span class="npside"><span class="nptw"><span class="nptile"><span class="tmk" aria-hidden="true"><svg viewBox="0.2 0 43.3 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3388)"> <mask id="np_mask0_97_3388" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="44" height="24"> <path d="M43.4569 0H0.210938V24H43.4569V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3388)"> <path d="M17.1836 0.000928822L25.1596 0C27.1666 0.141367 28.6323 1.70068 28.7155 3.70321C28.7786 5.22444 28.6812 6.8012 28.6958 8.32577C28.6016 9.244 28.0342 10.043 27.2983 10.5668C27.1203 10.6935 26.9244 10.7896 26.7464 10.9151C27.768 11.2783 28.5524 12.2299 28.8496 13.2586C28.9513 13.6104 28.9989 13.973 29.0127 14.3392C29.0791 16.119 28.9605 17.9396 29.0127 19.7237C28.928 21.8947 27.3454 23.4798 25.16 23.5013H17.2479L17.1838 23.4725L17.1836 0.000928822ZM20.9715 9.91313H23.469C24.0138 9.91313 24.6618 9.30381 24.7353 8.76604C24.776 7.0113 24.7746 5.24171 24.7359 3.48642C24.6136 2.7311 24.0056 2.12812 23.244 2.0265C23.0253 1.99734 22.8418 2.02409 22.6341 2.02501C22.08 2.02744 21.5254 2.02168 20.9715 2.02427V9.91313ZM20.9715 21.3473L23.4697 21.348C24.2415 21.3019 24.823 20.7971 24.9088 20.0209C24.8916 17.8512 24.9394 15.6768 24.8842 13.5098C24.836 12.8308 24.0398 12.0292 23.3575 12.0292H20.9715V21.3473Z" fill="white"/> <path d="M35.864 0.0381076V20.1129C35.864 20.2166 35.9678 20.5077 36.0152 20.6115C36.7458 22.2134 39.5428 21.8959 39.6889 20.057C39.7783 18.9303 39.6261 17.6881 39.6883 16.5481C39.6916 16.4881 39.7096 16.4325 39.7078 16.3725H43.4586V23.4818H31.9648V0.0195312L35.864 0.0381076Z" fill="white"/> <path d="M9.97521 0.0381076L13.8748 0.0195312L13.8755 19.6312C13.7426 21.9481 11.8394 23.8514 9.5212 23.984C8.17756 23.8992 6.67381 24.1764 5.37941 23.7794C3.55056 23.2188 2.24297 21.5414 2.12109 19.6303V16.3729H6.13174L6.15069 20.5213C6.35857 22.4842 9.4402 22.6473 9.92505 20.7681C9.93675 20.7226 9.97558 20.5738 9.97558 20.5401L9.97521 0.0381076Z" fill="white"/> <path d="M7.61977 0.00146484L3.90634 8.42848L0.210938 0.00146484H7.61977Z" fill="white"/> <path d="M3.69871 9.15751C5.59852 9.00128 6.89998 11.0086 5.9524 12.6727C5.06686 14.2278 2.78605 14.2291 1.88639 12.6845C0.986737 11.1398 1.99879 9.29738 3.69871 9.15751Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3388"> <rect width="44.4" height="24" fill="white"/> </clipPath> </defs> </svg></span></span></span><span class="npname">JBL</span></span><span class="npend"><span class="npmeta"><em>Web</em><s>/</s><em>2023</em></span><span class="npbtn"><span class="npi" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h12M10.5 13.5 15 9l-4.5-4.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span></span>
+          <span class="nprowin"><span class="npside"><span class="nptw"><span class="nptile"><span class="tmk" aria-hidden="true"><svg viewBox="0.2 0 43.3 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3388)"> <mask id="np_mask0_97_3388" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="44" height="24"> <path d="M43.4569 0H0.210938V24H43.4569V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3388)"> <path d="M17.1836 0.000928822L25.1596 0C27.1666 0.141367 28.6323 1.70068 28.7155 3.70321C28.7786 5.22444 28.6812 6.8012 28.6958 8.32577C28.6016 9.244 28.0342 10.043 27.2983 10.5668C27.1203 10.6935 26.9244 10.7896 26.7464 10.9151C27.768 11.2783 28.5524 12.2299 28.8496 13.2586C28.9513 13.6104 28.9989 13.973 29.0127 14.3392C29.0791 16.119 28.9605 17.9396 29.0127 19.7237C28.928 21.8947 27.3454 23.4798 25.16 23.5013H17.2479L17.1838 23.4725L17.1836 0.000928822ZM20.9715 9.91313H23.469C24.0138 9.91313 24.6618 9.30381 24.7353 8.76604C24.776 7.0113 24.7746 5.24171 24.7359 3.48642C24.6136 2.7311 24.0056 2.12812 23.244 2.0265C23.0253 1.99734 22.8418 2.02409 22.6341 2.02501C22.08 2.02744 21.5254 2.02168 20.9715 2.02427V9.91313ZM20.9715 21.3473L23.4697 21.348C24.2415 21.3019 24.823 20.7971 24.9088 20.0209C24.8916 17.8512 24.9394 15.6768 24.8842 13.5098C24.836 12.8308 24.0398 12.0292 23.3575 12.0292H20.9715V21.3473Z" fill="white"/> <path d="M35.864 0.0381076V20.1129C35.864 20.2166 35.9678 20.5077 36.0152 20.6115C36.7458 22.2134 39.5428 21.8959 39.6889 20.057C39.7783 18.9303 39.6261 17.6881 39.6883 16.5481C39.6916 16.4881 39.7096 16.4325 39.7078 16.3725H43.4586V23.4818H31.9648V0.0195312L35.864 0.0381076Z" fill="white"/> <path d="M9.97521 0.0381076L13.8748 0.0195312L13.8755 19.6312C13.7426 21.9481 11.8394 23.8514 9.5212 23.984C8.17756 23.8992 6.67381 24.1764 5.37941 23.7794C3.55056 23.2188 2.24297 21.5414 2.12109 19.6303V16.3729H6.13174L6.15069 20.5213C6.35857 22.4842 9.4402 22.6473 9.92505 20.7681C9.93675 20.7226 9.97558 20.5738 9.97558 20.5401L9.97521 0.0381076Z" fill="white"/> <path d="M7.61977 0.00146484L3.90634 8.42848L0.210938 0.00146484H7.61977Z" fill="white"/> <path d="M3.69871 9.15751C5.59852 9.00128 6.89998 11.0086 5.9524 12.6727C5.06686 14.2278 2.78605 14.2291 1.88639 12.6845C0.986737 11.1398 1.99879 9.29738 3.69871 9.15751Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3388"> <rect width="44.4" height="24" fill="white"/> </clipPath> </defs> </svg></span></span></span><span class="npname">JBL</span></span><span class="npend"><span class="npmeta"><em>Web<i aria-hidden="true"></i>iOS</em><s>/</s><em>2023</em></span><span class="npbtn"><span class="npi" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h12M10.5 13.5 15 9l-4.5-4.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span></span>
+          <span class="nprowin nplit" aria-hidden="true"><span class="npside"><span class="nptw"><span class="nptile"><span class="tmk" aria-hidden="true"><svg viewBox="0.2 0 43.3 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#np_clip0_97_3388)"> <mask id="np_mask0_97_3388" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="44" height="24"> <path d="M43.4569 0H0.210938V24H43.4569V0Z" fill="white"/> </mask> <g mask="url(#np_mask0_97_3388)"> <path d="M17.1836 0.000928822L25.1596 0C27.1666 0.141367 28.6323 1.70068 28.7155 3.70321C28.7786 5.22444 28.6812 6.8012 28.6958 8.32577C28.6016 9.244 28.0342 10.043 27.2983 10.5668C27.1203 10.6935 26.9244 10.7896 26.7464 10.9151C27.768 11.2783 28.5524 12.2299 28.8496 13.2586C28.9513 13.6104 28.9989 13.973 29.0127 14.3392C29.0791 16.119 28.9605 17.9396 29.0127 19.7237C28.928 21.8947 27.3454 23.4798 25.16 23.5013H17.2479L17.1838 23.4725L17.1836 0.000928822ZM20.9715 9.91313H23.469C24.0138 9.91313 24.6618 9.30381 24.7353 8.76604C24.776 7.0113 24.7746 5.24171 24.7359 3.48642C24.6136 2.7311 24.0056 2.12812 23.244 2.0265C23.0253 1.99734 22.8418 2.02409 22.6341 2.02501C22.08 2.02744 21.5254 2.02168 20.9715 2.02427V9.91313ZM20.9715 21.3473L23.4697 21.348C24.2415 21.3019 24.823 20.7971 24.9088 20.0209C24.8916 17.8512 24.9394 15.6768 24.8842 13.5098C24.836 12.8308 24.0398 12.0292 23.3575 12.0292H20.9715V21.3473Z" fill="white"/> <path d="M35.864 0.0381076V20.1129C35.864 20.2166 35.9678 20.5077 36.0152 20.6115C36.7458 22.2134 39.5428 21.8959 39.6889 20.057C39.7783 18.9303 39.6261 17.6881 39.6883 16.5481C39.6916 16.4881 39.7096 16.4325 39.7078 16.3725H43.4586V23.4818H31.9648V0.0195312L35.864 0.0381076Z" fill="white"/> <path d="M9.97521 0.0381076L13.8748 0.0195312L13.8755 19.6312C13.7426 21.9481 11.8394 23.8514 9.5212 23.984C8.17756 23.8992 6.67381 24.1764 5.37941 23.7794C3.55056 23.2188 2.24297 21.5414 2.12109 19.6303V16.3729H6.13174L6.15069 20.5213C6.35857 22.4842 9.4402 22.6473 9.92505 20.7681C9.93675 20.7226 9.97558 20.5738 9.97558 20.5401L9.97521 0.0381076Z" fill="white"/> <path d="M7.61977 0.00146484L3.90634 8.42848L0.210938 0.00146484H7.61977Z" fill="white"/> <path d="M3.69871 9.15751C5.59852 9.00128 6.89998 11.0086 5.9524 12.6727C5.06686 14.2278 2.78605 14.2291 1.88639 12.6845C0.986737 11.1398 1.99879 9.29738 3.69871 9.15751Z" fill="white"/> </g> </g> <defs> <clipPath id="np_clip0_97_3388"> <rect width="44.4" height="24" fill="white"/> </clipPath> </defs> </svg></span></span></span><span class="npname">JBL</span></span><span class="npend"><span class="npmeta"><em>Web<i aria-hidden="true"></i>iOS</em><s>/</s><em>2023</em></span><span class="npbtn"><span class="npi" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 9h12M10.5 13.5 15 9l-4.5-4.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span></span>
         </span>
       </div>
       <div class="nprow" role="link" tabindex="0" data-page="ets"
