@@ -262,6 +262,16 @@
         letter-spacing:-.04em;text-transform:uppercase}
   .navr a{color:inherit}
   .navr .sep{color:rgba(0,0,0,.25);letter-spacing:-.06em;text-transform:none}
+  /* 616:50310 — the phone's top bar trades the two text links for the same
+     pair of pills the footer carries: 40 round on E7, a 13 LinkedIn and a
+     14.4 envelope in 1A. Desktop keeps the words, so this ships hidden and
+     the 720 block swaps which of the two is shown. */
+  .navric{display:none}
+  .nvic{flex:none;display:grid;place-items:center;
+        width:40px;height:40px;border-radius:999px;
+        background:#E7E7E7;color:#1A1A1A}
+  .nvic:first-child svg{display:block;width:13px;height:13px}
+  .nvic:last-child svg{display:block;width:14.4px;height:11.7px}
 
   /* Primary Content (7:427) — column, gap 48, at left 40 / top 266
        └ Frame 9 (7:426) — column, gap 32
@@ -328,20 +338,6 @@
           not honour, so it never applied anywhere it mattered. The block axis
           is simply not clipped now. */
        overflow-x:clip;overflow-y:visible}
-  .hs-m{display:none}
-
-  /* ── the sub-headline — 415:54846 ────────────────────────────────────
-     Line two is no longer a second display line. It is a sentence at 56 in the
-     UI face, on the frame's own 40 rather than the display line's optical
-     nudge — there is no oversized stem to hang here, so nothing to correct
-     for. The break after "craft," is drawn, not found: at 950 the line would
-     wrap somewhere else entirely. */
-  .hsub{margin:0;font-family:var(--font-ui);
-        font-size:2.25vw;                                      /* 32.4 @1440 */
-        font-weight:400;line-height:1.1;letter-spacing:-.02em;
-        color:#000;
-        text-box:trim-both cap alphabetic;
-        text-box-trim:trim-both;text-box-edge:cap alphabetic}
 
   /* ── the marquee — 413:54486 ────────────────────────────────────────
      Line one is a loop, not a word. The frame draws the track running from
@@ -2484,11 +2480,6 @@
   .hero.landing .lines .ln.mq{
         animation:landIn var(--land-dur) var(--land-spring) both;
         animation-delay:var(--ld,0s)}
-  /* The sub-headline takes the slot the second display line used to hold —
-     same spring, same keyframe, one step behind the loop above it. */
-  .hero.landing .hsub{
-        animation:landIn var(--land-dur) var(--land-spring) both;
-        animation-delay:.15s}
   .hero.landing .lines .ln:nth-child(1){--ld:.06s}
   .hero.landing .lines .ln:nth-child(2){--ld:.15s}
   .hero.landing .byline               {animation-delay:.26s}
@@ -4700,19 +4691,9 @@
       .nav-wrap .nrcell{color:#515151}
       html.nav-dark .nav-wrap .nrcell{color:#9F9F9F}
       html.nav-held .nav-wrap .nrcell{color:var(--nav-ink)}
-      /* 521:37392 - the brand blur. A 20 disc in the study's own colour
-         centred behind the mark, Figma layer-blur 24 which is a 12 CSS blur,
-         clipped by the chip. It belongs to the study, so it only exists on a
-         project page - the Home / Story / Play chip has no ellipse in it. */
-      .nav-wrap .navroll .nrglow{
-            position:absolute;left:50%;top:50%;width:20px;height:20px;
-            margin:-10px 0 0 -10px;border-radius:999px;z-index:0;
-            background:var(--brand, transparent);
-            filter:blur(12px);opacity:0;pointer-events:none;
-            transition:opacity .4s ease}
-      html.nav-held .nav-wrap .navroll .nrglow{opacity:1}
-      /* the window is absolutely positioned - it only needs to stack above
-         the blur, not to be re-positioned */
+      /* the window is absolutely positioned - the z-index is what is left of
+         the brand blur that used to sit under it, and it stays because the
+         roll still has a stacking order to keep */
       .nav-wrap .navroll .nrwin{z-index:1}
       /* 521:37680 - the track is 80%, not 20% / 40%. White at 80% on a light
          surface, black at 80% on a dark one, blur 10 on both. */
@@ -4850,7 +4831,6 @@
     .byline .byl2{display:flex;align-items:baseline;gap:8px}
     .byline .at{font-size:28px;line-height:1.25;letter-spacing:.02em;
             color:#9F9F9F}
-    .hsub{display:none}
 
     /* 3:60 — the hero carries its own bar. Three page links, a quarter-black
        divider on 32 either side, then contact and the mark. */
@@ -4951,59 +4931,111 @@
           color:#fff;
           transition:background-color .4s ease, box-shadow .4s ease}
 
-    /* ══ the hero — 421:55491 ═══════════════════════════════════════
-       One looping band becomes THREE, one word each and no slashes: the
-       phone frame draws CONCEPTING, DESIGNING and BUILDING on their own
-       lines at 54.454 Heavy on -0.04em, cap tops on 201 / 256.49 / 312.12.
-       That pitch is 55.5 against a 39 cap box, so the lines sit 16.5 apart
-       — .30301 of the type, stated as em so it tracks the fit.
+    /* ══ the hero — 608:50181 "Home / Hero / Mobile" ═════════════════
+       The phone hero is redrawn. Four things move at once, so they are
+       written as one block rather than four patches:
 
-       --m is set on the HERO rather than :root: the marquee's full-bleed
-       pull, the column, the top bar and the byline all read it, and every
-       other section on the phone wants its own margin. */
-    .hero{--m:16px}
-    .topbar{top:40px}
-    .bfull{display:none}
-    .hs-d{display:none}
-    .hs-m{display:inline}
-    .lines span.ln:nth-child(2),
-    .lines span.ln:nth-child(3){display:block}
+       1. The column INVERTS. The byline used to sit under the bands near
+          the bottom of the screen; it now sits ABOVE them. .primary and
+          .byline are siblings in the DOM in the other order, so the hero
+          becomes a bottom-anchored column and the two take an `order`.
+       2. THREE bands become two — DESIGNING and BUILDING, the same pair
+          the desktop carries. The third band is the first word repeating,
+          so dropping it costs no copy.
+       3. The type triples: 107.8468 Heavy on -2%, which is 27.442vw of the
+          393 frame. The words bleed both edges by design.
+       4. The margin goes 16 → 20.
 
-    /* em, not --hl-fit. The fit only runs when there is a non-marquee line
-       to measure, and on the phone there is none — so --hl-fit is unset and
-       every calc built on it silently falls back to --hl's 64px floor while
-       the band itself is 54.454. The gap and the slash are em of the band,
-       which is the size they were always meant to be relative to. */
-    .lines .mqtrack{gap:.232558em}
+       Every vertical number below is measured off the frame and stated
+       from the BOTTOM, because that is the edge the bar is pinned to:
+       bands bottom on 742 of 852 (110 up), the byline's cap box bottoms on
+       498, and the 40 between them is the difference. Stated from the top
+       instead, the block would drift on any phone that is not 852 tall. */
+    .hero{--m:20px;
+          flex-direction:column;align-items:flex-start;
+          justify-content:flex-end;
+          gap:40px;
+          /* 110 at 393, stated as the bar rather than as the number: the
+             bar's own bottom offset, its pill, and the drawn 24 between the
+             pill and the bands. When the bar shrinks on a narrower phone the
+             bands follow it down instead of leaving a hole. */
+          padding-bottom:calc(var(--nav-bottom) + var(--seg-h)
+                              + 2 * var(--nav-pad) + 24px)}
+    .byline{order:1}
+    .primary{order:2}
+
+    /* 616:50311 — 353 wide at 20/39, the mark against a pair of 40 pills */
+    .topbar{top:39px;height:40px}
+    .bfull{display:inline}
+    .brand{font-family:var(--font-ui);font-size:24px;font-weight:700;
+           letter-spacing:-.02em;line-height:1.45;text-transform:uppercase}
+    .navr > a.u,.navr > .sep{display:none}
+    /* the 40 is STATED. Left to hug, the row resolved to 35 — the brand's own
+       line box — and the two pills hung 2.5 below the bar they sit in. */
+    .navric{display:flex;align-items:center;gap:8px;height:40px}
+
+    /* 616:50228 — two bands, 96 tall each on a 12 gap. The cap box is 78 of
+       that 96, so between two cap-trimmed lines the gap is 96 - 78 + 12 =
+       30, which is .278187 of the type. The arrow is the same drawing the
+       desktop uses, rotated a quarter turn in the frame: 91.789 x 96 on
+       canvas, which is .851124 x .890147 em — bigger against the word here
+       than it is on the desktop, and that is drawn, not derived. */
+    .lines span.ln:nth-child(2){display:block}
+    .lines span.ln:nth-child(3){display:none}
+    .lines .mqtrack{gap:.111271em}                /* 12 on 107.8468 */
+    .lines .mqtrack .ar{width:.851124em;height:.890147em}
     .lines .mqtrack .ms{width:calc(1em * var(--sl-w, .4));
                  transform:translateY(calc(1em * var(--sl-y, 0) * -1))
                            scale(var(--sl-s, 1))}
-    .lines{font-size:13.856vw;                    /* 54.454 @393 */
-           letter-spacing:-.04em;
-           gap:.30301em}                          /* 16.5 on a 39 cap box */
-    /* Alternating. Bands one and three run to the RIGHT, band two to the
-       left, so the eye is handed back and forth instead of being pulled the
-       same way three times. It is the same keyframe reversed rather than a
-       second set: the track is filled to cover the window plus a whole
-       cycle, so it is continuous at both ends of the travel and reversing
-       cannot open a gap at either edge. */
-    .lines span.ln:nth-child(1) .mqtrack,
-    .lines span.ln:nth-child(3) .mqtrack{animation-direction:reverse}
+    /* Two expressions, and the smaller wins. Below 393 the band holds the
+       drawn PROPORTION — 107.8468 of a 393 frame is 27.442vw, so the same
+       slice of the word is on screen on a 320 phone as on the drawing.
+       Above 393 that ratio runs away: at 1080 it would be 296 against the
+       desktop's own 124.9 one pixel later, and the band would more than
+       double crossing the breakpoint. So past 393 the size walks the
+       straight line from the drawn 107.8468 to the 124.9 the desktop fit
+       resolves to at 1080, and hands over level. */
+    .lines{font-size:min(27.442vw,
+                  calc(107.8468px + (100vw - 393px) * .024823));
+           letter-spacing:-.02em;
+           gap:.111271em}                         /* the drawn 12 */
+    /* Band one runs RIGHT and band two LEFT, so the eye is handed back and
+       forth rather than pulled the same way twice. The direction is set on
+       the animation in script; these are the CSS fallbacks. */
+    .lines span.ln:nth-child(1) .mqtrack{animation-direction:reverse}
     .lines span.ln:nth-child(2) .mqtrack{animation-direction:normal}
 
-    .primary{gap:9.066vw}                         /* 35.63 @393 */
-    /* 20 flat across every phone — the floor is the value, so it reads the
-       same at 393 and at your 420 and there is nothing to re-check between
-       them. It only starts growing past ~504, and stops at 24. */
-    .hsub{font-size:clamp(20px,4.7619vw,24px);    /* 20 @393 and @420 */
-          width:calc(100vw - 32px);               /* the drawn 361 */
-          line-height:1.2;letter-spacing:-.01em}
-    .byline{left:18px;bottom:17.49svh;
-            display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-    .byline p{margin:0;font-family:var(--font-ui);font-size:16px;font-weight:500;
-            line-height:1.2;color:#000;white-space:nowrap}
-    .byline .byl2{display:flex;align-items:baseline;gap:6px}
-    .byline .at{font-size:15px;color:rgba(0,0,0,.5)}            /* 149 of 852 */
+    /* 608:50195 — 22 Medium on 145%, cap-trimmed, 12 between the two lines
+       and 4 between the sentence and the handle. The @ is a size and a
+       weight of its own in the frame: 20 SemiBold against Venmo's 22
+       Medium, one text node with two segments. */
+    .primary{gap:0;transform:none}
+    .byline{position:static;left:auto;bottom:auto;margin-left:var(--m);
+            text-transform:none;
+            display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+    /* 22 is the drawn size and it is also the WIDEST the line can be: the
+       sentence and the handle come to 354.7 at 22, against a 353 column. So
+       22 is a ceiling, not a constant — below ~393 the pair is scaled to
+       whatever fits between the two margins, because it is one nowrap line
+       and there is nowhere for it to go. */
+    .byline p{margin:0;font-family:var(--font-ui);
+            font-size:min(22px, calc((100vw - 36px) / 16.13));
+            font-weight:500;
+            line-height:1.45;letter-spacing:0;color:#1A1A1A;white-space:nowrap;
+            text-box:trim-both cap alphabetic;
+            text-box-trim:trim-both;text-box-edge:cap alphabetic}
+    /* The trim goes on the two SPANS, not on the row. text-box-trim collapses
+       a block's own line box; on a flex container there is no line box to
+       collapse, so the row kept its full 31.9 and pushed the line above it
+       15.7 up the frame. Trimmed children, untrimmed row: 15.9, as drawn. */
+    .byline .byl2{display:flex;align-items:baseline;gap:4px;
+            text-box:normal;text-box-trim:none;text-box-edge:auto}
+    .byline .byl2 > span{display:block;
+            text-box:trim-both cap alphabetic;
+            text-box-trim:trim-both;text-box-edge:cap alphabetic}
+    .byline .at{display:inline;line-height:1.25;
+            letter-spacing:.02em;color:#71747B}
+    .byline .at .atg{font-size:.909em;font-weight:600}   /* 20 against 22 */
 
     /* == the marks and the awards - 417:55288 ========================
        Eight across becomes FOUR, and the sequence is untouched: slot i
@@ -5059,17 +5091,23 @@
        Stacked, so hugging is affordable: side by side a stop needs ~120 and
        three of those cannot sit next to a 64 button.
 
-       56 is the stack: 20 of icon, 6 of gap, 14 of cap, 8 of air each side. */
-    :root{--seg-h:clamp(46px,14.249vw,64px);--btn-size:clamp(52px,16.285vw,72px);
+       54 is the stack: 20 of icon, 8 of gap, 10 of cap, 8 of air each side. */
+    :root{--seg-h:clamp(46px,13.7405vw,64px);
+          --btn-size:clamp(48px,calc((100vw - 40px) * .169972),72px);
           --np-pill:calc(100vw - 32px)}   /* the way-back pill, not 370 */
-    /* ── the bar, default state — 421:55552 ─────────────────────────
-       293 + 4 + 64 = 361, which is the column. Three stops of 95 on a 4
-       padding, a 24 icon over a 10 cap on a 6 gap, and the row sits 32 up
-       from the bottom rather than 24. */
-    :root{--nav-bottom:32px;--segi:clamp(20px,6.107vw,28px);
-          --seg-w:clamp(72px,24.173vw,110px);
-          --hero-shift:-13.157svh}   /* 201 for the first band */
-    .navrow{gap:4px}
+    /* ── the bar, default state — 616:50270 ─────────────────────────
+       301 + 8 + 60 = 369, which is the frame's own 12 either side. Three
+       stops of 97.667 on a 4 padding, a 20 icon over a 14 cap on an 8 gap,
+       and the row sits 24 up from the bottom. */
+    /* Stop and button are fractions of (100vw - 40), not of 100vw: three
+       stops, the 8 inside the pill, the 8 beside it and the button come to
+       exactly the frame's own 12 either side at every width, because the
+       three fixed gaps are taken out of the span BEFORE it is divided. A
+       plain vw share left the row 7 wider than a 320 screen. */
+    :root{--nav-bottom:24px;--segi:clamp(18px,5.0891vw,28px);
+          --seg-w:clamp(72px,calc((100vw - 40px) * .276677),110px);
+          --hero-shift:0svh}
+    .navrow{gap:8px}
     /* width:auto is not enough on Safari — it sized this to 113 against
        three 95 stops and then laid the round button over the second one.
        min-width:max-content is the floor a flex container cannot be shrunk
@@ -5085,13 +5123,15 @@
        flex:0 0 auto it is the same number through a path every engine
        resolves the same way. */
     .seg{flex:0 0 auto;width:var(--seg-w);
-         flex-direction:column;gap:6px;padding:0;
+         flex-direction:column;gap:8px;padding:0;
          transition:color .3s ease, background-color .3s ease,
                     box-shadow .3s ease, height .46s var(--nav-ease),
                     width .46s var(--nav-ease), gap .46s var(--nav-ease),
                     padding .46s var(--nav-ease)}
-    .seg:last-of-type{flex:0 0 auto;width:var(--seg-w);gap:6px;padding:0}
-    .segl{font-size:10px}
+    .seg:last-of-type{flex:0 0 auto;width:var(--seg-w);gap:8px;padding:0}
+    .seglw{line-height:0}
+    .segl{display:block;font-size:clamp(11px,3.5623vw,14px);
+          letter-spacing:0;line-height:1}
     .segi{transition:width .46s var(--nav-ease), height .46s var(--nav-ease)}
     .seglw{overflow:hidden;max-height:1.4em;opacity:1;
            transition:max-height .46s var(--nav-ease), opacity .2s ease}
@@ -5365,6 +5405,12 @@
       <a class="u" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
       <span class="sep">/</span>
       <a class="u" href="mailto:hello@krisjensson.design">Get in touch</a>
+      <span class="navric">
+        <a class="nvic" href="https://www.linkedin.com/in/krisjensson/" target="_blank"
+           rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 13 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 13H10.329V8.45054C10.329 7.20324 9.85499 6.50616 8.86764 6.50616C7.79361 6.50616 7.23248 7.23156 7.23248 8.45054V13H4.65834V4.33333H7.23248V5.50073C7.23248 5.50073 8.00648 4.06855 9.84561 4.06855C11.6839 4.06855 13 5.19112 13 7.51284V13ZM1.58734 3.1985C0.710508 3.1985 0 2.48241 0 1.59924C0 0.716088 0.710508 0 1.58734 0C2.46415 0 3.17425 0.716088 3.17425 1.59924C3.17425 2.48241 2.46415 3.1985 1.58734 3.1985ZM0.25813 13H2.94235V4.33333H0.25813V13Z" fill="currentColor"/></svg></a>
+        <a class="nvic" href="mailto:hello@krisjensson.design"
+           aria-label="Email Kris"><svg viewBox="0 0 16 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.739258 4.18926C0.739258 2.98164 0.739258 2.37784 0.974275 1.91659C1.181 1.51087 1.51087 1.181 1.91659 0.974275C2.37784 0.739258 2.98164 0.739258 4.18926 0.739258H11.6643C12.8719 0.739258 13.4757 0.739258 13.9369 0.974275C14.3426 1.181 14.6725 1.51087 14.8792 1.91659C15.1143 2.37784 15.1143 2.98164 15.1143 4.18926V8.78926C15.1143 9.99687 15.1143 10.6007 14.8792 11.0619C14.6725 11.4676 14.3426 11.7975 13.9369 12.0042C13.4757 12.2393 12.8719 12.2393 11.6643 12.2393H4.18926C2.98164 12.2393 2.37784 12.2393 1.91659 12.0042C1.51087 11.7975 1.181 11.4676 0.974275 11.0619C0.739258 10.6007 0.739258 9.99687 0.739258 8.78926V4.18926Z" fill="currentColor"/><path d="M0.739258 2.89551L6.60779 7.00348C7.08301 7.33613 7.32062 7.50246 7.57907 7.56689C7.80737 7.62379 8.04615 7.62379 8.27444 7.56689C8.5329 7.50246 8.77051 7.33613 9.24572 7.00348L15.1143 2.89551M4.18926 12.2393H11.6643C12.8719 12.2393 13.4757 12.2393 13.9369 12.0042C14.3426 11.7975 14.6725 11.4676 14.8792 11.0619C15.1143 10.6007 15.1143 9.99687 15.1143 8.78926V4.18926C15.1143 2.98164 15.1143 2.37784 14.8792 1.91659C14.6725 1.51087 14.3426 1.181 13.9369 0.974275C13.4757 0.739258 12.8719 0.739258 11.6643 0.739258H4.18926C2.98164 0.739258 2.37784 0.739258 1.91659 0.974275C1.51087 1.181 1.181 1.51087 0.974275 1.91659C0.739258 2.37784 0.739258 2.98164 0.739258 4.18926V8.78926C0.739258 9.99687 0.739258 10.6007 0.974275 11.0619C1.181 11.4676 1.51087 11.7975 1.91659 12.0042C2.37784 12.2393 2.98164 12.2393 4.18926 12.2393Z" stroke="#E7E7E7" stroke-width="1.47857" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </span>
     </nav>
   </div>
 
@@ -5375,11 +5421,10 @@
       <span class="ln mq mq2" aria-hidden="true"><span class="mqtrack"></span></span>
       <span class="ln mq mq2" aria-hidden="true"><span class="mqtrack"></span></span>
     </h1>
-    <p class="hsub"><span class="hs-d">Digital experiences shaped by visual craft,<br>systems, and real-world impact.</span><span class="hs-m">Digital experiences shaped by visual craft, systems, and real-world impact.</span></p>
   </div>
   <div class="byline">
     <p class="byl1">Staff Experience Designer</p>
-    <p class="byl2"><span>Currently shipping impact</span><span class="at">@Venmo</span></p>
+    <p class="byl2"><span>Currently shipping impact</span><span class="at"><span class="atg">@</span>Venmo</span></p>
   </div>
 </section>
 
@@ -6701,7 +6746,6 @@
          is only invisible because the cell it lands on is the cell it left. -->
     <button class="navroll glass" id="navDots" aria-label="Case studies and contact"
             aria-expanded="false" aria-controls="navPanel">
-      <span class="nrglow" aria-hidden="true"></span>
       <span class="navx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/></svg></span>
       <span class="nrdot" aria-hidden="true"></span>
       <span class="nrback" aria-hidden="true">
@@ -7029,18 +7073,15 @@
     /* Which mark the button holds. null puts it back on the roll. The order
        here is the track's order, and the fifth cell is the NFL clone. */
     const ORDER=['nfl','jbl','volvo','ets'];
-    /* 521:37392 - each study's own blur colour, read off the drawn ellipse.
-       Volvo has no brand colour in the mark, so its disc is the surface's own
-       ink: white on the dark bar, black on the light one. */
-    const BRAND={nfl:'#003BFF', jbl:'#FF4713', ets:'#4DD3FE',
-                 volvo:'var(--nav-ink)'};
+    /* 521:37392 drew a 20 disc of the study's own colour behind the mark,
+       blurred. It is gone: the mark alone says which study you are on, and a
+       coloured haze under a 24 logo in a 60 button reads as a smudge rather
+       than as brand. The --brand property went with it — nothing else on the
+       bar was reading it. */
     window.__navLogo=function(name){
       const i=ORDER.indexOf(name);
       root.classList.toggle('nav-held', i>=0);
-      if(i>=0){
-        root.style.setProperty('--hold', i);
-        root.style.setProperty('--brand', BRAND[name]||'transparent');
-      }
+      if(i>=0) root.style.setProperty('--hold', i);
     };
 
     /* ── the button's journey ─────────────────────────────────────────
@@ -11383,7 +11424,7 @@
       'vw '+innerWidth+'  vh '+innerHeight+'  dpr '+devicePixelRatio+
       '  mq640 '+matchMedia('(max-width:1080px)').matches+'\n'+
       'anum '+fs('.anum')+'  acap '+fs('.acap')+'  segl '+fs('.segl')+
-      '  hsub '+fs('.hsub')+'  lines '+fs('.lines')+'\n'+
+      '  lines '+fs('.lines')+'\n'+
       'ctalabel '+fs('.ctalabel')+'  gcta '+fs('.gcta')+'  brand '+fs('.brand')+'\n'+
       'navRow '+rect('#navRow')+'  pill '+rect('#nav')+'  roll '+rect('#navDots')+'\n'+
       'mini '+document.documentElement.classList.contains('nav-mini')+
