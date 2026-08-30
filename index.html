@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<!-- Safari tints its own chrome with this on iOS and on the Mac. It starts
-     on the loader's black and is repainted from whatever section is under
-     the top of the window from there on. -->
-<meta name="theme-color" content="#000000">
+<!-- Safari tints its own chrome with this. The authored value is the HERO,
+     not the loader's black: if a browser reads this once at load and never
+     again — which is the behaviour to plan for — the one value it keeps has
+     to be the one the page actually opens on. The loader is a one-second
+     curtain and is not worth being wrong for the rest of the session. -->
+<meta name="theme-color" content="#F6F6F6">
 <title>Kris Jensson</title>
 <style>
   /* ── swap the typeface here and nowhere else ──────────────────────── */
@@ -11521,8 +11523,9 @@
   }
 
   function surfaceColour(){
-    var ld=document.getElementById('loader');
-    if(ld && getComputedStyle(ld).display!=='none' && !ld.classList.contains('out')) return '#000000';
+    /* the loader is deliberately NOT a case. It is black, it is up for about a
+       second, and giving it the tag means the first value a load-time-only
+       reader sees is black on a light hero. */
     if(root.classList.contains('pin-open')) return '#0A0A0A';   /* black at 90% */
     if(root.classList.contains('nav-open')) return '#101010';   /* the sheet   */
 
@@ -11590,8 +11593,6 @@
      sheet and the scrim opening and closing */
   var mo=new MutationObserver(schedule);
   mo.observe(root,{attributes:true,attributeFilter:['class']});
-  var ld=document.getElementById('loader');
-  if(ld) mo.observe(ld,{attributes:true,attributeFilter:['class']});
   document.querySelectorAll('.page').forEach(function(pg){
     mo.observe(pg,{attributes:true,attributeFilter:['class','style']});
   });
