@@ -234,7 +234,12 @@
      No parking, no pinning: an earlier build stopped the drift at 75% and the
      type visibly stopped dead while the panel kept coming. This one is linear
      the whole way, so it never stalls. */
+  /* Its own ground, not body's. The hero used to be transparent and let
+     --paper through from the canvas; the tint strip below sits behind the
+     page, so any section that does not paint is a section the strip can
+     show through. */
   .hero{position:relative;height:100svh;overflow:hidden;z-index:0;
+        background:var(--paper);
         display:flex;align-items:center;will-change:transform}
   /* 78svh of push against 100svh of scroll leaves the hero moving at about a
      fifth of the page — it reads as almost holding still while the black comes
@@ -2399,6 +2404,21 @@
      headline uses — same per-letter stagger, same tighter wave in the lift.
      Lifts off the top when it lands, so what follows is the loader leaving
      rather than a fade. */
+  /* ── the strip Safari tints from — NOT the meta tag ────────────────
+     Safari 26 ignores theme-color and samples RENDERED CSS instead, in one
+     order: a fixed or sticky element bordering the viewport edge first, the
+     body background second, the system default last. So the tag was never
+     going to work, and neither was painting `html` — Safari does not look
+     at either.
+
+     This is the fixed element it looks at. 64 tall along the top edge,
+     z-index -1 so it sits behind every section, pointer-events off, and its
+     colour is whatever section is under the top of the window — which is
+     also, by construction, the colour of everything painted over it. It
+     cannot be seen. It exists to be sampled. */
+  .chrometint{position:fixed;top:0;left:0;right:0;height:64px;
+              z-index:-1;pointer-events:none;background:var(--paper)}
+
   .loader{position:fixed;inset:0;z-index:100;background:#000;
           will-change:transform}
   .loader.out{transform:translateY(-100%);
@@ -5448,6 +5468,8 @@
 <body>
 <div class="curchip" id="curchip" aria-hidden="true"><span><b class="chiplock" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M11.3322 7.08333V5.08333C11.3322 3.24238 9.83981 1.75 7.99886 1.75C6.15791 1.75 4.66553 3.24238 4.66553 5.08333V7.08333M5.86553 13.75H10.1322C11.2523 13.75 11.8124 13.75 12.2402 13.532C12.6165 13.3403 12.9225 13.0343 13.1142 12.658C13.3322 12.2302 13.3322 11.6701 13.3322 10.55V10.2833C13.3322 9.16323 13.3322 8.60318 13.1142 8.17535C12.9225 7.79903 12.6165 7.49307 12.2402 7.30132C11.8124 7.08333 11.2523 7.08333 10.1322 7.08333H5.86553C4.74542 7.08333 4.18537 7.08333 3.75755 7.30132C3.38122 7.49307 3.07526 7.79903 2.88351 8.17535C2.66553 8.60318 2.66553 9.16323 2.66553 10.2833V10.55C2.66553 11.6701 2.66553 12.2302 2.88351 12.658C3.07526 13.0343 3.38122 13.3403 3.75755 13.532C4.18537 13.75 4.74542 13.75 5.86553 13.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></b>Read more</span></div>
 <div class="cur" id="cur" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24"/><text x="24" y="24" text-anchor="middle" dominant-baseline="central">Read more</text></svg></div>
+
+<div class="chrometint" id="chrometint" aria-hidden="true"></div>
 
 <div class="loader" id="loader">
   <p class="lmark" id="lmark">Kris Jensson Design Portfolio</p>
@@ -11578,6 +11600,8 @@
     if(old && old.parentNode) old.parentNode.replaceChild(m,old);
     else document.head.appendChild(m);
     root.style.backgroundColor=c;
+    var tint=document.getElementById('chrometint');
+    if(tint) tint.style.backgroundColor=c;
   }
 
   var queued=false;
