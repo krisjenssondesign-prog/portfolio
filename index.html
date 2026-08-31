@@ -492,7 +492,7 @@
      margin up by the same amount did, and it dragged the whole row 160 up into
      the card above, where it crossed the phone. The lead is bought with 160px
      more scroll, which is all it should ever have cost. */
-  .rail{position:relative;z-index:2;margin-top:-38.34svh;
+  .rail{position:relative;z-index:2;margin-top:-38.34svh;background:var(--w-sur);
         height:calc(var(--rail-h, 512px) + var(--rail-lead, 0px)
                     + var(--rail-over, 0px) + var(--rail-tail, 0px))}
   /* pan-y: the browser keeps vertical scrolling, horizontal wheels come to us */
@@ -2606,7 +2606,13 @@
      puts the phone's top edge at the bottom of the screen just as the heading
      passes the middle of the viewport. (It was 200svh, which left three
      quarters of a viewport of empty black between them.) */
-  .work{position:relative;height:16.33svh;z-index:2}
+  /* Its own ground, like the hero. This section and the two cards and the
+     rail used to be transparent and let the VEIL show through — and the veil
+     is 100svh, the SMALL viewport. Under viewport-fit=cover the screen is
+     taller than that, so the veil stops short of the bottom edge by exactly
+     the height of Safari's toolbar and the canvas shows underneath it as a
+     white band. A section that paints its own ground cannot leave that gap. */
+  .work{position:relative;height:16.33svh;z-index:2;background:var(--w-sur)}
   .work-in{position:fixed;left:40px;top:0;pointer-events:none;
            display:flex;flex-direction:column;align-items:flex-start;gap:40px;
            transform:translateY(calc(100svh + 168px));
@@ -2735,7 +2741,7 @@
      phone still breaks the edge while the previous block is only just moving,
      instead of half a viewport later — without the two blocks meeting. */
   .card + .card{margin-top:-105svh}
-  .card{position:relative;z-index:2;height:220svh;
+  .card{position:relative;z-index:2;height:220svh;background:var(--w-sur);
         view-timeline-name:--cardTL;view-timeline-axis:block}
   .card-stage{position:sticky;top:0;height:100svh;clip-path:inset(0)}
 
