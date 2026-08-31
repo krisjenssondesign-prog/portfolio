@@ -108,12 +108,14 @@
      one (UI as it is this instant). max() of the two is whichever is actually
      in the way, and it follows the bar as it hides and comes back. */
   --safe-b:max(env(safe-area-inset-bottom, 0px), calc(100lvh - 100dvh));
-  /* THE ONE KNOB. 100lvh-100dvh measures Safari's whole reserved band at the
-     bottom, and its visible URL pill floats inside that band with air above
-     it. Nothing in CSS reports where the pill's top edge actually is, so the
-     air has to be stated. Raise this if the bar sits too high, lower it if it
-     crowds the pill — it is the only number that moves it. */
-  --nav-ui-trim:10px;
+  /* THE ONE KNOB, and it is MEASURED, not guessed. 100lvh-100dvh reports
+     Safari's whole reserved band at the bottom — 127.2 on a 393x852 iPhone —
+     while its visible URL pill's top edge is only 60.5 up from the screen. So
+     the band overshoots the pill by 66.7, and nothing in CSS reports that.
+     Taken off a screenshot: the pill rows were found by luminance, the scale
+     from the 393 width. Subtracting it lands --safe-b exactly on the top edge
+     of the pill, so --nav-bottom below is then a real gap in real pixels. */
+  --nav-ui-trim:67px;
   --safe-t:env(safe-area-inset-top, 0px);
   --nav-bottom:24px;
   --np-pill:370px;                /* the drawn way-back pill — 409:47362 */
@@ -3283,7 +3285,8 @@
      the `nav-light` branch are all gone. */
   .nav-wrap{position:fixed;left:0;right:0;
             bottom:calc(var(--nav-bottom)
-                        + max(0px, var(--safe-b) - var(--nav-ui-trim)));z-index:80;
+                        + max(env(safe-area-inset-bottom, 0px),
+                              var(--safe-b) - var(--nav-ui-trim)));z-index:80;
             display:flex;justify-content:center;pointer-events:none}
 
   /* the row rides the same hide-on-scroll offset it always did */
@@ -4295,7 +4298,8 @@
 
   .navopen{position:fixed;left:0;right:0;
            bottom:calc(var(--nav-bottom)
-                       + max(0px, var(--safe-b) - var(--nav-ui-trim)));z-index:70;
+                       + max(env(safe-area-inset-bottom, 0px),
+                             var(--safe-b) - var(--nav-ui-trim)));z-index:70;
            display:flex;flex-direction:column;align-items:center;gap:4px;
            pointer-events:none}
   .navopen > *{pointer-events:auto}
