@@ -2766,6 +2766,10 @@
 
   .idx b{font-weight:500}
   .idx span{font-weight:400}
+  /* 624:50541 — the card's body paragraph. It is drawn on the phone frame
+     only (and switched off there until the copy existed), so it ships hidden
+     and the 1080 block turns it on. The desktop card is unchanged. */
+  .cbody{display:none}
 
   /* 56 between the copy and the button, 32 inside the copy — 97:3299 */
   .card-main{display:flex;flex-direction:column;align-items:flex-start;gap:48px;
@@ -4874,32 +4878,86 @@
   }
 
   @media (max-width:1080px){
-    /* Top-anchored, not centred. On the desktop the copy is a column beside
-       the phone, so centring it is right; stacked, the block has to start at
-       a known distance DOWN from the top — the frame draws 191 of 852 — and
-       stay there whatever the copy runs to. --body-base turns the ride's
-       own -50% off rather than duplicating fifty keyframes. */
+    /* ══ the work block and the cards — 616:50312 ══════════════════════
+       On the desktop the heading is a FIXED rider and each card is a 220svh
+       sticky stage the copy and the mockup are pinned inside. Stacked on a
+       phone that reads as three separate empty screens: a viewport of black
+       under the heading, the device alone on the next one, and the copy on
+       the one after.
+
+       The frame draws none of that. It is a plain column — heading, 80,
+       card, 80, card — 631 tall per card against the 1,874 the stage was
+       taking. So on the phone the ride comes off and everything goes back
+       into flow, in the frame's own order: mockup first, copy under it.
+
+       The card's own reveal (the line masks, the rotateY tilt) is scroll
+       position on the element, not a scroll TIMELINE, so all of it survives
+       the change untouched. */
+    .work{height:auto;padding:80px 0}          /* 80 above, 80 to the card */
+    .work-in{position:static;transform:none;animation:none;
+             padding:0 20px;gap:20px}
+    .work.css-timeline .work-in{animation:none}
+
+    .card{height:auto}
+    .card + .card{margin-top:80px}
+    .card-stage{position:static;height:auto;clip-path:none;
+                display:flex;flex-direction:column;align-items:stretch}
+    /* the frame stacks device then copy; the markup is copy then device */
+    .card-phone-wrap{order:1}
+    .card-body{order:2}
+    .card.css-timeline .card-body,
+    .card.css-timeline .card-phone,
+    .card.css-timeline .card-phone-wrap{animation:none}
+
+    /* 623:50442 — 220 x 462.16 at x56. The aspect is the desktop's own
+       0.476027 to five places, so only the width is stated. */
+    /* The vw share is the phone's, and 80svh is the ceiling that stops it
+       being the tablet's: at 393 the drawn 220 wins outright, and it only
+       starts binding around 800 wide, where a proportional mockup would
+       stand 962 tall in a 900 window. Height leads and the width follows,
+       so the aspect is the drawn one either way. */
+    .card-phone-wrap{position:static;top:auto;left:auto;
+                     --ph:min(calc(55.9796vw / .476027), 80svh);   /* 462.16 */
+                     --pw:calc(var(--ph) * .476027);               /* 220    */
+                     width:var(--pw);height:var(--ph);
+                     margin-left:min(14.2494vw, 72px)}             /* 56     */
+
+    /* 624:50537 — the copy column is the frame's 56 left and 40 right, and
+       it starts 48 under the device. */
     .card-body,
     .card[data-side="right"] .card-body,
-    .card[data-side="left"]  .card-body{left:16px;width:calc(100% - 32px);
-                     --body-base:0%;top:55.28svh}            /* 471/852 */
+    .card[data-side="left"]  .card-body{position:static;left:auto;top:auto;
+                     width:auto;max-width:560px;--body-base:0%;
+                     margin:48px min(10.1781vw,56px) 0 min(14.2494vw,72px)}
 
-    /* 40 between the copy and the button, 5 inside the title block, and 24
-       from the paragraph down to the stat — 5 of gap plus the stat's 19. */
-    .work-in{gap:24px}
-    .card-main{gap:clamp(28px,10.178vw,48px)}
-    .tblock{gap:16px}
-    .tblock .kpi{margin-top:19px}
+    /* 10 from the title to the copy, 24 between everything under it. Stated
+       as 10 plus a 14 top margin rather than two gaps, because .tblock is a
+       flat list — title, line, body, stat — not two nested groups. */
+    .card-main{gap:32px}
+    .tblock,#cs .tblock{gap:10px}
+    .tblock .cbody,.tblock .kpi{margin-top:14px}
 
     /* the 322 measure is a DESKTOP measure — in vw it resolves to 88px on the
        phone, which stands every paragraph on its end */
     .card-main p,.gtext p{max-width:none}
-    .card-main h3{font-size:clamp(24px,6.107vw,38px)}      /* 24 @393 */
-    .card-main p{font-size:clamp(17px,4.580vw,24px)}       /* 18 @393 */
-    .kpi .fig i{font-size:clamp(15px,4.453vw,25px);width:clamp(11px,3.562vw,17px)}
-    .kpi .fig i:last-child{font-size:clamp(13px,3.817vw,21px)}
-    .kpi .fig b{font-size:clamp(17px,5.089vw,33px)}        /* 20 @393 */
-    .kpi .cap{font-size:clamp(17px,4.580vw,24px)}          /* 18 @393 */
+    /* 624:50538 / 624:50540 / 624:50541 — 32 / 20 / 16, all Medium */
+    .card-main h3{font-size:clamp(26px,8.1425vw,44px);      /* 32 @393 */
+                  font-weight:500;line-height:1.1;letter-spacing:0}
+    .card-main p{font-size:clamp(17px,5.0891vw,26px);       /* 20 @393 */
+                 line-height:1.2}
+    .card-main p.cbody{display:block;
+                 font-size:clamp(14px,4.0712vw,20px);       /* 16 @393 */
+                 line-height:1.2}
+    /* 624:50546 — the stat is four sizes, not one: + at 20 SemiBold, the
+       numeral at 22 Medium, the unit at 18 SemiBold, the caption at 18
+       Medium. 4 inside the figure, 12 out to the caption, everything
+       bottom-aligned on the cap boxes. */
+    .kpi{gap:12px}
+    .kpi .fig i{font-size:clamp(17px,5.0891vw,26px);       /* 20 @393 */
+                width:clamp(11px,3.562vw,17px)}
+    .kpi .fig i:last-child{font-size:clamp(15px,4.5802vw,24px)}   /* 18 */
+    .kpi .fig b{font-size:clamp(19px,5.5980vw,29px)}       /* 22 @393 */
+    .kpi .cap{font-size:clamp(15px,4.5802vw,24px)}         /* 18 @393 */
 
     /* 48, not 56, and the label and lock come down a step with it —
        170 x 48 across 21 + 14 + 4 + 79 + 16 + 15 + 21. */
@@ -5075,7 +5133,26 @@
        for: a stylesheet answering an inline attribute it does not own. */
     .cblock{padding:0 20px;gap:48px}
     .cblock + .cblock{margin-top:57px}
-    .weyebrow{font-size:14px;gap:10px}
+    /* 503:81046 — 14 SemiBold on 145%, a 6 gap, and LOWER case. The trail and
+       the slash are the menu's own ink, not Secondary Light. */
+    .weyebrow{font-size:14px;gap:6px;padding:0;
+              font-weight:600;line-height:1.45;text-transform:none}
+    .weyebrow > :nth-child(2){font-size:14px}
+    .work-in .weyebrow{color:#F8F8F8}
+    .work-in .weyebrow .dim{color:#9CA1A4}
+    /* 503:80992 — 32 Medium on 110% in the frame's own 353 column, and it
+       WRAPS: the drawn box is 93 tall, which is three lines cap-trimmed, not
+       the two the desktop draws. So the authored <br> after "of," comes out
+       and nowrap with it — on the phone the column decides the shape, which
+       is the one thing the desktop line is written never to let it do.
+
+       The size walks 32 at 393 to the 30 the desktop resolves to at 1081, so
+       the two meet level across the breakpoint; under 393 it goes back to
+       being 8.1425vw of the frame, and gives up size rather than shape. */
+    .work h2{white-space:normal;
+             width:100%;max-width:14em;
+             font-size:min(8.1425vw, calc(33.1442px - .2911vw))}
+    .work h2 br{display:none}
     .logobank{aspect-ratio:353/168.18018}
     .lb-slot[data-i="0"]{left:10.6443% !important;top:3.2098% !important;width:16.0891% !important;height:9.9893% !important}
     .lb-slot[data-i="1"]{left:37.3444% !important;top:4.4580% !important;width:16.0891% !important;height:9.9893% !important}
@@ -5185,12 +5262,12 @@
        It is no longer the full column under the words; it is a small
        mockup ABOVE them, 169.17 x 355.39 on a 393 frame, and the copy
        starts at 471. Same 0.476027 aspect, so only the width is said. */
-    .card-phone-wrap{--pw:43.045vw;                       /* 169.17/393 */
-                     --ph:calc(43.045vw / .476027);       /* 355.39     */
-                     width:var(--pw);height:var(--ph);
-                     top:9.51svh}                         /* 81/852     */
+    /* 169 at 81 of 852 was the OLD stacked card, where the device floated in
+       a sticky stage. Both numbers are the frame's now and both live in the
+       block above; the two side rules only existed to place it inside that
+       stage. */
     .card[data-side="right"] .card-phone-wrap,
-    .card[data-side="left"]  .card-phone-wrap{left:18.32vw}   /* 72/393 */
+    .card[data-side="left"]  .card-phone-wrap{left:auto}
 
     /* Side by side, the phone gains 27svh on the copy halfway through and
        PASSES it — that beat is the whole desktop ride. Stacked above it,
@@ -5198,7 +5275,9 @@
        while the copy is still arriving, and the card reads as a hole with
        a paragraph under it. On a phone the two take the same curve, so the
        card travels as one object. */
-    .card.css-timeline .card-phone-wrap{animation-name:bodyRide;--body-base:0%}
+    /* the ride is what the sticky stage was FOR. In flow it only translates
+       the device back out of the column it now lives in. */
+    .card.css-timeline .card-phone-wrap{animation:none;--body-base:0%}
 
     /* ── the skew ────────────────────────────────────────────────────
        Driven from JS, not from a scroll timeline. animation-timeline is
@@ -5512,7 +5591,10 @@
 
 <section  data-surface="dark" class="work" id="work">
   <div class="work-in">
-    <div class="weyebrow"><span class="dim">WORK</span><span class="dim">/</span><span>CASE STUDIES</span></div>
+    <!-- lower case in the markup, uppercased by .weyebrow above 1080. 503:81046
+         draws it lower on the phone, and text-transform is the only thing that
+         can be two cases at two widths off one string. -->
+    <div class="weyebrow"><span class="dim">work</span><span class="dim">/</span><span>case studies</span></div>
     <h2 id="workhead">The work im proudest of, and the impact that came with it</h2>
   </div>
 </section>
@@ -5523,7 +5605,8 @@
       <div class="card-main">
         <div class="tblock">
           <h3>Venmo</h3>
-          <p>Leading design in Venmos biggest redesign in a decade</p>
+          <p>Leading work for Venmo's biggest redesign in a decade</p>
+          <p class="cbody">A decade of shipping had left the app carrying every decision it ever made. I led the design work that rebuilt it as one system, and the staged rollout that put it in front of millions without breaking the habit they already had.</p>
         </div>
         <div class="kpi">
           <span class="fig"><i>+</i><b>320</b><i>%</i></span>
@@ -5569,6 +5652,7 @@
         <div class="tblock">
           <h3>NFL</h3>
           <p>Turning NFL into a D2C growth engine</p>
+          <p class="cbody">A media brand that needed to sell subscriptions, not just show football. I led the design of the surfaces that carry NFL+ acquisition, built so a change to the season lands in one place instead of five.</p>
           <div class="kpi">
             <span class="fig"><i>+</i><b>3.2</b><i>X</i></span>
             <span class="cap">Acquisition for NFL+</span>
@@ -7726,8 +7810,14 @@
 
     hero.style.transform='translateY('+Math.min(H*.78,y*.78).toFixed(1)+'px)';
 
-    const ride = y<=H ? (1-k)*H+168 : 168-(y-H);
-    document.querySelector('.work-in').style.transform='translateY('+ride.toFixed(1)+'px)';
+    /* the rider only exists above 1080 — on the phone .work-in is in flow and
+       an inline transform here would drag it straight back out of it */
+    if(matchMedia('(min-width:1081px)').matches){
+      const ride = y<=H ? (1-k)*H+168 : 168-(y-H);
+      document.querySelector('.work-in').style.transform='translateY('+ride.toFixed(1)+'px)';
+    }else{
+      document.querySelector('.work-in').style.transform='';
+    }
 
     revealEls.forEach((el,i)=>{
       const [a,b]=wordSlice(i);
