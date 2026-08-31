@@ -223,7 +223,11 @@
      switches off the zoom gesture on controls only; the page still pinches. */
   button,a,[role="tab"],.seg,.navroll,.card-cta,.gcta,.nprow,.gmedia,.stat{
     touch-action:manipulation}
-  html{scroll-behavior:smooth}
+  /* An EXPLICIT root background. With none, body's colour propagates to the
+     canvas and Safari falls back to its own white base layer when it works out
+     what to put behind the toolbar. Stated here, the page owns it. It is also
+     what the rubber-band overscroll shows. */
+  html{scroll-behavior:smooth;background:var(--paper)}
   /* Snap has to live on the scroll container, which is the document — so
      leaving it on permanently ran snap logic over every gesture on the JBL
      page, the only page with targets. Proximity snapping nudges where a
@@ -2429,8 +2433,14 @@
 
   .loader{position:fixed;inset:0;z-index:100;background:#000;
           will-change:transform}
-  .loader.out{transform:translateY(-100%);
-              transition:transform .62s cubic-bezier(.76,0,.16,1)}
+  /* visibility, not just the transform. This is a full-screen fixed box with
+     a solid background, and it does not leave the DOM when it slides — it sits
+     above the fold for the rest of the visit, where Safari 26 still counts it
+     when it decides whether to drop a solid block behind its own toolbar. The
+     flip is delayed by the whole slide, so the exit is untouched. */
+  .loader.out{transform:translateY(-100%);visibility:hidden;
+              transition:transform .62s cubic-bezier(.76,0,.16,1),
+                         visibility 0s linear .62s}
   /* Set exactly as the KRIS logo is: the display face at 800, -.04em, 22/22,
      uppercase. Same values, not similar ones. */
   .lmark{position:absolute;left:50%;top:50%;translate:-50% -50%;
@@ -4268,9 +4278,13 @@
             background-color:transparent;      /* see .veil — the sampler */
             background-image:linear-gradient(rgba(0,0,0,.40),rgba(0,0,0,.40));
             -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
-            opacity:0;pointer-events:none;
+            /* visibility too, not opacity alone — the other three overlays
+               already carry it and this one did not. An opacity:0 box is
+               still a box Safari's layout engine tracks. */
+            opacity:0;visibility:hidden;pointer-events:none;
+            transition:opacity .42s ease, visibility 0s linear .42s}
+  html.nav-open .navscrim{opacity:1;visibility:visible;pointer-events:auto;
             transition:opacity .42s ease}
-  html.nav-open .navscrim{opacity:1;pointer-events:auto}
 
   .navopen{position:fixed;left:0;right:0;
            bottom:calc(var(--nav-bottom) + var(--safe-b));z-index:70;
