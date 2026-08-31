@@ -2420,26 +2420,12 @@
      headline uses — same per-letter stagger, same tighter wave in the lift.
      Lifts off the top when it lands, so what follows is the loader leaving
      rather than a fade. */
-  /* ── the strip Safari tints from — NOT the meta tag ────────────────
-     Safari 26 ignores theme-color and samples RENDERED CSS instead, in one
-     order: a fixed or sticky element bordering the viewport edge first, the
-     body background second, the system default last. So the tag was never
-     going to work, and neither was painting `html` — Safari does not look
-     at either.
-
-     This is the fixed element it looks at. 64 tall along the top edge,
-     z-index -1 so it sits behind every section, pointer-events off, and its
-     colour is whatever section is under the top of the window — which is
-     also, by construction, the colour of everything painted over it. It
-     cannot be seen. It exists to be sampled. */
-  .chrometint,.chrometintb{position:fixed;left:0;right:0;height:96px;
-              z-index:-1;pointer-events:none;background:var(--paper)}
-  .chrometint {top:0}
-  /* iOS 26 floats its toolbar over the bottom of the page and tints the band
-     behind it the same way it tints the top. It gets its own strip and its own
-     reading: the section under the BOTTOM edge of the window, which is not the
-     one under the top. */
-  .chrometintb{bottom:0}
+  /* NOTHING sits at either edge on purpose. Safari 26 will paint a solid
+     band behind its own bars if it finds a fixed or sticky element there to
+     sample — that is where the white band under the URL pill came from, and
+     it was a strip put there deliberately. With nothing to sample, the bars
+     go translucent over the page itself, which is the behaviour nfl.com has
+     and the one Kris asked for. Do not put a fixed element on an edge. */
 
   .loader{position:fixed;inset:0;z-index:100;background:#000;
           will-change:transform}
@@ -5590,8 +5576,6 @@
 <div class="curchip" id="curchip" aria-hidden="true"><span><b class="chiplock" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M11.3322 7.08333V5.08333C11.3322 3.24238 9.83981 1.75 7.99886 1.75C6.15791 1.75 4.66553 3.24238 4.66553 5.08333V7.08333M5.86553 13.75H10.1322C11.2523 13.75 11.8124 13.75 12.2402 13.532C12.6165 13.3403 12.9225 13.0343 13.1142 12.658C13.3322 12.2302 13.3322 11.6701 13.3322 10.55V10.2833C13.3322 9.16323 13.3322 8.60318 13.1142 8.17535C12.9225 7.79903 12.6165 7.49307 12.2402 7.30132C11.8124 7.08333 11.2523 7.08333 10.1322 7.08333H5.86553C4.74542 7.08333 4.18537 7.08333 3.75755 7.30132C3.38122 7.49307 3.07526 7.79903 2.88351 8.17535C2.66553 8.60318 2.66553 9.16323 2.66553 10.2833V10.55C2.66553 11.6701 2.66553 12.2302 2.88351 12.658C3.07526 13.0343 3.38122 13.3403 3.75755 13.532C4.18537 13.75 4.74542 13.75 5.86553 13.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></b>Read more</span></div>
 <div class="cur" id="cur" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24"/><text x="24" y="24" text-anchor="middle" dominant-baseline="central">Read more</text></svg></div>
 
-<div class="chrometint" id="chrometint" aria-hidden="true"></div>
-<div class="chrometintb" id="chrometintb" aria-hidden="true"></div>
 
 <div class="loader" id="loader">
   <p class="lmark" id="lmark">Kris Jensson Design Portfolio</p>
@@ -11647,11 +11631,16 @@
 })();
 </script>
 <script>
-/* ── the browser’s own chrome ────────────────────────────────────────
-   Safari 15+ paints its toolbar with the page’s theme-color rather than
-   guessing at the top edge. There was no tag, so it was sampling — which is
-   why the bar read as a slightly wrong grey on the hero and did nothing at
-   all on the black pages.
+/* ── the browser's own chrome ────────────────────────────────────────
+   What is left here is the TAG, and the tag is for other browsers: Chrome on
+   Android and Safari 15–18.7 both use it and both follow it as it changes.
+
+   Safari 26 does not. It ignores theme-color, samples rendered CSS instead —
+   a fixed or sticky element's background-color first, the body background
+   second — and it takes that reading ONCE, at first render. Nothing below
+   can move it afterwards. That is why the chrome cannot follow the section
+   you are on, and why the answer was to give it nothing to sample rather
+   than something better.
 
    The value is READ off the section, not written twice: whichever top-level
    [data-surface] block is under the top of the window hands over its own
@@ -11664,7 +11653,7 @@
    is scrolled underneath it. */
 (function(){
   if(!document.querySelector('meta[name="theme-color"]')) return;
-  var root=document.documentElement, last=null, lastB=null;
+  var root=document.documentElement, last=null;
 
   function flowTop(el){ var y=0; for(var n=el;n;n=n.offsetParent) y+=n.offsetTop; return y; }
 
@@ -11741,11 +11730,7 @@
         nothing on the page changes — only the chrome and the rubber-band
         gutter, which are the two things that were disagreeing with it. */
   function paint(){
-    var c=surfaceColour('top'), cb=surfaceColour('bottom');
-    if(c===last && cb===lastB) return;
-    lastB=cb;
-    var tb=document.getElementById('chrometintb');
-    if(tb) tb.style.backgroundColor=cb;
+    var c=surfaceColour('top');
     if(c===last) return;
     last=c;
     var old=document.querySelector('meta[name="theme-color"]');
@@ -11754,12 +11739,6 @@
     m.setAttribute('content',c);
     if(old && old.parentNode) old.parentNode.replaceChild(m,old);
     else document.head.appendChild(m);
-    /* BODY, not html. Safari's documented fallback when it finds no fixed
-       element to sample is the body background; the html background it
-       ignores outright, which is where this was written first. */
-    document.body.style.backgroundColor=c;
-    var tint=document.getElementById('chrometint');
-    if(tint) tint.style.backgroundColor=c;
   }
 
   var queued=false;
