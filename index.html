@@ -108,6 +108,12 @@
      one (UI as it is this instant). max() of the two is whichever is actually
      in the way, and it follows the bar as it hides and comes back. */
   --safe-b:max(env(safe-area-inset-bottom, 0px), calc(100lvh - 100dvh));
+  /* THE ONE KNOB. 100lvh-100dvh measures Safari's whole reserved band at the
+     bottom, and its visible URL pill floats inside that band with air above
+     it. Nothing in CSS reports where the pill's top edge actually is, so the
+     air has to be stated. Raise this if the bar sits too high, lower it if it
+     crowds the pill — it is the only number that moves it. */
+  --nav-ui-trim:10px;
   --safe-t:env(safe-area-inset-top, 0px);
   --nav-bottom:24px;
   --np-pill:370px;                /* the drawn way-back pill — 409:47362 */
@@ -3276,7 +3282,8 @@
      hero and black over the black sections, so the sampling, the glass and
      the `nav-light` branch are all gone. */
   .nav-wrap{position:fixed;left:0;right:0;
-            bottom:calc(var(--nav-bottom) + var(--safe-b));z-index:80;
+            bottom:calc(var(--nav-bottom)
+                        + max(0px, var(--safe-b) - var(--nav-ui-trim)));z-index:80;
             display:flex;justify-content:center;pointer-events:none}
 
   /* the row rides the same hide-on-scroll offset it always did */
@@ -4287,7 +4294,8 @@
             transition:opacity .42s ease}
 
   .navopen{position:fixed;left:0;right:0;
-           bottom:calc(var(--nav-bottom) + var(--safe-b));z-index:70;
+           bottom:calc(var(--nav-bottom)
+                       + max(0px, var(--safe-b) - var(--nav-ui-trim)));z-index:70;
            display:flex;flex-direction:column;align-items:center;gap:4px;
            pointer-events:none}
   .navopen > *{pointer-events:auto}
@@ -5253,7 +5261,11 @@
        exactly the frame's own 12 either side at every width, because the
        three fixed gaps are taken out of the span BEFORE it is divided. A
        plain vw share left the row 7 wider than a 320 screen. */
-    :root{--nav-bottom:24px;--segi:clamp(18px,5.0891vw,28px);
+    /* 20, not the frame's 24. The frame measures from the screen edge, where
+       there is no browser; in Safari the row is measured from the top of the
+       bottom bar instead — --safe-b — and 20 is the gap Kris asked for
+       between his pill and the URL pill. */
+    :root{--nav-bottom:20px;--segi:clamp(18px,5.0891vw,28px);
           --seg-w:clamp(72px,calc((100vw - 40px) * .276677),110px);
           --hero-shift:0svh}
     .navrow{gap:8px}
@@ -7822,6 +7834,70 @@
     (parseFloat(getComputedStyle(root).getPropertyValue('--veil-end'))||1));
 
   const CSS_TL = CSS.supports('animation-timeline','scroll()');
+  /* The cards do not ride a scroll() timeline — they ride a VIEW timeline, off
+     `view-timeline-name:--cardTL`. Those are two different capabilities and
+     this gate only ever asked about the first, so a browser with scroll() and
+     without view() took the CSS branch, got the class, and then every keyframe
+     on the card FROZE on its first frame. A frozen ride does not look like a
+     missing ride: the copy sits at full opacity, and when the sticky stage
+     reaches the end of its 220svh and slides away, its clip-path cuts straight
+     through the mockup and the button. That is the "half of this is cutting
+     off". Ask about view() separately, and fade the copy by hand when it is
+     not there. */
+  const VIEW_TL = CSS.supports('animation-timeline','view()')
+               && CSS.supports('view-timeline-name','--cardTL');
+
+  /* The same window the CSS uses — contain 68% to contain 97% — measured the
+     same way: a card is taller than the window, so its contain range runs from
+     its top meeting the top of the window to its bottom meeting the bottom.
+     Sampled against the CSS at 2000x963 and it lands on the same numbers. */
+  function cardFadeFallback(){
+    const cards=[...document.querySelectorAll('.card')];
+    if(!cards.length) return;
+    /* The phoneRide keyframes themselves, lifted out of the stylesheet — 51
+       samples of the damped spring at 2% apart, in svh. A straight line
+       between the two ends is NOT the same move: the spring carries its speed
+       through the middle and settles late, so linear had the mockup halfway
+       gone at the point the real one is still arriving. Same numbers, one
+       source, interpolated between samples. */
+    const RIDE=[48.66,43.516,38.478,33.526,28.62,24,19.603,15.377,11.615,8.564,6.039,3.783,1.566,-0.8,-3.2,-5.6,-8,-10.4,-12.8,-15.2,-17.6,-20,-22.4,-24.8,-27.2,-29.6,-32,-34.4,-36.8,-39.2,-41.6,-44,-46.4,-48.8,-51.2,-53.6,-56,-58.4,-60.8,-63.2,-65.6,-68,-70.4,-72.8,-75.2,-77.6,-80,-82.4,-84.8,-87.2,-89.6];
+    let craf=0, cleared=false;
+    function paint(){
+      craf=0;
+      /* Below 1081 the card is a plain column — no sticky stage, no ride —
+         so a transform here would drag the mockup straight out of it. */
+      if(innerWidth<=1080){
+        if(!cleared){ cleared=true;
+          for(const c of cards){
+            const b=c.querySelector('.card-body'), w=c.querySelector('.card-phone-wrap');
+            if(b){ b.style.opacity=''; b.style.transform=''; }
+            if(w) w.style.transform='';
+          } }
+        return;
+      }
+      cleared=false;
+      const svh=innerHeight/100;
+      for(const c of cards){
+        const body=c.querySelector('.card-body'), wrap=c.querySelector('.card-phone-wrap');
+        const top=c.getBoundingClientRect().top+scrollY;
+        const span=Math.max(1, c.offsetHeight - innerHeight);
+        const prog=Math.min(1,Math.max(0,(scrollY-top)/span));
+        const f=prog*(RIDE.length-1), i0=Math.floor(f), i1=Math.min(RIDE.length-1,i0+1);
+        const v=(RIDE[i0]+(RIDE[i1]-RIDE[i0])*(f-i0))*svh;
+        if(wrap) wrap.style.transform='translateY('+v.toFixed(1)+'px)';
+        if(body){
+          const base=(getComputedStyle(c).getPropertyValue('--body-base')||'-50%').trim()||'-50%';
+          body.style.transform='translateY('+base+') translateY('+v.toFixed(1)+'px)';
+          const k=Math.min(1,Math.max(0,((scrollY-top)/span-.68)/.29));
+          body.style.opacity=(1-k).toFixed(3);
+        }
+      }
+    }
+    const tick=()=>{ if(!craf) craf=requestAnimationFrame(paint); };
+    addEventListener('scroll',tick,{passive:true});
+    addEventListener('resize',tick);
+    tick();
+  }
   function setRange(){
     const H=Math.round(endScroll());
     veil.style.animationRange='0px '+H+'px';
@@ -7880,7 +7956,8 @@
     veil.classList.add('css-timeline');
     work.classList.add('css-timeline');
     hero.classList.add('css-timeline');
-    document.querySelectorAll('.card').forEach(c=>c.classList.add('css-timeline'));
+    if(VIEW_TL) document.querySelectorAll('.card').forEach(c=>c.classList.add('css-timeline'));
+    else cardFadeFallback();
     document.getElementById('testi')?.classList.add('css-timeline');
     document.querySelectorAll('.nu').forEach(n=>n.classList.add('css-timeline'));
     setRange();
@@ -7889,6 +7966,7 @@
     addEventListener('scroll',veilTick,{passive:true});
     addEventListener('resize',veilTick);
     veilTick();
+    cardFadeFallback();
   }
 
   addEventListener('scroll',onScroll,{passive:true});
