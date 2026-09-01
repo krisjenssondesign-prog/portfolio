@@ -1741,16 +1741,14 @@
      against the line's -2.8, so F|T is opened by 1.52 at 140. That pair was
      the one left alone up there because the crossbars interlock - this is the
      drawing asking for it, so it is taken from the drawing. */
-  /* 716:52400 pulls the F hard into the T — -8% against the line's -2%. In
-     Saans that closes an interlock; in the fallback the pair is ALREADY 8px
-     tighter than the H|E reference at 192, so the drawing's intent is met by
-     simply taking the old opening off and leaving the face's own fit. */
-  .kf{margin-right:0}
-  /* SETS is new. E|T measures 12.48 against the 17.6 reference at 192, the
-     tightest pair in the word, so it is opened by the difference on the same
-     .9 correction the others carry. T|S and S|E already sit on 17.6 and 14.4,
-     and S|E is what .ks is. */
-  .ke{margin-right:.0240em}   /* E|T  +4.6 @192 */
+  /* 716:52400 / 720:52823 kern these two by hand against the line's -2%: the
+     F is pulled to -8% on the wide window and -4% on the phone, and the E in
+     SETS to -5% on both. Taken from the drawing rather than from the optical
+     table above — these two are Kris closing the pairs deliberately, not the
+     face needing a correction. The margin carries only the DIFFERENCE, since
+     letter-spacing has already paid the -2%. */
+  .kf{margin-right:var(--k-ft, -.06em)}   /* F|T  -8% total */
+  .ke{margin-right:var(--k-et, -.03em)}   /* E|T  -5% total */
   .abpul{display:flex;align-items:flex-end;gap:calc(var(--abhl) * var(--ab-pgap))}
   /* 140 on a 140 headline - the circle is exactly one type size now */
   /* The portrait is a flap card like every letter beside it: a blank disc on
@@ -1850,6 +1848,8 @@
         --ab-av:.941176;     /* 64       — the face           */
         --ab-dot:.294118;    /* 20       — the full stop      */
         --abhl:clamp(32px, min(17.3028vw, calc((100vw - 80px) / 4.87)), 120px)}
+    /* 720:52823 pulls the F to -4% here, not the wide window's -8% */
+    .ab{--k-ft:-.02em}
     .abr1 .abwide{display:none}
     .abr2{display:flex;align-items:center;
           gap:calc(var(--abhl) * var(--ab-gap) * 2)}
