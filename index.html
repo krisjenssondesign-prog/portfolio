@@ -504,7 +504,7 @@
      margin up by the same amount did, and it dragged the whole row 160 up into
      the card above, where it crossed the phone. The lead is bought with 160px
      more scroll, which is all it should ever have cost. */
-  .rail{position:relative;z-index:2;margin-top:-38.34svh;background:var(--w-sur);
+  .rail{position:relative;z-index:2;margin-top:-38.34svh;
         height:calc(var(--rail-h, 512px) + var(--rail-lead, 0px)
                     + var(--rail-over, 0px) + var(--rail-tail, 0px))}
   /* pan-y: the browser keeps vertical scrolling, horizontal wheels come to us */
@@ -907,8 +907,14 @@
      the first 60/280 = 21.43%. */
   /* Surface Light, 506:81763 - #F6F6F6. The cards are WHITE on it, which
      is what makes their 12 radius and E7 hairline read at all. */
+  /* 260svh, not 380. The composition is unchanged — every range below is a
+     percentage of the section's own contain range, so shortening the section
+     shortens all of them together and the row still rides up over the type
+     the same way. What goes is the dead scroll: the cards used to land 2.75
+     screens in with a further screen of nothing after them. They land inside
+     two now, and the footer arrives on the last of it. */
   .testi{position:relative;z-index:2;background:#F6F6F6;
-         margin-top:-60svh;height:380svh}
+         margin-top:-60svh;height:260svh}
   .testi.css-timeline{view-timeline-name:--testiTL;view-timeline-axis:block}
   /* 506:81763 - one set of numbers for the whole composition, so the band,
      the card row and the card height cannot drift apart.
@@ -1389,7 +1395,11 @@
     .tfoot .tfsl{display:none}
     .tfoot .tflinks .tfmark{font-size:24px}
     .tfright{justify-content:space-between;gap:24px}
-    .tficons{gap:4px}
+    /* 48 square on the phone, not the desktop's 56 x 40 pill — a round tap
+       target the thumb can actually find, with the glyph on both centres. */
+    .tficons{gap:8px}
+    .tfic{width:48px;height:48px;place-items:center}
+    .tfic svg{margin:0}
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -2726,8 +2736,15 @@
      on every scroll event and the edge tears against the type riding on it.
      transform is composited. Driven by a CSS scroll-driven timeline rather
      than a scroll listener, so the edge and the type resolve in one frame. */
+  /* lvh, not svh. The veil is the dark ground the work section stands on,
+     and svh is the SMALL viewport — under viewport-fit=cover the screen is
+     taller than that, so a veil sized in svh stopped short of the physical
+     bottom and the canvas showed as a white band under Safari's toolbar.
+     The large viewport is the tallest the screen ever is, so a veil that
+     covers it cannot leave a gap, and at rest it still sits entirely below
+     the fold. On a desktop lvh and svh are the same number. */
   @keyframes veilRise{
-    from{ transform:translateY(100svh) }
+    from{ transform:translateY(100lvh) }
     to  { transform:translateY(0) }
   }
   /* The colour is a GRADIENT, not a background-color, and that is the whole
@@ -2738,11 +2755,11 @@
      DOM. Safari was reading them instead of the page, which is why the bar
      under the hero came out grey and changed shot to shot. A one-stop linear
      gradient paints identically and is invisible to the sampler. */
-  .veil{position:fixed;left:0;top:0;width:100vw;height:100svh;
+  .veil{position:fixed;left:0;top:0;width:100vw;height:100lvh;
         background-color:transparent;
         background-image:linear-gradient(var(--w-sur),var(--w-sur));
         z-index:1;pointer-events:none;
-        transform:translateY(var(--vy,100svh));
+        transform:translateY(var(--vy,100lvh));
         will-change:transform;backface-visibility:hidden}
   .veil.css-timeline{
         animation:veilRise var(--rise) both;
@@ -2762,13 +2779,14 @@
      puts the phone's top edge at the bottom of the screen just as the heading
      passes the middle of the viewport. (It was 200svh, which left three
      quarters of a viewport of empty black between them.) */
-  /* Its own ground, like the hero. This section and the two cards and the
-     rail used to be transparent and let the VEIL show through — and the veil
-     is 100svh, the SMALL viewport. Under viewport-fit=cover the screen is
-     taller than that, so the veil stops short of the bottom edge by exactly
-     the height of Safari's toolbar and the canvas shows underneath it as a
-     white band. A section that paints its own ground cannot leave that gap. */
-  .work{position:relative;height:16.33svh;z-index:2;background:var(--w-sur)}
+  /* TRANSPARENT, and it has to be. This section, the two cards and the rail
+     all stand on the VEIL — one shared ground behind the lot of them. Giving
+     each its own opaque background (the first attempt at the Safari band)
+     made every one of them a shutter: the card's own ground painted over the
+     pinned work headline, and the next card's ground painted over the phone
+     the previous card was still riding. The band is fixed on the veil now,
+     which is where it belonged. */
+  .work{position:relative;height:16.33svh;z-index:2}
   .work-in{position:fixed;left:40px;top:0;pointer-events:none;
            display:flex;flex-direction:column;align-items:flex-start;gap:40px;
            transform:translateY(calc(100svh + 168px));
@@ -2897,7 +2915,7 @@
      phone still breaks the edge while the previous block is only just moving,
      instead of half a viewport later — without the two blocks meeting. */
   .card + .card{margin-top:-105svh}
-  .card{position:relative;z-index:2;height:220svh;background:var(--w-sur);
+  .card{position:relative;z-index:2;height:220svh;
         view-timeline-name:--cardTL;view-timeline-axis:block}
   .card-stage{position:sticky;top:0;height:100svh;clip-path:inset(0)}
 
@@ -3006,8 +3024,10 @@
   .kpi .fig b{font-family:var(--font-ui);font-weight:500;
             font-size:clamp(19px,1.9444vw,44px);               /* 28 @1440 */
             line-height:1;letter-spacing:0}
+  /* The caption is set at the SUBTITLE's size, not a step below it — the
+     same expression, so the two can never drift apart at any width. */
   .kpi .cap{font-family:var(--font-ui);
-            font-size:clamp(16px,1.25vw,30px);font-weight:500;   /* 18 @1440 */
+            font-size:clamp(16px,1.5278vw,30px);font-weight:500; /* 22 @1440 */
             line-height:1.25;letter-spacing:0;color:var(--w-2);
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -3814,12 +3834,14 @@
   .cstop .rzlinks{color:var(--bar-ink)}
   .cstop .rzlinks a{color:var(--bar-ink)}
   .cstop .rzlinks .sep{color:rgba(255,255,255,.25)}
-  /* Desktop carries both links. The phone bar has the wordmark and one link's
-     worth of room — the second would run off the right edge, so below 1080
-     the case-study bar shows Linkedin alone, exactly as it shipped. */
+  /* Desktop carries both links as words. The phone does what the hero's own
+     phone bar does — the same two 40px icon pills, LinkedIn and mail — so the
+     case-study bars and the home bar are one treatment instead of two. */
+  .cstop .csic{margin-left:0}
   @media (max-width:1080px){
-    .cstop .rzlinks .sep,
-    .cstop .rzlinks .sep ~ a{display:none}
+    .cstop .rzlinks > a,
+    .cstop .rzlinks > .sep{display:none}
+    .cstop .rzlinks{gap:8px}
   }
 
   /* 297:16696 + 297:16699 — the mark and the claim on one row, both trimmed
@@ -5123,7 +5145,10 @@
                      --ph:min(calc(55.9796vw / .476027), 80svh);   /* 462.16 */
                      --pw:calc(var(--ph) * .476027);               /* 220    */
                      width:var(--pw);height:var(--ph);
-                     margin-left:min(14.2494vw, 72px)}             /* 56     */
+                     /* centred, not inset 56 from the left. The stage is a
+                        column on the phone and the device is the only thing
+                        on its row, so it sits on the column's own axis. */
+                     margin-left:auto;margin-right:auto}
 
     /* 624:50537 — the copy column is the frame's 56 left and 40 right, and
        it starts 48 under the device. */
@@ -5148,7 +5173,11 @@
                   font-weight:500;line-height:1.1;letter-spacing:0}
     .card-main p{font-size:clamp(17px,5.0891vw,26px);       /* 20 @393 */
                  line-height:1.2}
-    .card-main p.cbody{display:block;
+    /* The mobile frame draws a third paragraph in the card that the desktop
+       frame does not, so the phone was carrying copy the web never showed.
+       Content is 1:1 across the two now; the size below is kept for the day
+       the block is wanted on both. */
+    .card-main p.cbody{display:none;
                  font-size:clamp(14px,4.0712vw,20px);       /* 16 @393 */
                  line-height:1.2}
     /* 624:50546 — the stat is four sizes, not one: + at 20 SemiBold, the
@@ -5160,7 +5189,9 @@
                 width:clamp(11px,3.562vw,17px)}
     .kpi .fig i:last-child{font-size:clamp(15px,4.5802vw,24px)}   /* 18 */
     .kpi .fig b{font-size:clamp(19px,5.5980vw,29px)}       /* 22 @393 */
-    .kpi .cap{font-size:clamp(15px,4.5802vw,24px)}         /* 18 @393 */
+    .kpi .cap{font-size:clamp(17px,5.0891vw,26px);         /* 20 @393 —
+              the subtitle's own size */
+              line-height:1.2}
 
     /* 48, not 56, and the label and lock come down a step with it —
        170 x 48 across 21 + 14 + 4 + 79 + 16 + 15 + 21. */
@@ -5205,7 +5236,9 @@
     .gstat .fig i{font-size:clamp(15px,5.089vw,24px);width:clamp(10px,3.053vw,14px)}
     .gstat .fig i:last-child{font-size:clamp(12px,3.817vw,19px)}
     .gstat .fig b{font-size:clamp(17px,5.089vw,28px)}      /* 20 @393 */
-    .gstat .cap{font-size:clamp(17px,5.089vw,24px);font-weight:400}
+    .gstat .cap{font-size:clamp(15px,4.071vw,24px);         /* 16 @393 —
+                the rail copy's own size */
+                line-height:1.25;font-weight:400}
 
     /* 353 x 48, the word centred, nothing either side of it */
     .gtext > .ln-mask{display:block}
@@ -6520,6 +6553,12 @@
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
         <span class="sep">/</span>
         <a href="mailto:hello@krisjensson.design">Get in touch</a>
+        <span class="navric csic">
+          <a class="nvic" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener"
+             aria-label="LinkedIn"><svg viewBox="0 0 13 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 13H10.329V8.45054C10.329 7.20324 9.85499 6.50616 8.86764 6.50616C7.79361 6.50616 7.23248 7.23156 7.23248 8.45054V13H4.65834V4.33333H7.23248V5.50073C7.23248 5.50073 8.00648 4.06855 9.84561 4.06855C11.6839 4.06855 13 5.19112 13 7.51284V13ZM1.58734 3.1985C0.710508 3.1985 0 2.48241 0 1.59924C0 0.716088 0.710508 0 1.58734 0C2.46415 0 3.17425 0.716088 3.17425 1.59924C3.17425 2.48241 2.46415 3.1985 1.58734 3.1985ZM0.25813 13H2.94235V4.33333H0.25813V13Z" fill="currentColor"/></svg></a>
+          <a class="nvic" href="mailto:hello@krisjensson.design"
+             aria-label="Email Kris"><svg viewBox="0 0 16 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.739258 4.18926C0.739258 2.98164 0.739258 2.37784 0.974275 1.91659C1.181 1.51087 1.51087 1.181 1.91659 0.974275C2.37784 0.739258 2.98164 0.739258 4.18926 0.739258H11.6643C12.8719 0.739258 13.4757 0.739258 13.9369 0.974275C14.3426 1.181 14.6725 1.51087 14.8792 1.91659C15.1143 2.37784 15.1143 2.98164 15.1143 4.18926V8.78926C15.1143 9.99687 15.1143 10.6007 14.8792 11.0619C14.6725 11.4676 14.3426 11.7975 13.9369 12.0042C13.4757 12.2393 12.8719 12.2393 11.6643 12.2393H4.18926C2.98164 12.2393 2.37784 12.2393 1.91659 12.0042C1.51087 11.7975 1.181 11.4676 0.974275 11.0619C0.739258 10.6007 0.739258 9.99687 0.739258 8.78926V4.18926Z" fill="currentColor"/><path d="M0.739258 2.89551L6.60779 7.00348C7.08301 7.33613 7.32062 7.50246 7.57907 7.56689C7.80737 7.62379 8.04615 7.62379 8.27444 7.56689C8.5329 7.50246 8.77051 7.33613 9.24572 7.00348L15.1143 2.89551M4.18926 12.2393H11.6643C12.8719 12.2393 13.4757 12.2393 13.9369 12.0042C14.3426 11.7975 14.6725 11.4676 14.8792 11.0619C15.1143 10.6007 15.1143 9.99687 15.1143 8.78926V4.18926C15.1143 2.98164 15.1143 2.37784 14.8792 1.91659C14.6725 1.51087 14.3426 1.181 13.9369 0.974275C13.4757 0.739258 12.8719 0.739258 11.6643 0.739258H4.18926C2.98164 0.739258 2.37784 0.739258 1.91659 0.974275C1.51087 1.181 1.181 1.51087 0.974275 1.91659C0.739258 2.37784 0.739258 2.98164 0.739258 4.18926V8.78926C0.739258 9.99687 0.739258 10.6007 0.974275 11.0619C1.181 11.4676 1.51087 11.7975 1.91659 12.0042C2.37784 12.2393 2.98164 12.2393 4.18926 12.2393Z" stroke="#E7E7E7" stroke-width="1.47857" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </span>
       </nav>
     </div>
 
@@ -6856,6 +6895,12 @@
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
         <span class="sep">/</span>
         <a href="mailto:hello@krisjensson.design">Get in touch</a>
+        <span class="navric csic">
+          <a class="nvic" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener"
+             aria-label="LinkedIn"><svg viewBox="0 0 13 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 13H10.329V8.45054C10.329 7.20324 9.85499 6.50616 8.86764 6.50616C7.79361 6.50616 7.23248 7.23156 7.23248 8.45054V13H4.65834V4.33333H7.23248V5.50073C7.23248 5.50073 8.00648 4.06855 9.84561 4.06855C11.6839 4.06855 13 5.19112 13 7.51284V13ZM1.58734 3.1985C0.710508 3.1985 0 2.48241 0 1.59924C0 0.716088 0.710508 0 1.58734 0C2.46415 0 3.17425 0.716088 3.17425 1.59924C3.17425 2.48241 2.46415 3.1985 1.58734 3.1985ZM0.25813 13H2.94235V4.33333H0.25813V13Z" fill="currentColor"/></svg></a>
+          <a class="nvic" href="mailto:hello@krisjensson.design"
+             aria-label="Email Kris"><svg viewBox="0 0 16 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.739258 4.18926C0.739258 2.98164 0.739258 2.37784 0.974275 1.91659C1.181 1.51087 1.51087 1.181 1.91659 0.974275C2.37784 0.739258 2.98164 0.739258 4.18926 0.739258H11.6643C12.8719 0.739258 13.4757 0.739258 13.9369 0.974275C14.3426 1.181 14.6725 1.51087 14.8792 1.91659C15.1143 2.37784 15.1143 2.98164 15.1143 4.18926V8.78926C15.1143 9.99687 15.1143 10.6007 14.8792 11.0619C14.6725 11.4676 14.3426 11.7975 13.9369 12.0042C13.4757 12.2393 12.8719 12.2393 11.6643 12.2393H4.18926C2.98164 12.2393 2.37784 12.2393 1.91659 12.0042C1.51087 11.7975 1.181 11.4676 0.974275 11.0619C0.739258 10.6007 0.739258 9.99687 0.739258 8.78926V4.18926Z" fill="currentColor"/><path d="M0.739258 2.89551L6.60779 7.00348C7.08301 7.33613 7.32062 7.50246 7.57907 7.56689C7.80737 7.62379 8.04615 7.62379 8.27444 7.56689C8.5329 7.50246 8.77051 7.33613 9.24572 7.00348L15.1143 2.89551M4.18926 12.2393H11.6643C12.8719 12.2393 13.4757 12.2393 13.9369 12.0042C14.3426 11.7975 14.6725 11.4676 14.8792 11.0619C15.1143 10.6007 15.1143 9.99687 15.1143 8.78926V4.18926C15.1143 2.98164 15.1143 2.37784 14.8792 1.91659C14.6725 1.51087 14.3426 1.181 13.9369 0.974275C13.4757 0.739258 12.8719 0.739258 11.6643 0.739258H4.18926C2.98164 0.739258 2.37784 0.739258 1.91659 0.974275C1.51087 1.181 1.181 1.51087 0.974275 1.91659C0.739258 2.37784 0.739258 2.98164 0.739258 4.18926V8.78926C0.739258 9.99687 0.739258 10.6007 0.974275 11.0619C1.181 11.4676 1.51087 11.7975 1.91659 12.0042C2.37784 12.2393 2.98164 12.2393 4.18926 12.2393Z" stroke="#E7E7E7" stroke-width="1.47857" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </span>
       </nav>
     </div>
 
@@ -6945,6 +6990,12 @@
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
         <span class="sep">/</span>
         <a href="mailto:hello@krisjensson.design">Get in touch</a>
+        <span class="navric csic">
+          <a class="nvic" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener"
+             aria-label="LinkedIn"><svg viewBox="0 0 13 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 13H10.329V8.45054C10.329 7.20324 9.85499 6.50616 8.86764 6.50616C7.79361 6.50616 7.23248 7.23156 7.23248 8.45054V13H4.65834V4.33333H7.23248V5.50073C7.23248 5.50073 8.00648 4.06855 9.84561 4.06855C11.6839 4.06855 13 5.19112 13 7.51284V13ZM1.58734 3.1985C0.710508 3.1985 0 2.48241 0 1.59924C0 0.716088 0.710508 0 1.58734 0C2.46415 0 3.17425 0.716088 3.17425 1.59924C3.17425 2.48241 2.46415 3.1985 1.58734 3.1985ZM0.25813 13H2.94235V4.33333H0.25813V13Z" fill="currentColor"/></svg></a>
+          <a class="nvic" href="mailto:hello@krisjensson.design"
+             aria-label="Email Kris"><svg viewBox="0 0 16 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.739258 4.18926C0.739258 2.98164 0.739258 2.37784 0.974275 1.91659C1.181 1.51087 1.51087 1.181 1.91659 0.974275C2.37784 0.739258 2.98164 0.739258 4.18926 0.739258H11.6643C12.8719 0.739258 13.4757 0.739258 13.9369 0.974275C14.3426 1.181 14.6725 1.51087 14.8792 1.91659C15.1143 2.37784 15.1143 2.98164 15.1143 4.18926V8.78926C15.1143 9.99687 15.1143 10.6007 14.8792 11.0619C14.6725 11.4676 14.3426 11.7975 13.9369 12.0042C13.4757 12.2393 12.8719 12.2393 11.6643 12.2393H4.18926C2.98164 12.2393 2.37784 12.2393 1.91659 12.0042C1.51087 11.7975 1.181 11.4676 0.974275 11.0619C0.739258 10.6007 0.739258 9.99687 0.739258 8.78926V4.18926Z" fill="currentColor"/><path d="M0.739258 2.89551L6.60779 7.00348C7.08301 7.33613 7.32062 7.50246 7.57907 7.56689C7.80737 7.62379 8.04615 7.62379 8.27444 7.56689C8.5329 7.50246 8.77051 7.33613 9.24572 7.00348L15.1143 2.89551M4.18926 12.2393H11.6643C12.8719 12.2393 13.4757 12.2393 13.9369 12.0042C14.3426 11.7975 14.6725 11.4676 14.8792 11.0619C15.1143 10.6007 15.1143 9.99687 15.1143 8.78926V4.18926C15.1143 2.98164 15.1143 2.37784 14.8792 1.91659C14.6725 1.51087 14.3426 1.181 13.9369 0.974275C13.4757 0.739258 12.8719 0.739258 11.6643 0.739258H4.18926C2.98164 0.739258 2.37784 0.739258 1.91659 0.974275C1.51087 1.181 1.181 1.51087 0.974275 1.91659C0.739258 2.37784 0.739258 2.98164 0.739258 4.18926V8.78926C0.739258 9.99687 0.739258 10.6007 0.974275 11.0619C1.181 11.4676 1.51087 11.7975 1.91659 12.0042C2.37784 12.2393 2.98164 12.2393 4.18926 12.2393Z" stroke="#E7E7E7" stroke-width="1.47857" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </span>
       </nav>
     </div>
 
@@ -7024,6 +7075,12 @@
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener">Linkedin</a>
         <span class="sep">/</span>
         <a href="mailto:hello@krisjensson.design">Get in touch</a>
+        <span class="navric csic">
+          <a class="nvic" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener"
+             aria-label="LinkedIn"><svg viewBox="0 0 13 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 13H10.329V8.45054C10.329 7.20324 9.85499 6.50616 8.86764 6.50616C7.79361 6.50616 7.23248 7.23156 7.23248 8.45054V13H4.65834V4.33333H7.23248V5.50073C7.23248 5.50073 8.00648 4.06855 9.84561 4.06855C11.6839 4.06855 13 5.19112 13 7.51284V13ZM1.58734 3.1985C0.710508 3.1985 0 2.48241 0 1.59924C0 0.716088 0.710508 0 1.58734 0C2.46415 0 3.17425 0.716088 3.17425 1.59924C3.17425 2.48241 2.46415 3.1985 1.58734 3.1985ZM0.25813 13H2.94235V4.33333H0.25813V13Z" fill="currentColor"/></svg></a>
+          <a class="nvic" href="mailto:hello@krisjensson.design"
+             aria-label="Email Kris"><svg viewBox="0 0 16 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.739258 4.18926C0.739258 2.98164 0.739258 2.37784 0.974275 1.91659C1.181 1.51087 1.51087 1.181 1.91659 0.974275C2.37784 0.739258 2.98164 0.739258 4.18926 0.739258H11.6643C12.8719 0.739258 13.4757 0.739258 13.9369 0.974275C14.3426 1.181 14.6725 1.51087 14.8792 1.91659C15.1143 2.37784 15.1143 2.98164 15.1143 4.18926V8.78926C15.1143 9.99687 15.1143 10.6007 14.8792 11.0619C14.6725 11.4676 14.3426 11.7975 13.9369 12.0042C13.4757 12.2393 12.8719 12.2393 11.6643 12.2393H4.18926C2.98164 12.2393 2.37784 12.2393 1.91659 12.0042C1.51087 11.7975 1.181 11.4676 0.974275 11.0619C0.739258 10.6007 0.739258 9.99687 0.739258 8.78926V4.18926Z" fill="currentColor"/><path d="M0.739258 2.89551L6.60779 7.00348C7.08301 7.33613 7.32062 7.50246 7.57907 7.56689C7.80737 7.62379 8.04615 7.62379 8.27444 7.56689C8.5329 7.50246 8.77051 7.33613 9.24572 7.00348L15.1143 2.89551M4.18926 12.2393H11.6643C12.8719 12.2393 13.4757 12.2393 13.9369 12.0042C14.3426 11.7975 14.6725 11.4676 14.8792 11.0619C15.1143 10.6007 15.1143 9.99687 15.1143 8.78926V4.18926C15.1143 2.98164 15.1143 2.37784 14.8792 1.91659C14.6725 1.51087 14.3426 1.181 13.9369 0.974275C13.4757 0.739258 12.8719 0.739258 11.6643 0.739258H4.18926C2.98164 0.739258 2.37784 0.739258 1.91659 0.974275C1.51087 1.181 1.181 1.51087 0.974275 1.91659C0.739258 2.37784 0.739258 2.98164 0.739258 4.18926V8.78926C0.739258 9.99687 0.739258 10.6007 0.974275 11.0619C1.181 11.4676 1.51087 11.7975 1.91659 12.0042C2.37784 12.2393 2.98164 12.2393 4.18926 12.2393Z" stroke="#E7E7E7" stroke-width="1.47857" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </span>
       </nav>
     </div>
 
@@ -7109,7 +7166,7 @@
       </button>
       <button class="seg" role="tab" data-page="resume" aria-selected="false">
         <span class="segi ic flickcap" aria-hidden="true"><svg aria-hidden="true" viewBox="3.344 3.309 25.713 25.713" aria-hidden="true"><path d="M20.6944 18.8213C22.0924 18.6996 23.9482 18.9019 26.4737 19.9102C26.7147 20.1842 26.9462 20.4617 27.1544 20.7363C27.55 21.2583 27.9123 21.8245 28.086 22.3555C28.1735 22.623 28.2333 22.941 28.1788 23.2666C28.1192 23.6212 27.9299 23.9391 27.6114 24.1582L27.5889 24.1738L27.5635 24.1885C27.3544 24.3106 27.138 24.3408 26.9815 24.3467C26.8215 24.3526 26.6619 24.3341 26.5235 24.3125C26.2614 24.2715 25.9189 24.1892 25.626 24.127C24.9875 23.9912 24.2669 23.8782 23.4971 24.001C21.885 24.2584 21.117 24.8287 20.209 25.3828C19.7447 25.6661 19.2279 25.9529 18.5704 26.1338C17.9096 26.3154 17.1479 26.3808 16.1866 26.2842C14.6003 26.1792 13.0329 25.1891 11.7842 24.0781C11.1501 23.5139 10.5675 22.8871 10.0684 22.2676C12.6346 22.1707 14.7395 20.9875 16.9727 20.001C17.9418 19.5728 19.0156 18.9676 20.6944 18.8213Z" fill="currentColor"/><path d="M13.9454 6C14.2625 6.00012 14.526 6.22589 14.586 6.52539C16.9111 6.52401 18.77 7.0598 20.2344 7.94531C21.7612 8.86867 22.8145 10.1464 23.5206 11.4961C24.7052 13.7608 24.9352 16.2829 24.7706 17.8613C23.1183 17.42 21.7425 17.3222 20.5743 17.4238C18.6066 17.5951 17.2804 18.3322 16.4053 18.7188C13.7053 19.9115 11.6772 21.0803 9.05962 20.8428L9.05865 20.8418C8.79436 20.8138 8.49568 20.7708 8.18072 20.7129C7.90202 20.6562 7.61517 20.5859 7.32037 20.4961L7.31255 20.5186C7.23312 20.4969 7.15344 20.4741 7.07427 20.4502C6.22484 20.1933 5.21285 19.7491 4.66998 18.96C4.44833 18.6371 4.33156 18.1913 4.26861 17.7607C4.20164 17.3026 4.18116 16.7574 4.21587 16.1641C4.28533 14.9778 4.57971 13.5409 5.22076 12.1406C6.4346 9.48988 8.89407 6.9908 13.2969 6.58301C13.3327 6.25526 13.6081 6 13.9454 6Z" fill="currentColor"/><path d="M11.6895 11.5654C11.5099 11.2519 11.1096 11.1428 10.796 11.3223C9.83797 11.871 9.22781 12.9846 8.9024 14.1201C8.57078 15.2775 8.49169 16.6016 8.71587 17.7402C8.78594 18.0945 9.13 18.3255 9.48443 18.2559C9.8388 18.1859 10.0696 17.8417 10.0001 17.4873C9.81984 16.572 9.88097 15.4585 10.1612 14.4805C10.4477 13.481 10.9214 12.7599 11.4463 12.459C11.7599 12.2794 11.8687 11.8791 11.6895 11.5654Z" fill="currentColor"/></svg></span>
-        <span class="seglw"><span class="segl">Play</span></span>
+        <span class="seglw"><span class="segl">Craft</span></span>
       </button>
     </nav>
     <!-- The four case studies, rolling. The last cell is a second NFL: the
@@ -11425,7 +11482,14 @@
       /* fire off the FIRST LINE, not the card box: these cards are twice the
          height of the window, so 25% of the card is met while the copy is
          still a screen below the fold — the whole run would be over unseen */
-      card.__lrAnchor = card.querySelector('.card-main h3, .gtext h3') || card;
+      /* The big cards are twice the height of the window, so their anchor has
+         to be the first line — 25% of the box is met while the copy is still
+         a screen below the fold. A rail card is half a window tall, so its
+         own box is the anchor and the words start as the row arrives rather
+         than a third of a screen later. */
+      card.__lrAnchor = card.classList.contains('rcard')
+        ? card
+        : (card.querySelector('.card-main h3, .gtext h3') || card);
     }
 
     let raf=0;
@@ -11446,7 +11510,16 @@
       es.forEach(e=>{
         if(!e.isIntersecting) return;
         const card = CARDS.find(c=>c.__lrAnchor===e.target);
-        if(card) card.classList.add('lr-go');
+        if(!card) return;
+        card.classList.add('lr-go');
+        /* The rail is a HORIZONTAL scroller. On a phone cards two and three
+           sit outside the window to the right, so an observer with the
+           viewport as its root never calls them intersecting and their copy
+           stayed in its mask for the whole visit — the cards were there and
+           the words were not. The row arrives as one line, so whichever of
+           them lands first lands all three. */
+        if(card.classList.contains('rcard'))
+          CARDS.forEach(c=>{ if(c.classList.contains('rcard')) c.classList.add('lr-go'); });
       });
     },{rootMargin:'0px 0px -14% 0px', threshold:0});
     CARDS.forEach(c=>io.observe(c.__lrAnchor));
@@ -11618,8 +11691,13 @@
          It is scrubbed by scroll now, so latching means the second pass down
          has nothing in it — the cards are simply already standing. Reversing
          is the honest behaviour for something driven by where you are. */
+      /* .95 → .60 on a .26 lag, not .90 → .20 on .48. The old range ran
+         until the track's top was a fifth of the way up the window, and the
+         third card in the wave finished later still — by which point the row
+         was already pinned and you had scrolled most of the way past it. The
+         row now stands while it is arriving, not after. */
       rv.add({els:cards, host:railTrack, downOnly:true,
-              from:.90, to:.20, lag:.48, dy:30, ease:'soft'});
+              from:.95, to:.60, lag:.26, dy:30, ease:'soft'});
       rv.tick();
     }
 
