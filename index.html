@@ -1851,26 +1851,26 @@
          align-items:flex-start}
   /* the two stops drawn as a column rather than a row - the pill sits ABOVE
      its copy instead of beside it */
-  .jstop[data-kind="b"]{flex-direction:column;gap:24px}
+  .jstop[data-kind="b"]{flex-direction:column;gap:2.12389cqw}
   /* 513:35511 - 91 x 48 on Divider Light, with a 2px ring in the section's own
      ground so the connector reads as passing BEHIND the pill */
   .jpill{flex:none;box-sizing:border-box;
          display:grid;place-items:center;
-         width:91px;height:48px;
+         width:8.05310cqw;height:4.24779cqw;
          border-radius:999px;background:#1E1E1E;
          box-shadow:inset 0 0 0 1.4px #F8F8F8, 0 0 0 3px #101010;
-         font-family:var(--font-ui);font-size:16px;font-weight:600;
+         font-family:var(--font-ui);font-size:1.41593cqw;font-weight:600;
          line-height:1;letter-spacing:0;color:#F8F8F8;white-space:nowrap}
-  .jbody{flex:1 1 auto;min-width:0;padding-top:16px;
-         display:flex;flex-direction:column;gap:12px}
-  .jstop[data-kind="b"] .jbody{padding-top:0;padding-left:12px;padding-right:12px}
+  .jbody{flex:1 1 auto;min-width:0;padding-top:1.41593cqw;
+         display:flex;flex-direction:column;gap:1.06195cqw}
+  .jstop[data-kind="b"] .jbody{padding-top:0;padding-left:1.06195cqw;padding-right:1.06195cqw}
   /* 503:80719 - 20 SemiBold on 1.45 */
-  .jbody h3{margin:0;font-family:var(--font-ui);font-size:20px;font-weight:600;
+  .jbody h3{margin:0;font-family:var(--font-ui);font-size:1.76991cqw;font-weight:600;
             line-height:1.45;letter-spacing:0;color:#F8F8F8;
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* 503:80759 - 18 Medium on 1.25 in Secondary Dark */
-  .jbody p{margin:0;font-family:var(--font-ui);font-size:18px;font-weight:500;
+  .jbody p{margin:0;font-family:var(--font-ui);font-size:1.59292cqw;font-weight:500;
            line-height:1.25;letter-spacing:0;color:#777777}
   /* Each stop's copy is held until the STROKE reaches its pill - the class is
      set off the line's own progress, not off the block's position in the
@@ -1886,13 +1886,38 @@
   .jbody .jln{display:block;overflow:hidden}
   /* splitting moves the line box off the heading and onto the mask, and
      text-box-trim does not follow it - so the mask carries the trim */
-  .jbody h3 > .jln{text-box:trim-both cap alphabetic;
-           text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  /* Trim the BLOCK, not every line. text-box-trim on each mask collapses that
+     mask to its cap height, which also collapses the LEADING between lines —
+     invisible while every title fitted on one line, and on the phone where
+     they wrap it stacked line two straight on top of line one. First mask
+     trims its top, last mask its bottom, a lone mask does both, and the lines
+     in between keep the pitch they are set on. */
+  .jbody h3 > .jln{text-box-edge:cap alphabetic;text-box-trim:none}
+  .jbody h3 > .jln:first-child{text-box-trim:trim-start}
+  .jbody h3 > .jln:last-child{text-box-trim:trim-end}
+  .jbody h3 > .jln:first-child:last-child{text-box-trim:trim-both}
+  /* 100% of the line PLUS the mask's own vent. A percentage translate is a
+     percentage of the element being moved — the line, 22.5 — while the box it
+     has to clear is the mask, which is 8 taller top and bottom because it is
+     vented so descenders are not shaved. 110% moved it 24.8 where 30.5 was
+     needed, so 5.8px of every line stayed inside the clip: the ghost of the
+     copy sitting there before it animates. --vent is set on the mask by the
+     splitter, which is the only place that knows the number. */
   .jbody .jlni{display:block;will-change:transform;
-           transform:translateY(110%);
+           transform:translateY(calc(100% + var(--vent, 0px)));
            transition:transform .82s cubic-bezier(.22,1,.3,1)
                       calc(var(--i, 0) * 70ms)}
   .jstop.lit .jbody .jlni{transform:none}
+
+  /* the pill arrives WITH its stop rather than sitting there waiting for it —
+     index 0, so it leads the first line of the title by one step */
+  .jpill{opacity:0;transform:translateY(14px);
+         transition:opacity .5s var(--rv-ease) calc(var(--i, 0) * 70ms),
+                    transform .82s cubic-bezier(.22,1,.3,1) calc(var(--i, 0) * 70ms)}
+  .jstop.lit .jpill{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .jpill{opacity:1;transform:none;transition:none}
+  }
   @media (prefers-reduced-motion:reduce){
     .jbody .jlni{transform:none;transition:none}
   }
@@ -1930,11 +1955,20 @@
      identical on both drawn sizes, which is what makes one component out of
      two. Only the height and the caption's size differ, so those two are the
      only per-card numbers. */
+  /* Each card now lives INSIDE the stop it belongs to, which is what lets the
+     phone put it in the flow next to its own milestone. That makes the stop
+     its containing block, so the offsets are stop-relative rather than
+     board-relative: --ox/--oy are the card's centre measured from its stop's
+     top-left, in cqw of the board (1cqw = 11.3 board px). The board is still
+     the container for cqw, so the numbers land in the same place they did
+     when they were placed against it directly. NOT --dx/--dy: the float
+     animation below already owns those two names as its delays, and a time
+     in a calc() that wants a length is an invalid declaration, silently. */
   .jpol{position:absolute;margin:0;z-index:2;pointer-events:none;
         width:calc(var(--w) * 1cqw);
         height:calc(var(--w) * var(--h) * 1cqw);
-        left:calc(var(--cx) * 1% - var(--w) * .5cqw);
-        top:calc(var(--cy) * 1% - var(--w) * var(--h) * .5cqw);
+        left:calc(var(--ox) * 1cqw - var(--w) * .5cqw);
+        top:calc(var(--oy) * 1cqw - var(--w) * var(--h) * .5cqw);
         font-size:calc(var(--w) * 1cqw);
         opacity:0;
         transform:rotate(var(--r)) translateY(14px) scale(.94);
@@ -1994,15 +2028,82 @@
     .stleft,.stcopy{flex:none;width:100%;position:static;top:auto}
     .stcopy{padding-top:0}
     .stfacts{padding-right:0}
-    .jnwrap{aspect-ratio:auto;margin-top:80px}
+    /* ══ the phone's own board — 520:36067 ═════════════════════════════
+       The routed line only means something at the width it was drawn for, so
+       on the phone it becomes ONE vertical run down the pill centres and the
+       stops become rows: the 82 pill at the left, 16, then the copy on 255.
+       61 is where the frame puts that line, which is exactly the pill's own
+       middle — 20 + 41.
+
+       The portraits come with their stop rather than being placed against a
+       board, which is the whole reason each one now lives inside its own
+       <li>. They land under the milestone they belong to, in the order the
+       frame stacks them.
+
+       Colour is the DESKTOP's, not this frame's: the mobile frame is still on
+       paper and still carries the old captions — Kris asked for the web's
+       colours until he swaps them in Figma. */
+    .jn{padding:80px 20px 0}
+    .jnhead{width:100%;align-items:flex-start;gap:24px}
+    .jnct{align-items:flex-start;text-align:left;gap:16px}
+    .jnt,.jnlead{width:100%;max-width:none}
+    .jnwrap{aspect-ratio:auto;margin-top:80px;width:100%}
     .jnline{display:none}
-    .jnlist{position:static;display:flex;flex-direction:column;gap:48px}
-    .jstop{position:static;width:100% !important;left:auto;top:auto;
-           flex-direction:column;gap:24px}
-    .jstop .jpill{width:91px}
-    .jstop .jbody{padding:0}
-    /* the cards are placed against the board - there is no board here */
-    .jpol{display:none}
+    .jnlist{position:static;display:flex;flex-direction:column;gap:53px}
+    /* 82 + 16 + 255 = 353, the column */
+    .jstop{position:relative;width:100% !important;left:auto;top:auto;
+           display:grid;grid-template-columns:82px minmax(0,1fr);
+           column-gap:16px;row-gap:0;align-items:start}
+    /* the base gives the column stops `gap:24px`, and an attribute selector
+       outranks the plain class — in a grid that 24 becomes the COLUMN gap too
+       and pushed their copy 8 off the shared 118 guide */
+    .jstop[data-kind="b"]{column-gap:16px;row-gap:0}
+    .jstop .jpill{grid-column:1;width:82px;height:48px;font-size:16px}
+    /* 520:36163 - the phone draws its own type: title 18 SemiBold on 115,
+       body 16 Medium on 120, 20 between them. The board's cqw sizes are the
+       desktop's and would resolve to five pixels here. */
+    .jstop .jbody{grid-column:2;grid-row:1;padding:16px 0 0;gap:20px}
+    .jbody h3{font-size:18px;line-height:1.15}
+    .jbody p{font-size:16px;line-height:1.2}
+    /* the desktop's column stops carry a 12 inset either side; on the phone
+       every stop is the same row and the column is the same 255 */
+    .jstop[data-kind="b"] .jbody{padding:16px 0 0;padding-left:0;padding-right:0}
+    /* 520:36181 — one 2px run at the pill's centre, from this stop's pill
+       down to the next one's. The last stop has nothing to reach, so it
+       carries no line and the run ends on 2026 exactly as drawn. */
+    .jstop::before{content:'';position:absolute;left:40px;top:24px;bottom:-77px;
+           width:2px;background:#F8F8F8;opacity:.5;pointer-events:none}
+    .jstop:last-child::before{display:none}
+    /* the cards ride under their own milestone, still tilted, still the
+       drawn 169.8 against the 353 column */
+    /* 169.8 of the 353 column is 48.102cqw. Both frames draw the card at the
+       same 169.8, so it shrinks with a narrower phone but never grows past
+       the drawn size — otherwise the tilt lifts its corner into the copy on
+       a wide window, and the pair stops reading as a stack. */
+    .jpol{display:block;position:static;grid-column:1 / -1;
+          --pw:min(48.102cqw, 169.769px);
+          width:var(--pw);height:calc(var(--h) * var(--pw));
+          font-size:var(--pw);
+          margin:32px 0 0 var(--mx, 0);
+          transform:rotate(var(--r)) translateY(14px) scale(.94)}
+    .jpol.lit,.jpol.jstill{transform:rotate(var(--r))}
+    .jpolf{height:100%}
+    /* 520:36183 / 520:36193 — a pair is down-and-right, 51 lower and 133 over,
+       not stacked. Pulling the second one up by its whole height buried the
+       first one's caption. */
+    .jpol + .jpol{margin-top:calc(min(14.4476cqw, 51px) - var(--h) * var(--pw))}
+    .jstop .jpol:nth-of-type(1){--mx:min(22.946%, 81px);z-index:3}   /* 81 of 353  */
+    .jstop .jpol:nth-of-type(2){--mx:min(60.623%, 214px);z-index:2}  /* 214 of 353 */
+    /* the drawn pair overlaps 37 across. In the frame the upper card's
+       caption is one short line that clears it; ours run two, so the upper
+       card sits on top and keeps its own caption readable. Nothing of the
+       lower card's caption is covered either way. */
+    /* 360 after the board is the desktop drawing; on the phone the list ends
+       where it ends, so the footer sits a section gap below it */
+    .jn .tfoot{margin-top:120px}
+    /* the drawn pair reaches 11 past the frame's right edge, as it does in
+       Figma — clipped rather than allowed to widen the page */
+    .jn{overflow-x:clip}
   }
 
   /* ── Resume — 132:4568 ───────────────────────────────────────────────
@@ -6165,14 +6266,38 @@
             <h3>Trading Iceland for Silicon Valley</h3>
             <p>I grew up in Iceland, splitting most of my time between school and a soccer field. In 2017, I moved to San Francisco to study interaction design and keep playing the game I’d grown up with.</p>
           </div>
-        </li>
+            <figure class="jpol p1 jstill" data-cy="85" style="--ox:59.440;--oy:7.522;--w:15.02;--h:1.17807;--cf:0.070684;--r:-9.80deg;--by:7.40s;--bx:10.30s;--dy:-2.10s;--dx:-4.60s;--fy:-11.5px;--fx:6.2px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-iceland.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>Me and my partner staying cool back home in Iceland</figcaption>
+            </span>
+          </figure>
+          <figure class="jpol p2 jstill" data-cy="115" style="--ox:74.393;--oy:10.155;--w:15.02;--h:1.17807;--cf:0.070684;--r:10.46deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-marlowe.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>Me and my pup Marlowe battling the hills of SF</figcaption>
+            </span>
+          </figure>
+      </li>
         <li class="jstop js2" data-side="l" data-kind="b">
           <span class="jpill">2019</span>
           <div class="jbody">
             <h3>Soccer &amp; design, what a combo</h3>
             <p>Four years at Academy of Art meant design classes by day and goalkeeper gloves by night. I played for the university team for four year, captained for two, and made some of my best mates while doing it.</p>
           </div>
-        </li>
+            <figure class="jpol p3" data-cy="627" style="--ox:-4.030;--oy:32.355;--w:15.02;--h:1.17807;--cf:0.070684;--r:-7.01deg;--by:6.80s;--bx:10.90s;--dy:-3.40s;--dx:-6.20s;--fy:-12.4px;--fx:4.8px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-school.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>Late nighters at school</figcaption>
+            </span>
+          </figure>
+          <figure class="jpol p4" data-cy="649" style="--ox:11.998;--oy:34.329;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-mls.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>Had the chance to train with an MLS team on the way</figcaption>
+            </span>
+          </figure>
+      </li>
         <li class="jstop js3" data-side="r" data-kind="a">
           <span class="jpill">2021</span>
           <div class="jbody">
@@ -6186,81 +6311,57 @@
             <h3>The first real real gig</h3>
             <p>At YML, I went from internships and student projects to real products, real clients and real constraints. Biggest growth of my career, and where I really learned what great culture stood for.</p>
           </div>
-        </li>
+            <figure class="jpol p6" data-cy="954" style="--ox:12.440;--oy:27.869;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:10.20s;--bx:8.80s;--dy:-4.10s;--dx:-3.30s;--fy:12.0px;--fx:-7.3px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-yml.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>First day at YML, mask on</figcaption>
+            </span>
+          </figure>
+      </li>
         <li class="jstop js5" data-side="l" data-kind="b">
           <span class="jpill">2023</span>
           <div class="jbody">
             <h3>Design at full speed</h3>
             <p>Code and Theory threw me into ambitious work across brands, products and industries. JBL, NFL, Volvo, Lucid and plenty more taught me how to move fast without letting the craft disappear.</p>
           </div>
-        </li>
+            <figure class="jpol p5" data-cy="923" style="--ox:-13.221;--oy:10.240;--w:15.40;--h:1.14943;--cf:0.055901;--r:-5.40deg;--by:7.90s;--bx:11.60s;--dy:-1.20s;--dx:-7.80s;--fy:-13.1px;--fx:5.9px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-jbl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>Shopping a speaker post JBL presentation in Soho</figcaption>
+            </span>
+          </figure>
+      </li>
         <li class="jstop js6" data-side="l" data-kind="a">
           <span class="jpill">2025</span>
           <div class="jbody">
             <h3>Saying bye to agency life... for now</h3>
             <p>After years of jumping between clients, industries and problems, I wanted to go deeper. One product, one team, and the chance to live with the decisions long after launch.</p>
           </div>
-        </li>
+            <figure class="jpol p7" data-cy="1210" style="--ox:54.262;--oy:7.665;--w:15.40;--h:1.14414;--cf:0.055901;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-nfl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>On site at the NFL, still a fan first</figcaption>
+            </span>
+          </figure>
+      </li>
         <li class="jstop js7" data-side="r" data-kind="a">
           <span class="jpill">2026</span>
           <div class="jbody">
             <h3>Reimagining an app that I love</h3>
             <p>Today I’m helping rethink Venmo, an app I’d already loved and used for years. I still play and coach soccer on the side, and spend the rest of my time in San Francisco with my Aussie girlfriend and our little pup Marlowe aka Goose aka Chubby aka no barking, who is unquestionably in charge.</p>
           </div>
-        </li>
+            <figure class="jpol p8" data-cy="1607" style="--ox:-2.465;--oy:18.905;--w:15.40;--h:1.14414;--cf:0.055901;--r:8.76deg;--by:9.80s;--bx:9.20s;--dy:-2.60s;--dx:-5.10s;--fy:13.4px;--fx:-5.1px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-venmo.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>Using the app I now get to help design</figcaption>
+            </span>
+          </figure>
+      </li>
       </ol>
       <!-- 519:35776 etc - eight polaroids over the board. One component at two
            scales, each rotated and placed off the drawn 1130 x 1550, so they
            sit in the same coordinate space as the stops. data-cy is the card's
            centre on that board: it is what the line is measured against. -->
-        <figure class="jpol p1 jstill" data-cy="85" style="--cx:59.44;--cy:5.48;--w:15.02;--h:1.17807;--cf:0.070684;--r:-9.80deg;--by:7.40s;--bx:10.30s;--dy:-2.10s;--dx:-4.60s;--fy:-11.5px;--fx:6.2px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-iceland.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Me and my partner staying cool back home in Iceland</figcaption>
-          </span>
-        </figure>
-        <figure class="jpol p2 jstill" data-cy="115" style="--cx:74.39;--cy:7.40;--w:15.02;--h:1.17807;--cf:0.070684;--r:10.46deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-marlowe.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Me and my pup Marlowe battling the hills of SF</figcaption>
-          </span>
-        </figure>
-        <figure class="jpol p3" data-cy="627" style="--cx:16.59;--cy:40.43;--w:15.02;--h:1.17807;--cf:0.070684;--r:-7.01deg;--by:6.80s;--bx:10.90s;--dy:-3.40s;--dx:-6.20s;--fy:-12.4px;--fx:4.8px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-school.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Late nighters at school</figcaption>
-          </span>
-        </figure>
-        <figure class="jpol p4" data-cy="649" style="--cx:32.62;--cy:41.87;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-mls.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Had the chance to train with an MLS team on the way</figcaption>
-          </span>
-        </figure>
-        <figure class="jpol p5" data-cy="923" style="--cx:17.40;--cy:59.53;--w:15.40;--h:1.14943;--cf:0.055901;--r:-5.40deg;--by:7.90s;--bx:11.60s;--dy:-1.20s;--dx:-7.80s;--fy:-13.1px;--fx:5.9px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-jbl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Shopping a speaker post JBL presentation in Soho</figcaption>
-          </span>
-        </figure>
-        <figure class="jpol p6" data-cy="954" style="--cx:73.77;--cy:61.54;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:10.20s;--bx:8.80s;--dy:-4.10s;--dx:-3.30s;--fy:12.0px;--fx:-7.3px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-yml.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>First day at YML, mask on</figcaption>
-          </span>
-        </figure>
-        <figure class="jpol p7" data-cy="1210" style="--cx:54.26;--cy:78.04;--w:15.40;--h:1.14414;--cf:0.055901;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-nfl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>On site at the NFL, still a fan first</figcaption>
-          </span>
-        </figure>
-        <figure class="jpol p8" data-cy="1607" style="--cx:58.86;--cy:103.65;--w:15.40;--h:1.14414;--cf:0.055901;--r:8.76deg;--by:9.80s;--bx:9.20s;--dy:-2.60s;--dx:-5.10s;--fy:13.4px;--fx:-5.1px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-venmo.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Using the app I now get to help design</figcaption>
-          </span>
-        </figure>
     </div>
 
     <footer class="tfoot" data-tfoot></footer>
@@ -10069,7 +10170,8 @@
       if(!w || (!force && Math.abs(w-splitW)<1)) return;
       splitW=w;
       wrap.querySelectorAll('.jstop').forEach(stop=>{
-        let n=0;
+        /* 1, not 0 — the year pill takes 0 and leads the copy in */
+        let n=1;
         stop.querySelectorAll('.jbody h3, .jbody p').forEach(el=>{
           if(!el.dataset.raw) el.dataset.raw=el.textContent;
           const words=el.dataset.raw.trim().split(/\s+/);
@@ -10119,6 +10221,7 @@
             m.appendChild(i2); el.appendChild(m);
             m.style.paddingTop=pad+'px';    m.style.marginTop='-'+pad+'px';
             m.style.paddingBottom=pad+'px'; m.style.marginBottom='-'+pad+'px';
+            m.style.setProperty('--vent', pad+'px');
           });
         });
       });
