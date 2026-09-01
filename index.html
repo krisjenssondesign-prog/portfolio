@@ -1536,13 +1536,13 @@
      screen. Only the stacking is this section's business. */
   .me .abbar{z-index:3}
 
-  /* The phone has no frame for this hero yet, so it takes the obvious stack:
-     the four blocks come out of their placements and run down the 20 guide in
-     the order they are written, with the portrait last and the fact row
-     wrapping instead of scrolling. Provisional — it wants a drawing. */
+  /* 678:51623 — the phone's own hero. The stack is title, lead, the 2 x 2
+     fact grid, a FULL-WIDTH button on Containers on Dark, then the portrait
+     centred at three quarters of the column. 24 between title and lead, 40
+     between every block after it. */
   @media (max-width:1080px){
     .me{min-height:0;display:flex;flex-direction:column;align-items:stretch;
-        gap:32px;padding:0 0 calc(var(--m) + var(--safe-b));overflow:visible}
+        gap:40px;padding:0 0 calc(var(--m) + var(--safe-b));overflow:visible}
     .me .meh,.me .melead,.me .mecta,.me .mefacts,.me .meport{
         position:static;left:auto;right:auto;top:auto;bottom:auto}
     /* The copy is held while the portrait comes up past it. Both are carried
@@ -1553,7 +1553,10 @@
        and is fully on the screen inside 165, and from there the copy comes
        back and the picture eases off until the two are square. */
     .me .metxt{display:flex;flex-direction:column;align-items:stretch;
-        gap:32px;position:relative;z-index:1}
+        gap:24px;position:relative;z-index:1}
+    /* the drawn order puts the fact grid ABOVE the button */
+    .me .mefacts{order:1}
+    .me .mecta{order:2}
     @keyframes meTxtM{
       0%  {transform:translateY(0)}
       30% {transform:translateY(14svh)}
@@ -1563,37 +1566,48 @@
         animation:meTxtM linear both;
         animation-timeline:scroll(root block);
         animation-range:0 60svh}
-    /* Two lines on the phone. Held on one line the word is 453 wide at any
-       size worth setting it at, which pushed the whole page 57px sideways —
-       the section does not clip on this side of the breakpoint. Sized to the
-       longer word so STORY lands on the 20 guide both ends. */
+    /* ONE line now, at 68 against the frame's own 353 measure. The size is
+       taken from the COLUMN rather than from the viewport: the drawn word
+       fills 94.6% of the measure, and the fallback face runs 5.24px of ink per
+       px of type, so (column * .946) / 5.24 is the size that lands it on the
+       guide at any width. Held on one line, so it can never wrap. */
     .me .meh{margin:calc(var(--safe-t) + 128px) var(--m) 0;
-             white-space:normal;
-             font-size:min(21.83vw, 13svh);line-height:.909}
-    /* capped at the desktop's own 22 so the phone cannot set it larger than
-       the wide window does. Line height comes from the base rule. */
+             white-space:nowrap;
+             font-size:min(calc(18.05vw - 14.4px), 13svh);line-height:1}
+    /* 18 on 125 as drawn */
     .me .melead{margin:0 var(--m);width:auto;max-width:none;
-                font-size:clamp(16px,4.5802vw,22px)}
+                font-size:clamp(16px,4.5802vw,22px);line-height:1.25}
     /* 678:51593 — the bar over the dark hero: the mark is KRIS on its own,
        and the two pills are 48 on Containers on Dark rather than the light
        page's 40 on E7. */
     .me .abbar .mefull{display:none}
     .me .abbar .nvic{width:48px;height:48px;background:#1C1C1C;color:#F8F8F8}
     .me .abbar .navric{height:48px}
-    /* 678:51593 — the four facts are a 2 x 2 grid on the phone, not a
-       wrapping row: two 169 columns 16 apart, labels at 14. */
-    .me .mefacts{margin:0 var(--m);display:grid;
+    /* 678:51623 — two columns 16 apart, each cell carrying its own 16 of
+       lead-in. That inset is what makes the drawn gap read as 40 above the
+       first row and 40 between the two. */
+    .me .mefacts{margin:16px var(--m) 0;display:grid;
                  grid-template-columns:repeat(2,minmax(0,1fr));
                  column-gap:16px;row-gap:40px}
-    .me .mecell dt{font-size:14px}
-    .me .mecta{margin:0 var(--m);align-self:flex-start}
+    .me .mecell{gap:8px;padding:0}
+    .me .mecell dt{font-size:14px;line-height:1.5}
+    .me .mecell dd{line-height:1.5}
+    /* 678:51623 — the phone's button is the full measure, on Containers on
+       Dark with the label in Text White 1, not the light pill the wide window
+       draws. */
+    .me .mecta{margin:16px var(--m) 0;align-self:stretch;
+               justify-content:center;
+               background:#1C1C1C;color:#F8F8F8}
+    .me .mecta:hover{background:#1C1C1C}
     .me .medv{display:none}
     /* No ride here: the phone stacks, so there is no column beside it to be
        twice the speed of. */
     /* it travels half again as fast as the page on the way in, then eases
        back to its own place on the way out */
-    .me .meport{margin:0 var(--m);width:auto;height:auto;max-width:none;
-                aspect-ratio:437 / 551.74;border-radius:12px;
+    /* 266.1 of the drawn 353 — three quarters of the measure, centred, on an
+       8 radius rather than the wide window's 12 */
+    .me .meport{margin:0 auto;width:75.38%;height:auto;max-width:none;
+                aspect-ratio:266.1 / 336;border-radius:8px;
                 position:relative;z-index:2;transform:none}
     @keyframes mePortM{
       0%  {transform:translateY(0)}
@@ -2339,6 +2353,11 @@
     /* The column is the full width now, so the row and the body take it —
        the 89% measures are the desktop's two-column composition. */
     .swhead,.swbody{max-width:none}
+    /* 678:51623 draws the rows with no rule between them, and 20 above / 21
+       below each one rather than the wide window's 32 */
+    .swrow::after,.swrow:first-child::before{display:none}
+    .swrow{padding:20px 0 21px}
+    .swrow:first-child{padding-top:0}
     /* 678:51623 sets the phone's own ramp: the eyebrow and the fact labels at
        14, the section titles at 32, the subheads at 18 and every body at 16 */
     .steyebrow,.jneb{font-size:14px}
