@@ -1409,6 +1409,136 @@
     .testi.css-timeline .tfoot{animation:none;transform:none;opacity:1}
   }
 
+
+  /* ── Story / hero — 660:51005 ────────────────────────────────────────
+     1440 x 900, Surface Dark, everything on the 40 guide. The four left-hand
+     blocks are placed off the SECTION's height rather than stacked, because
+     that is how the frame spaces them — 205 / 377 / 555 / 752 of 900 — and a
+     flow column would let the gaps move every time the lead wrapped to a
+     different number of lines. The portrait is flush to the right and bottom
+     guides: 963 + 437 = 1400 = 1440 - 40, and 308 + 551.7 = 859.7 = 900 - 40.
+
+     The title is drawn in Saans Heavy, which is not one of the four Saans
+     cuts this site embeds, so it takes the display face the rest of the site's
+     headlines take — the same substitution CRAFT IS THE PULSE already makes. */
+  /* No padding on the section: the bar brings its own guide and every block
+     under it is placed on left/right:var(--m) already. Padding here put the
+     bar on 80 and pushed its right-hand links off the screen. */
+  .me{position:relative;box-sizing:border-box;
+      min-height:100svh;overflow:hidden;
+      background:#101010;color:#F8F8F8}
+
+  /* 158.4 of 1440 is 11vw; 158.4 of 900 is 17.6svh. Whichever axis runs out
+     first decides, so a short window shrinks the word instead of eating the
+     lead under it. */
+  .me .meh{position:absolute;left:var(--m);top:22.778svh;margin:0;
+      font-family:var(--font-display);font-weight:900;
+      font-size:min(11vw, 17.6svh);
+      line-height:1;letter-spacing:-.02em;color:#F8F8F8;white-space:nowrap;
+      text-box:trim-both cap alphabetic;
+      text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .me .meh .txt{display:block}
+
+  /* 24 on 125 in a 709 measure. Two-tone: the claims in Text White 1, the
+     joins in the menu ink — 660:51010 sets it as thirteen styled runs. */
+  .me .melead{position:absolute;left:var(--m);top:41.889svh;margin:0;
+      width:49.236vw;max-width:709px;
+      font-family:var(--font-ui);font-size:min(1.6667vw, 24px);
+      font-weight:500;line-height:1.25;letter-spacing:0;color:#9CA1A4;
+      text-box:trim-start cap;text-box-trim:trim-start;text-box-edge:cap alphabetic}
+  .me .melead b{font-weight:500;color:#F8F8F8}
+
+  /* 182 x 48 on Light 2, label 14 SemiBold caps on Text Dark 1, 20 either
+     side. Not a link band — it is a pill. */
+  .me .mecta{position:absolute;left:var(--m);top:61.667svh;
+      box-sizing:border-box;display:inline-flex;align-items:center;
+      height:48px;padding:0 20px;border-radius:999px;
+      background:#E7E7E7;color:#1A1A1A;
+      font-family:var(--font-ui);font-size:14px;font-weight:600;
+      line-height:1;letter-spacing:0;text-transform:uppercase;
+      white-space:nowrap;
+      transition:background-color .3s ease, color .3s ease}
+  .me .mecta:hover{background:#F8F8F8}
+
+  /* 703 x 45 at 752: four hugging cells on a 48 gap with a 1.4 rule between
+     them, label 16 on the menu ink over value 18 on Text White 1, 12 apart. */
+  .me .mefacts{position:absolute;left:var(--m);top:83.556svh;margin:0;
+      display:flex;align-items:stretch;gap:48px}
+  .me .mecell{display:flex;flex-direction:column;justify-content:center;
+      gap:12px;padding:4px 0;min-width:0}
+  .me .mecell dt{margin:0;font-family:var(--font-ui);font-size:16px;
+      font-weight:500;line-height:1;letter-spacing:0;color:#9CA1A4;
+      text-box:trim-both cap alphabetic;
+      text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .me .mecell dd{margin:0;font-family:var(--font-ui);font-size:18px;
+      font-weight:500;line-height:1;letter-spacing:0;color:#F8F8F8;
+      white-space:nowrap;
+      text-box:trim-both cap alphabetic;
+      text-box-trim:trim-both;text-box-edge:cap alphabetic}
+  .me .medv{flex:none;align-self:stretch;width:1.4px;background:#1E1E1E}
+
+  /* 437 x 551.7 at radius 13.375, cover, pinned to the two guides it touches.
+     Sized off the height so it holds its share of the screen rather than its
+     share of the width — the composition is vertical. */
+  .me .meport{position:absolute;right:var(--m);bottom:var(--m);margin:0;
+      height:61.304svh;aspect-ratio:437 / 551.74;
+      max-width:calc(50vw - var(--m) * 2);
+      border-radius:min(1.486svh, 13.38px);overflow:hidden;background:#1C1C1C}
+  .me .meport img{display:block;width:100%;height:100%;object-fit:cover}
+
+  /* ── the portrait rides ─────────────────────────────────────────────
+     Twice the speed of the column beside it. The left-hand blocks move with
+     the page, which is 1x; over one screen of scroll the portrait takes a
+     second screen's worth of translate on top of that, so it clears the top
+     of the section while the copy is still leaving it. The section clips, so
+     what it does above its own edge is nobody's business.
+
+     Scrubbed off the root scroll rather than a view timeline: this section
+     starts AT scrollY 0, so there is no entry for `view()` to measure — the
+     range is simply the section's own height, counted from the top of the
+     document. */
+  @keyframes mePort{ from{transform:translateY(0)}
+                       to{transform:translateY(-100svh)} }
+  .me.css-timeline .meport{will-change:transform;
+      animation:mePort linear both;
+      animation-timeline:scroll(root block);
+      animation-range:0 100svh}
+  @media (prefers-reduced-motion:reduce){
+    .me.css-timeline .meport{animation:none} }
+
+  /* The bar is absolutely placed on the two guides by its own rule — do not
+     give it a position here, that is what pushed its right-hand links off the
+     screen. Only the stacking is this section's business. */
+  .me .abbar{z-index:3}
+
+  /* The phone has no frame for this hero yet, so it takes the obvious stack:
+     the four blocks come out of their placements and run down the 20 guide in
+     the order they are written, with the portrait last and the fact row
+     wrapping instead of scrolling. Provisional — it wants a drawing. */
+  @media (max-width:1080px){
+    .me{min-height:0;display:flex;flex-direction:column;align-items:stretch;
+        gap:32px;padding:0 0 calc(var(--m) + var(--safe-b));overflow:visible}
+    .me .meh,.me .melead,.me .mecta,.me .mefacts,.me .meport{
+        position:static;left:auto;right:auto;top:auto;bottom:auto}
+    /* Two lines on the phone. Held on one line the word is 453 wide at any
+       size worth setting it at, which pushed the whole page 57px sideways —
+       the section does not clip on this side of the breakpoint. Sized to the
+       longer word so STORY lands on the 20 guide both ends. */
+    .me .meh{margin:calc(var(--safe-t) + 128px) var(--m) 0;
+             white-space:normal;
+             font-size:min(24.4vw, 13svh);line-height:.95}
+    .me .melead{margin:0 var(--m);width:auto;max-width:none;
+                font-size:clamp(16px,4.5802vw,24px)}
+    .me .mecta{margin:0 var(--m);align-self:flex-start}
+    .me .mefacts{margin:0 var(--m);flex-wrap:wrap;gap:24px 40px}
+    .me .medv{display:none}
+    /* No ride here: the phone stacks, so there is no column beside it to be
+       twice the speed of. */
+    .me .meport{margin:0 var(--m);width:auto;height:auto;max-width:none;
+                aspect-ratio:437 / 551.74;border-radius:12px;
+                animation:none;transform:none}
+  }
+
   /* ── About / Landing — 124:3583 ──────────────────────────────────────
      Black page, one screen. Same 192 Inter Black headline as the hero, but
      the second line is a ROW — THE, a 165 portrait, PULSE and its full stop —
@@ -1459,6 +1589,15 @@
        letter-spacing:-.04em;line-height:1;text-transform:uppercase}
   .abr .ablink{color:var(--bar-ink)}
   .abr .sep{color:var(--bar-sep);letter-spacing:-.06em;text-transform:none}
+  /* Same as every other bar on the site: words on the desktop, the two 40px
+     icon pills on a phone. Held as words the wordmark and GET IN TOUCH both
+     wrapped to two lines at 393. */
+  .abr .csic{margin-left:0}
+  @media (max-width:1080px){
+    .abr > .ablink,.abr > .sep{display:none}
+    .abr{gap:8px}
+    .abbar .brand{white-space:nowrap}
+  }
 
   /* headline block sits on the 40 guide at y180; the row below it at y352 */
   .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * .085714)} /* 12 */
@@ -2246,6 +2385,11 @@
      The grid is the drawing's own guides: the dot sits on 40, the labels on
      68, the content on 396 and runs 772 wide. 28 + 328 + 772 = 1128, which
      puts the content's right edge on 1168 exactly as drawn. */
+  /* The pulse hero opens this page now, and it brings its own bar with it —
+     so the resume's own bar stands down rather than printing the wordmark
+     twice, once at the top of the screen and once a screen further down. */
+  .ab + .gw > .gwtop{display:none}
+  .ab + .gw{padding-top:120px}
   .gw{position:relative;display:flow-root;background:#000;color:var(--c-1);
       padding-bottom:12.5vw}
   .gwtop{position:relative;z-index:2;
@@ -6170,36 +6314,58 @@
 </main>
 
 <main class="page" id="pgAbout" data-page="about" hidden>
-  <section  data-surface="dark" class="ab">
+  <!-- ══ Story / hero — 660:51005 "Me" ══════════════════════════════
+       A fixed 1440 x 900 composition, everything on the 40 guide: the title
+       at 205, the lead at 377, the button at 555 and the fact row at 752,
+       with the portrait flush to the right and bottom guides. Those four are
+       placed off the section's own height rather than stacked, because the
+       frame spaces them against the FRAME, not against each other — a flow
+       column would have the gaps drift the moment the lead wrapped to a
+       different number of lines.
+
+       The lead is two-tone as drawn: the claims are Text White 1 and the
+       joins between them are the menu ink, so the sentence reads as a set of
+       facts rather than a paragraph. -->
+  <section  data-surface="dark" class="me" id="abMe">
     <div class="abbar">
       <span class="brand ab-brand">KRIS JENSSON</span>
       <nav class="abr">
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener" class="ablink">Linkedin</a>
         <span class="sep">/</span>
         <a href="mailto:hello@krisjensson.design" class="ablink">Get in touch</a>
+        <span class="navric csic">
+          <a class="nvic" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener"
+             aria-label="LinkedIn"><svg viewBox="0 0 13 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 13H10.329V8.45054C10.329 7.20324 9.85499 6.50616 8.86764 6.50616C7.79361 6.50616 7.23248 7.23156 7.23248 8.45054V13H4.65834V4.33333H7.23248V5.50073C7.23248 5.50073 8.00648 4.06855 9.84561 4.06855C11.6839 4.06855 13 5.19112 13 7.51284V13ZM1.58734 3.1985C0.710508 3.1985 0 2.48241 0 1.59924C0 0.716088 0.710508 0 1.58734 0C2.46415 0 3.17425 0.716088 3.17425 1.59924C3.17425 2.48241 2.46415 3.1985 1.58734 3.1985ZM0.25813 13H2.94235V4.33333H0.25813V13Z" fill="currentColor"/></svg></a>
+          <a class="nvic" href="mailto:hello@krisjensson.design"
+             aria-label="Email Kris"><svg viewBox="0 0 16 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.739258 4.18926C0.739258 2.98164 0.739258 2.37784 0.974275 1.91659C1.181 1.51087 1.51087 1.181 1.91659 0.974275C2.37784 0.739258 2.98164 0.739258 4.18926 0.739258H11.6643C12.8719 0.739258 13.4757 0.739258 13.9369 0.974275C14.3426 1.181 14.6725 1.51087 14.8792 1.91659C15.1143 2.37784 15.1143 2.98164 15.1143 4.18926V8.78926C15.1143 9.99687 15.1143 10.6007 14.8792 11.0619C14.6725 11.4676 14.3426 11.7975 13.9369 12.0042C13.4757 12.2393 12.8719 12.2393 11.6643 12.2393H4.18926C2.98164 12.2393 2.37784 12.2393 1.91659 12.0042C1.51087 11.7975 1.181 11.4676 0.974275 11.0619C0.739258 10.6007 0.739258 9.99687 0.739258 8.78926V4.18926Z" fill="currentColor"/><path d="M0.739258 2.89551L6.60779 7.00348C7.08301 7.33613 7.32062 7.50246 7.57907 7.56689C7.80737 7.62379 8.04615 7.62379 8.27444 7.56689C8.5329 7.50246 8.77051 7.33613 9.24572 7.00348L15.1143 2.89551M4.18926 12.2393H11.6643C12.8719 12.2393 13.4757 12.2393 13.9369 12.0042C14.3426 11.7975 14.6725 11.4676 14.8792 11.0619C15.1143 10.6007 15.1143 9.99687 15.1143 8.78926V4.18926C15.1143 2.98164 15.1143 2.37784 14.8792 1.91659C14.6725 1.51087 14.3426 1.181 13.9369 0.974275C13.4757 0.739258 12.8719 0.739258 11.6643 0.739258H4.18926C2.98164 0.739258 2.37784 0.739258 1.91659 0.974275C1.51087 1.181 1.181 1.51087 0.974275 1.91659C0.739258 2.37784 0.739258 2.98164 0.739258 4.18926V8.78926C0.739258 9.99687 0.739258 10.6007 0.974275 11.0619C1.181 11.4676 1.51087 11.7975 1.91659 12.0042C2.37784 12.2393 2.98164 12.2393 4.18926 12.2393Z" stroke="#E7E7E7" stroke-width="1.47857" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </span>
       </nav>
     </div>
 
-    <div class="abhead">
-      <h1 class="abline" id="abL1"><span class="txt"><span class="kc">C</span>RA<span class="kf">F</span>T <span class="ki">I</span>S</span></h1>
-      <div class="abbot">
-        <span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span>
-        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span></span>
-        <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span>E</span></span><i class="abdot" aria-hidden="true"></i></span>
-      </div>
-    </div>
+    <h1 class="meh"><span class="txt">MY STORY</span></h1>
 
-    <div class="abfoot">
-      <p class="abcopy"><b>After 8+ years in design,</b> I’ve learned to <b>embrace constraints</b> and adapt as I go. But one thing has stayed constant: <b>delightful design isn’t a nice-to-have. It’s the baseline.</b></p>
-    </div>
+    <p class="melead"><b>I build products</b> where the ambition is high and the
+      constraints are real. After <b>8+ years</b> designing for the likes of
+      <b>NFL, JBL</b>, and <b>Volvo</b>, I’m now <b>at Venmo</b>, shaping its
+      <b>biggest redesign in a decade.</b>  That’s the short version.
+      There’s <b>more to it below.</b></p>
 
-    <!-- 520:36312 / 520:36359 - the rule, the chip that sits over it, and the
-         band under both. Ten stops on a 40 gap, running off both edges; the
-         track is built and paced in JS off the same cycle the hero uses. -->
-    <div class="abrules" aria-hidden="true"><u></u><span class="ablovefor"><i>/</i><b>Love for</b></span></div>
-    <div class="abstrip" aria-label="San Francisco, Code, Design, Motion, People, AI used right, Prototyping, Systems, Illustrations, 3D Design">
-      <span class="mqtrack abtrack" id="abTrack" aria-hidden="true"></span>
-    </div>
+    <a class="mecta nolnk" href="#">Download resume</a>
+
+    <dl class="mefacts">
+      <div class="mecell"><dt>LOCATION</dt><dd>San Francisco</dd></div>
+      <i class="medv" aria-hidden="true"></i>
+      <div class="mecell"><dt>EXPERIENCE</dt><dd>8 Years</dd></div>
+      <i class="medv" aria-hidden="true"></i>
+      <div class="mecell"><dt>TITLE</dt><dd>Staff XD Designer</dd></div>
+      <i class="medv" aria-hidden="true"></i>
+      <div class="mecell"><dt>NOW</dt><dd>Venmo</dd></div>
+    </dl>
+
+    <figure class="meport">
+      <img src="media/story-me.png" alt="Kris Jensson"
+           decoding="async" onerror="this.closest('.meport').remove()">
+    </figure>
   </section>
 
   <!-- 513:24124 - About / Second section. Light now, and the picture cluster
@@ -6428,6 +6594,44 @@
      Everything after that is the panel's own window: the page keeps scrolling
      and .rzin is driven through it. -->
 <main class="page" id="pgResume" data-page="resume" hidden>
+  <section  data-surface="dark" class="ab">
+    <div class="abbar">
+      <span class="brand ab-brand">KRIS JENSSON</span>
+      <nav class="abr">
+        <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener" class="ablink">Linkedin</a>
+        <span class="sep">/</span>
+        <a href="mailto:hello@krisjensson.design" class="ablink">Get in touch</a>
+        <span class="navric csic">
+          <a class="nvic" href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener"
+             aria-label="LinkedIn"><svg viewBox="0 0 13 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 13H10.329V8.45054C10.329 7.20324 9.85499 6.50616 8.86764 6.50616C7.79361 6.50616 7.23248 7.23156 7.23248 8.45054V13H4.65834V4.33333H7.23248V5.50073C7.23248 5.50073 8.00648 4.06855 9.84561 4.06855C11.6839 4.06855 13 5.19112 13 7.51284V13ZM1.58734 3.1985C0.710508 3.1985 0 2.48241 0 1.59924C0 0.716088 0.710508 0 1.58734 0C2.46415 0 3.17425 0.716088 3.17425 1.59924C3.17425 2.48241 2.46415 3.1985 1.58734 3.1985ZM0.25813 13H2.94235V4.33333H0.25813V13Z" fill="currentColor"/></svg></a>
+          <a class="nvic" href="mailto:hello@krisjensson.design"
+             aria-label="Email Kris"><svg viewBox="0 0 16 13" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.739258 4.18926C0.739258 2.98164 0.739258 2.37784 0.974275 1.91659C1.181 1.51087 1.51087 1.181 1.91659 0.974275C2.37784 0.739258 2.98164 0.739258 4.18926 0.739258H11.6643C12.8719 0.739258 13.4757 0.739258 13.9369 0.974275C14.3426 1.181 14.6725 1.51087 14.8792 1.91659C15.1143 2.37784 15.1143 2.98164 15.1143 4.18926V8.78926C15.1143 9.99687 15.1143 10.6007 14.8792 11.0619C14.6725 11.4676 14.3426 11.7975 13.9369 12.0042C13.4757 12.2393 12.8719 12.2393 11.6643 12.2393H4.18926C2.98164 12.2393 2.37784 12.2393 1.91659 12.0042C1.51087 11.7975 1.181 11.4676 0.974275 11.0619C0.739258 10.6007 0.739258 9.99687 0.739258 8.78926V4.18926Z" fill="currentColor"/><path d="M0.739258 2.89551L6.60779 7.00348C7.08301 7.33613 7.32062 7.50246 7.57907 7.56689C7.80737 7.62379 8.04615 7.62379 8.27444 7.56689C8.5329 7.50246 8.77051 7.33613 9.24572 7.00348L15.1143 2.89551M4.18926 12.2393H11.6643C12.8719 12.2393 13.4757 12.2393 13.9369 12.0042C14.3426 11.7975 14.6725 11.4676 14.8792 11.0619C15.1143 10.6007 15.1143 9.99687 15.1143 8.78926V4.18926C15.1143 2.98164 15.1143 2.37784 14.8792 1.91659C14.6725 1.51087 14.3426 1.181 13.9369 0.974275C13.4757 0.739258 12.8719 0.739258 11.6643 0.739258H4.18926C2.98164 0.739258 2.37784 0.739258 1.91659 0.974275C1.51087 1.181 1.181 1.51087 0.974275 1.91659C0.739258 2.37784 0.739258 2.98164 0.739258 4.18926V8.78926C0.739258 9.99687 0.739258 10.6007 0.974275 11.0619C1.181 11.4676 1.51087 11.7975 1.91659 12.0042C2.37784 12.2393 2.98164 12.2393 4.18926 12.2393Z" stroke="#E7E7E7" stroke-width="1.47857" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </span>
+      </nav>
+    </div>
+
+    <div class="abhead">
+      <h1 class="abline" id="abL1"><span class="txt"><span class="kc">C</span>RA<span class="kf">F</span>T <span class="ki">I</span>S</span></h1>
+      <div class="abbot">
+        <span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span>
+        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span></span>
+        <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span>E</span></span><i class="abdot" aria-hidden="true"></i></span>
+      </div>
+    </div>
+
+    <div class="abfoot">
+      <p class="abcopy"><b>After 8+ years in design,</b> I’ve learned to <b>embrace constraints</b> and adapt as I go. But one thing has stayed constant: <b>delightful design isn’t a nice-to-have. It’s the baseline.</b></p>
+    </div>
+
+    <!-- 520:36312 / 520:36359 - the rule, the chip that sits over it, and the
+         band under both. Ten stops on a 40 gap, running off both edges; the
+         track is built and paced in JS off the same cycle the hero uses. -->
+    <div class="abrules" aria-hidden="true"><u></u><span class="ablovefor"><i>/</i><b>Love for</b></span></div>
+    <div class="abstrip" aria-label="San Francisco, Code, Design, Motion, People, AI used right, Prototyping, Systems, Illustrations, 3D Design">
+      <span class="mqtrack abtrack" id="abTrack" aria-hidden="true"></span>
+    </div>
+  </section>
+
   <section  data-surface="dark" class="gw">
     <div class="gwtop">
       <span class="brand u"><span class="txt">Kris Jensson</span></span>
@@ -8167,6 +8371,7 @@
     else cardFadeFallback();
     document.getElementById('testi')?.classList.add('css-timeline');
     document.querySelectorAll('.nu').forEach(n=>n.classList.add('css-timeline'));
+    document.querySelector('.me')?.classList.add('css-timeline');
     setRange();
     addEventListener('resize',setRange);
   }else{
@@ -8205,8 +8410,10 @@
        head y >= barBottom + 64 with the section's own 87 / 104 padding gives
        head <= H - 309 - foot. */
     function abFit(){
-      const ab=pages.about.querySelector('.ab'),
-            foot=pages.about.querySelector('.abfoot');
+      /* document-wide, not pages.about — the pulse hero lives on the CRAFT
+         page now and the About page carries the Story hero instead. */
+      const ab=document.querySelector('.ab'),
+            foot=document.querySelector('.abfoot');
       if(!ab||!foot) return;
       const fh=foot.getBoundingClientRect().height;
       if(!fh) return;                       /* the page is still display:none */
