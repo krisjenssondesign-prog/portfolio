@@ -1798,17 +1798,20 @@
      board (1130 x 1550) as a percentage of it, so the whole thing scales as
      one picture and the connector - which is drawn in the same coordinate
      space - cannot come apart from the pills it threads. */
+  /* 513:35373 — the section is on Surface Dark now, not paper. Heads Text
+     White 1, body Secondary Dark, and the pill goes from a filled chip to a
+     ringed one so the connector still reads as passing behind it. */
   .jn{position:relative;box-sizing:border-box;
-      padding:80px var(--m) 0;background:#F6F6F6;color:#1A1A1A}
+      padding:80px var(--m) 0;background:#101010;color:#F8F8F8}
   .jnhead{margin:0 auto;width:min(663px, calc(100% - var(--m) * 2));
           display:flex;flex-direction:column;align-items:center;gap:24px}
   /* 513:35482 - the 16/14 SemiBold pair in Secondary Light, 8 apart */
   .jneb{margin:0;display:flex;align-items:center;gap:8px;
         font-family:var(--font-ui);font-size:16px;font-weight:600;
-        line-height:1.45;color:#9F9F9F;text-transform:uppercase;
+        line-height:1.45;color:#9CA1A4;text-transform:uppercase;
         white-space:nowrap}
   .jneb i{font-style:normal;font-size:14px}
-  .jneb b{font-weight:600;color:#1A1A1A}
+  .jneb b{font-weight:600;color:#F8F8F8}
   .jnct{display:flex;flex-direction:column;align-items:center;gap:16px;
         width:100%;text-align:center}
   /* 513:35487 - 40 Medium on 1.1 over the drawn 494; fit-content so the line
@@ -1854,16 +1857,16 @@
   .jpill{flex:none;box-sizing:border-box;
          display:grid;place-items:center;
          width:91px;height:48px;
-         border-radius:999px;background:#E7E7E7;
-         box-shadow:0 0 0 2px #F6F6F6;
+         border-radius:999px;background:#1E1E1E;
+         box-shadow:inset 0 0 0 1.4px #F8F8F8, 0 0 0 3px #101010;
          font-family:var(--font-ui);font-size:16px;font-weight:600;
-         line-height:1;letter-spacing:0;color:#1A1A1A;white-space:nowrap}
+         line-height:1;letter-spacing:0;color:#F8F8F8;white-space:nowrap}
   .jbody{flex:1 1 auto;min-width:0;padding-top:16px;
          display:flex;flex-direction:column;gap:12px}
   .jstop[data-kind="b"] .jbody{padding-top:0;padding-left:12px;padding-right:12px}
   /* 503:80719 - 20 SemiBold on 1.45 */
   .jbody h3{margin:0;font-family:var(--font-ui);font-size:20px;font-weight:600;
-            line-height:1.45;letter-spacing:0;color:#1A1A1A;
+            line-height:1.45;letter-spacing:0;color:#F8F8F8;
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* 503:80759 - 18 Medium on 1.25 in Secondary Dark */
@@ -1914,10 +1917,25 @@
      rotated box is w*cos + h*sin wide, so the box and the media box together
      give the angle and the card's true size. */
   .jnwrap{container-type:inline-size}
+  /* Placed by its CENTRE, not its corner. Figma rotates a frame about its own
+     top-left and reports x/y there; CSS rotates about the middle. Feeding the
+     drawn top-left straight into `left`/`top` therefore lands every card a few
+     pixels off, and further off the more it is tilted. --cx/--cy are the
+     card's centre on the 1130 x 1550 board, taken from the absolute bounding
+     box, and the element is pulled back by half its own size — so the two
+     coordinate systems agree at every angle.
+
+     1em IS THE CARD'S WIDTH. Everything inside is a ratio of it — the media
+     box, the paddings, the radius, the caption measure — and those ratios are
+     identical on both drawn sizes, which is what makes one component out of
+     two. Only the height and the caption's size differ, so those two are the
+     only per-card numbers. */
   .jpol{position:absolute;margin:0;z-index:2;pointer-events:none;
-        left:calc(var(--l) * 1%);top:calc(var(--t) * 1%);
         width:calc(var(--w) * 1cqw);
-        font-size:calc(var(--w) * 1cqw * .070685);
+        height:calc(var(--w) * var(--h) * 1cqw);
+        left:calc(var(--cx) * 1% - var(--w) * .5cqw);
+        top:calc(var(--cy) * 1% - var(--w) * var(--h) * .5cqw);
+        font-size:calc(var(--w) * 1cqw);
         opacity:0;
         transform:rotate(var(--r)) translateY(14px) scale(.94);
         transition:opacity .7s var(--rv-ease),
@@ -1928,17 +1946,25 @@
      to its own copy made every card a line shorter than the frame and dragged
      the whole placement up with it, because the position is solved from the
      drawn box. */
-  .jpolf{display:flex;flex-direction:column;align-items:flex-start;gap:.703em;
-        height:calc(var(--h) * 1em);box-sizing:border-box;
-        padding:.3515em 0 .87875em;border-radius:.52725em;background:#FFFFFF;
-        box-shadow:0 .27017em 1.08058em rgba(26,26,26,.04)}
-  .jpolm{display:block;margin:0 .3515em;width:13.4444em;height:12.302em;
-        border-radius:.52725em;overflow:hidden;background:#E7E7E7}
+  /* every number here is drawn/cardWidth, and holds on both sizes:
+     pad-top 4.218/169.77 · pad-bottom 10.545 · gap 8.436 · radius 6.33 ·
+     media 161.3 x 147.6 · caption inset 8.436 and measure 152.9 */
+  .jpolf{display:flex;flex-direction:column;align-items:flex-start;
+        gap:.04968em;height:100%;box-sizing:border-box;
+        padding:.02484em 0 .06210em;border-radius:.03728em;background:#FFFFFF;
+        box-shadow:0 .0191em .15276em rgba(26,26,26,.04)}
+  .jpolm{display:block;margin:0 .02494em;width:.95012em;height:.86942em;
+        border-radius:.03728em;overflow:hidden;background:#E7E7E7}
   .jpolm img{width:100%;height:100%;display:block;object-fit:cover}
+  /* PERCENT, not em, for the caption's box. This is the one element that sets
+     a font-size of its own, so an em here resolves against 12 rather than
+     against the card — .90047em came out 10.8px wide and stacked the caption
+     one character per line. The percentages are of .jpolf, which IS the card:
+     8.436/169.77 = 4.968% either side, 152.9/169.77 = 90.047% of measure. */
   .jpol figcaption{flex:1 1 auto;min-height:0;overflow:hidden;
-        margin:0 .703em;width:12.741em;
-        font-family:var(--font-ui);font-size:1em;font-weight:500;
-        line-height:1.25;letter-spacing:0;color:#1A1A1A}
+        align-self:stretch;margin:0 4.968%;width:auto;
+        font-family:var(--font-ui);font-size:calc(var(--cf) * 1em);
+        font-weight:500;line-height:1.25;letter-spacing:0;color:#1A1A1A}
   /* the icon grid's float, on the card rather than the frame: the reveal owns
      .jpol's transform and the float owns .jpolf's, one property each on two
      elements so neither overwrites the other. Gated on .afloat like the icons
@@ -6118,20 +6144,19 @@
 
   <!-- 513:35373 - About / Journey. The head is centred, then a seven-stop
        timeline threaded by one drawn connector, then the Footer component. -->
-  <section  data-surface="light" class="jn" id="abJourney">
+  <section  data-surface="dark" class="jn" id="abJourney">
     <div class="jnhead">
-      <p class="jneb"><span>story</span><i>/</i><b>the path</b></p>
+      <p class="jneb"><span>story</span><i>/</i><b>path</b></p>
       <div class="jnct">
         <h2 class="jnt">My path into design</h2>
         <p class="jnlead">A not-so-straight path through soccer, San Francisco,
           school, ambitious projects, and the experiences that shaped how I work today.</p>
       </div>
-      <a class="jncta" href="#" download>Download resume<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
     </div>
 
     <div class="jnwrap">
       <svg class="jnline" id="jnLine" viewBox="0 0 1130 1550" fill="none"
-           preserveAspectRatio="none" aria-hidden="true"><path d="" stroke="#E7E7E7"
+           preserveAspectRatio="none" aria-hidden="true"><path d="M 47 44.5 L 47 270.5 A 12 12 0 0 1 59 282.5 L 724.5 282.5 A 12 12 0 0 0 736.5 294.5 L 736.5 819.5 A 12 12 0 0 0 724.5 831.5 L 60 831.5 A 12 12 0 0 1 48 843.5 L 48 1406 A 12 12 0 0 1 60 1418 L 725.5 1418" stroke="#F8F8F8" stroke-opacity=".5"
            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <ol class="jnlist">
         <li class="jstop js1" data-side="l" data-kind="a">
@@ -6179,67 +6204,61 @@
         <li class="jstop js7" data-side="r" data-kind="a">
           <span class="jpill">2026</span>
           <div class="jbody">
-            <h3>Redesigning an app that I love</h3>
+            <h3>Reimagining an app that I love</h3>
             <p>Today I’m helping rethink Venmo, an app I’d already loved and used for years. I still play and coach soccer on the side, and spend the rest of my time in San Francisco with my Aussie girlfriend and our little pup Marlowe aka Goose aka Chubby aka no barking, who is unquestionably in charge.</p>
           </div>
         </li>
       </ol>
-      <!-- 519:35776 etc - nine polaroids over the board. One component at two
+      <!-- 519:35776 etc - eight polaroids over the board. One component at two
            scales, each rotated and placed off the drawn 1130 x 1550, so they
            sit in the same coordinate space as the stops. data-cy is the card's
            centre on that board: it is what the line is measured against. -->
-        <figure class="jpol p1 jstill" data-cy="94" style="--w:15.0234;--l:56.8875;--t:-0.3877;--h:16.6667;--r:9.80deg;--by:7.40s;--bx:10.30s;--dy:-2.10s;--dx:-4.60s;--fy:-11.5px;--fx:6.2px">
+        <figure class="jpol p1 jstill" data-cy="85" style="--cx:59.44;--cy:5.48;--w:15.02;--h:1.17807;--cf:0.070684;--r:-9.80deg;--by:7.40s;--bx:10.30s;--dy:-2.10s;--dx:-4.60s;--fy:-11.5px;--fx:6.2px">
           <span class="jpolf">
-            <span class="jpolm"><img src="media/story-1.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Inside an ice cave. Its cold.</figcaption>
+            <span class="jpolm"><img src="media/story-iceland.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Me and my partner staying cool back home in Iceland</figcaption>
           </span>
         </figure>
-        <figure class="jpol p2 jstill" data-cy="140" style="--w:15.0239;--l:68.1097;--t:2.5895;--h:16.6667;--r:5.78deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
+        <figure class="jpol p2 jstill" data-cy="115" style="--cx:74.39;--cy:7.40;--w:15.02;--h:1.17807;--cf:0.070684;--r:10.46deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
           <span class="jpolf">
-            <span class="jpolm"><img src="media/story-2.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>SF hill adjustments.</figcaption>
+            <span class="jpolm"><img src="media/story-marlowe.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Me and my pup Marlowe battling the hills of SF</figcaption>
           </span>
         </figure>
-        <figure class="jpol p3" data-cy="634" style="--w:15.0238;--l:8.8287;--t:34.4388;--h:16.6667;--r:5.23deg;--by:6.80s;--bx:10.90s;--dy:-3.40s;--dx:-6.20s;--fy:-12.4px;--fx:4.8px">
+        <figure class="jpol p3" data-cy="627" style="--cx:16.59;--cy:40.43;--w:15.02;--h:1.17807;--cf:0.070684;--r:-7.01deg;--by:6.80s;--bx:10.90s;--dy:-3.40s;--dx:-6.20s;--fy:-12.4px;--fx:4.8px">
           <span class="jpolf">
-            <span class="jpolm"><img src="media/story-3.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Inside an ice cave. Its cold.</figcaption>
-          </span>
-        </figure>
-        <figure class="jpol p4" data-cy="666" style="--w:15.0239;--l:26.3710;--t:36.4913;--h:16.6667;--r:7.01deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
-          <span class="jpolf">
-            <span class="jpolm"><img src="media/story-4.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <span class="jpolm"><img src="media/story-school.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
             <figcaption>Late nighters at school</figcaption>
           </span>
         </figure>
-        <figure class="jpol p5" data-cy="661" style="--w:15.0237;--l:39.1761;--t:36.1695;--h:16.6667;--r:-9.74deg;--by:7.90s;--bx:11.60s;--dy:-1.20s;--dx:-7.80s;--fy:-13.1px;--fx:5.9px">
+        <figure class="jpol p4" data-cy="649" style="--cx:32.62;--cy:41.87;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
           <span class="jpolf">
-            <span class="jpolm"><img src="media/story-5.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Mask on.</figcaption>
+            <span class="jpolm"><img src="media/story-mls.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Had the chance to train with an MLS team on the way</figcaption>
           </span>
         </figure>
-        <figure class="jpol p6" data-cy="1115" style="--w:18.5373;--l:74.9511;--t:64.1981;--h:16.2573;--r:9.80deg;--by:10.20s;--bx:8.80s;--dy:-4.10s;--dx:-3.30s;--fy:12.0px;--fx:-7.3px">
+        <figure class="jpol p5" data-cy="923" style="--cx:17.40;--cy:59.53;--w:15.40;--h:1.14943;--cf:0.055901;--r:-5.40deg;--by:7.90s;--bx:11.60s;--dy:-1.20s;--dx:-7.80s;--fy:-13.1px;--fx:5.9px">
           <span class="jpolf">
-            <span class="jpolm"><img src="media/story-6.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Kris has a rare ability to turn complex product problems</figcaption>
+            <span class="jpolm"><img src="media/story-jbl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Shopping a speaker post JBL presentation in Soho</figcaption>
           </span>
         </figure>
-        <figure class="jpol p7" data-cy="1229" style="--w:18.5372;--l:53.3165;--t:71.5142;--h:16.2573;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
+        <figure class="jpol p6" data-cy="954" style="--cx:73.77;--cy:61.54;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:10.20s;--bx:8.80s;--dy:-4.10s;--dx:-3.30s;--fy:12.0px;--fx:-7.3px">
           <span class="jpolf">
-            <span class="jpolm"><img src="media/story-7.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Kris has a rare ability to turn complex product problems</figcaption>
+            <span class="jpolm"><img src="media/story-yml.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>First day at YML, mask on</figcaption>
           </span>
         </figure>
-        <figure class="jpol p8" data-cy="1603" style="--w:18.5373;--l:51.5566;--t:95.6778;--h:16.2573;--r:15.00deg;--by:9.80s;--bx:9.20s;--dy:-2.60s;--dx:-5.10s;--fy:13.4px;--fx:-5.1px">
+        <figure class="jpol p7" data-cy="1210" style="--cx:54.26;--cy:78.04;--w:15.40;--h:1.14414;--cf:0.055901;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
           <span class="jpolf">
-            <span class="jpolm"><img src="media/story-8.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Kris has a rare ability to turn complex product problems</figcaption>
+            <span class="jpolm"><img src="media/story-nfl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>On site at the NFL, still a fan first</figcaption>
           </span>
         </figure>
-        <figure class="jpol p9" data-cy="1630" style="--w:18.5372;--l:29.5997;--t:97.3852;--h:16.2573;--r:6.25deg;--by:8.40s;--bx:11.30s;--dy:-7.20s;--dx:-1.90s;--fy:-11.8px;--fx:7.4px">
+        <figure class="jpol p8" data-cy="1607" style="--cx:58.86;--cy:103.65;--w:15.40;--h:1.14414;--cf:0.055901;--r:8.76deg;--by:9.80s;--bx:9.20s;--dy:-2.60s;--dx:-5.10s;--fy:13.4px;--fx:-5.1px">
           <span class="jpolf">
-            <span class="jpolm"><img src="media/story-9.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <figcaption>Kris has a rare ability to turn complex product problems</figcaption>
+            <span class="jpolm"><img src="media/story-venmo.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <figcaption>Using the app I now get to help design</figcaption>
           </span>
         </figure>
     </div>
@@ -10039,9 +10058,15 @@
        because that is when the breaks move; the raw text is kept on the node
        so the split is always taken from the original, never from a split. */
     let splitW=0;
-    function split(){
+    /* `force` exists for the FONT. The guard below is a width guard, and the
+       width does not change when a webfont lands — the WRAPPING does. So the
+       split stayed frozen at whatever the fallback face broke the lines at,
+       which ran the 2019 paragraph to eight lines against the drawn six and
+       pushed its tail down into the polaroid below it. Re-split when the
+       fonts resolve, not only when the board resizes. */
+    function split(force){
       const w=wrap.getBoundingClientRect().width;
-      if(!w || Math.abs(w-splitW)<1) return;
+      if(!w || (!force && Math.abs(w-splitW)<1)) return;
       splitW=w;
       wrap.querySelectorAll('.jstop').forEach(stop=>{
         let n=0;
@@ -10076,6 +10101,16 @@
              ascender sits .078em over its cap and its descender .215em under
              the baseline, and the faces this may fall back to are wider still. */
           const pad=Math.round(parseFloat(cs.fontSize)*.42);
+          /* FLEX, once the lines are masks. Each mask vents itself with padding
+             and an equal negative margin, and in normal block flow the negative
+             margins of two adjacent masks COLLAPSE — CSS keeps the more
+             negative of the pair, not their sum — so every line after the first
+             gave back only half its vent and the paragraph ran 8px per line
+             taller than it is drawn. Six lines came to 175 against the drawn
+             138, and the tail dropped into the polaroid below. Flex items do
+             not collapse margins, so the vent nets to zero and the block is the
+             height its lines actually are. */
+          el.style.display='flex'; el.style.flexDirection='column';
           rows.forEach(g=>{
             const m=document.createElement('span'); m.className='jln';
             const i2=document.createElement('span'); i2.className='jlni';
@@ -10155,7 +10190,8 @@
     addEventListener('resize',draw,{passive:true});
     addEventListener('scroll',onScroll,{passive:true});
     if(STILL.addEventListener) STILL.addEventListener('change',tick);
-    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(draw);
+    if(document.fonts&&document.fonts.ready)
+      document.fonts.ready.then(()=>{ split(true); draw(); });
     draw();
   })();
 
