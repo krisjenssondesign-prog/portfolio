@@ -14,7 +14,7 @@
      again — which is the behaviour to plan for — the one value it keeps has
      to be the one the page actually opens on. The loader is a one-second
      curtain and is not worth being wrong for the rest of the session. -->
-<meta name="theme-color" content="#F6F6F6">
+<meta name="theme-color" content="#101010">
 <title>Kris Jensson</title>
 <style>
   /* ── swap the typeface here and nowhere else ──────────────────────── */
@@ -2566,7 +2566,10 @@
      go translucent over the page itself, which is the behaviour nfl.com has
      and the one Kris asked for. Do not put a fixed element on an edge. */
 
-  .loader{position:fixed;inset:0;z-index:100;background:#000;
+  /* #101010, not #000. This is the one fixed element with an opaque
+     background-color standing at first render, so it is the colour
+     Safari 26 samples for its own toolbar and keeps for the visit. */
+  .loader{position:fixed;inset:0;z-index:100;background:#101010;
           will-change:transform}
   /* visibility, not just the transform. This is a full-screen fixed box with
      a solid background, and it does not leave the DOM when it slides — it sits
@@ -11873,132 +11876,24 @@
 </script>
 <script>
 /* ── the browser's own chrome ────────────────────────────────────────
-   What is left here is the TAG, and the tag is for other browsers: Chrome on
-   Android and Safari 15–18.7 both use it and both follow it as it changes.
+   Solid #101010, everywhere, on every section. Not a value that follows
+   the page.
 
-   Safari 26 does not. It ignores theme-color, samples rendered CSS instead —
-   a fixed or sticky element's background-color first, the body background
-   second — and it takes that reading ONCE, at first render. Nothing below
-   can move it afterwards. That is why the chrome cannot follow the section
-   you are on, and why the answer was to give it nothing to sample rather
-   than something better.
+   Two readers, one answer:
 
-   The value is READ off the section, not written twice: whichever top-level
-   [data-surface] block is under the top of the window hands over its own
-   computed background, so the chrome can never disagree with the page. Flow
-   position, not a rect — the hero is parallaxed and .nu is sticky, and a
-   rect reports where a section has been moved TO rather than where it lives.
+   1. The TAG, which Chrome on Android and Safari 15–18.7 obey. It is set
+      once in the head and never rewritten. It used to be swapped per
+      section; that made the bar flip light over the hero, which is the
+      opposite of a constant dark chrome.
 
-   Three things outrank the page: the loader, which is black; the case-study
-   sheet; and the passcode scrim. Each covers the top of the window whatever
-   is scrolled underneath it. */
-(function(){
-  if(!document.querySelector('meta[name="theme-color"]')) return;
-  var root=document.documentElement, last=null;
+   2. Safari 26, which ignores the tag and samples rendered CSS instead —
+      a fixed or sticky element's background-color first, the body
+      background second — taking that reading ONCE, at first render and
+      keeping it for the visit. At first render exactly one fixed element
+      carries an opaque background-color: the loader. So the loader IS the
+      chrome colour, and it is now #101010 rather than #000.
 
-  function flowTop(el){ var y=0; for(var n=el;n;n=n.offsetParent) y+=n.offsetTop; return y; }
-
-  function hex(c){
-    var m=/^rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?\)/.exec(c||'');
-    if(!m) return null;
-    if(m[4]!==undefined && parseFloat(m[4])<.9) return null;   /* see-through */
-    return '#'+[m[1],m[2],m[3]].map(function(v){
-      return ('0'+Math.round(parseFloat(v)).toString(16)).slice(-2);
-    }).join('').toUpperCase();
-  }
-
-  /* Two readings, not one. The window has two edges and Safari tints both, and
-     on a page of full-height sections they are routinely different sections —
-     the hero at the top while the work is already at the bottom.
-
-     The loader is deliberately NOT a case. It is black, it is up for about a
-     second, and giving it the tag means the first value a load-time-only
-     reader sees is black on a light hero. */
-  function surfaceColour(edge){
-    if(root.classList.contains('pin-open')) return '#0A0A0A';   /* black at 90% */
-    if(root.classList.contains('nav-open')) return '#101010';   /* the sheet   */
-
-    var host=null, pages=document.querySelectorAll('.page');
-    for(var i=0;i<pages.length;i++) if(getComputedStyle(pages[i]).display!=='none'){ host=pages[i]; break; }
-    if(!host) return '#F6F6F6';
-
-    var scroll=(window.pageYOffset||root.scrollTop||0);
-    var y = edge==='bottom' ? scroll + innerHeight - 1 : scroll + 1;
-    var hit=null, first=null, bands=[];
-    var secs=host.querySelectorAll('[data-surface]');
-    for(var j=0;j<secs.length;j++){
-      var el=secs[j];
-      if(el.parentElement!==host) continue;              /* top-level only    */
-      var pos=getComputedStyle(el).position;
-      if(pos==='sticky'||pos==='fixed') continue;        /* never a band      */
-      var h=el.offsetHeight; if(h<1) continue;
-      var top=flowTop(el);
-      if(!first) first=el;
-      bands.push([top, top+h, el]);
-      if(y>=top && y<top+h) hit=el;                      /* last match wins   */
-    }
-    /* off the map — above the first band or in a gap between two. Take the
-       NEAREST one rather than the first: a hole in the middle of the page
-       used to resolve to the section at the top of the document. */
-    var el2=hit;
-    if(!el2 && bands.length){
-      var best=1/0;
-      for(var k=0;k<bands.length;k++){
-        var d = y<bands[k][0] ? bands[k][0]-y : (y>bands[k][1] ? y-bands[k][1] : 0);
-        if(d<best){ best=d; el2=bands[k][2]; }
-      }
-    }
-    if(!el2) el2=first;
-    if(!el2) return '#F6F6F6';
-    return hex(getComputedStyle(el2).backgroundColor)
-        || (el2.getAttribute('data-surface')==='dark' ? '#101010' : '#F6F6F6');
-  }
-
-  /* TWO writes, because Safari tints from two places and both of them were
-     wrong.
-
-     1. The META IS REPLACED, not edited. Safari does not re-read a
-        theme-color meta whose `content` attribute changed under it — it
-        takes the value it parsed and keeps it. Swapping the element for a
-        fresh one is what makes the toolbar follow the page.
-
-     2. The CANVAS. `body` carries --paper and `html` carries nothing, so the
-        page's background colour propagates to the canvas and is #F6F6F6 at
-        every scroll position, on every page. That is the colour Safari falls
-        back to, and it is why the bar stayed white over the black work
-        section. Setting it on `html` stops the propagation and hands the
-        canvas the same value the tag has. body still paints its own box, so
-        nothing on the page changes — only the chrome and the rubber-band
-        gutter, which are the two things that were disagreeing with it. */
-  function paint(){
-    var c=surfaceColour('top');
-    if(c===last) return;
-    last=c;
-    var old=document.querySelector('meta[name="theme-color"]');
-    var m=document.createElement('meta');
-    m.setAttribute('name','theme-color');
-    m.setAttribute('content',c);
-    if(old && old.parentNode) old.parentNode.replaceChild(m,old);
-    else document.head.appendChild(m);
-  }
-
-  var queued=false;
-  function schedule(){
-    if(queued) return; queued=true;
-    requestAnimationFrame(function(){ queued=false; paint(); });
-  }
-
-  paint();
-  addEventListener('scroll',schedule,{passive:true});
-  addEventListener('resize',schedule);
-  /* the class flips that matter: the loader leaving, a route change, the
-     sheet and the scrim opening and closing */
-  var mo=new MutationObserver(schedule);
-  mo.observe(root,{attributes:true,attributeFilter:['class']});
-  document.querySelectorAll('.page').forEach(function(pg){
-    mo.observe(pg,{attributes:true,attributeFilter:['class','style']});
-  });
-})();
+   Nothing here runs at scroll. There is nothing left to run. */
 </script>
 </body>
 </html>
