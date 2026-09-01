@@ -2010,8 +2010,17 @@
          height:1.4px;background:#E7E7E7}
   .swrow:first-child::before{content:'';position:absolute;left:4px;right:0;top:0;
          height:1.4px;background:#E7E7E7}
-  .swhead{display:flex;align-items:baseline;justify-content:flex-start;
-          gap:80px;max-width:89.33%;cursor:pointer}
+  .swhead{position:relative;display:flex;align-items:baseline;
+          justify-content:flex-start;gap:80px;max-width:89.33%;cursor:pointer}
+  /* A REAL button, laid over the row's own head. A div with role=button does
+     not reliably take a tap on iOS; a button always does. It carries no ink of
+     its own — the head under it is the visible control. */
+  .swtog{position:absolute;inset:-16px 0;z-index:2;
+         -webkit-appearance:none;appearance:none;
+         margin:0;padding:0;border:0;background:none;
+         font:inherit;color:inherit;cursor:pointer;
+         touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .swtog:focus-visible{outline:2px solid #1A1A1A;outline-offset:2px}
   .swlab{display:flex;align-items:baseline;gap:4px;
          flex:0 0 auto;min-width:200px}
   /* 521:37946 - a 15 x 12 down arrow in Text Dark 1 at the right end of the
@@ -2261,7 +2270,7 @@
   .jpol{position:absolute;margin:0;z-index:2;pointer-events:none;
         --u:calc(var(--jbw) / 100);          /* one board unit, was 1cqw */
         width:calc(var(--w) * var(--u));
-        height:calc(var(--w) * var(--h) * var(--u));
+        min-height:calc(var(--w) * var(--h) * var(--u));
         left:calc(var(--ox) * var(--u) - var(--w) * var(--u) * .5);
         top:calc(var(--oy) * var(--u) - var(--w) * var(--h) * var(--u) * .5);
         font-size:calc(var(--w) * var(--u));
@@ -2282,7 +2291,7 @@
         gap:.04968em;height:100%;box-sizing:border-box;
         padding:.02484em 0 .06210em;border-radius:.03728em;background:#FFFFFF;
         box-shadow:0 .0191em .15276em rgba(26,26,26,.04)}
-  .jpolm{display:block;margin:0 .02494em;width:.95012em;height:.86942em;
+  .jpolm{display:block;flex:none;margin:0 .02494em;width:.95012em;height:.86942em;
         border-radius:.03728em;overflow:hidden;background:#E7E7E7}
   .jpolm img{width:100%;height:100%;display:block;object-fit:cover}
   /* PERCENT, not em, for the caption's box. This is the one element that sets
@@ -2396,7 +2405,10 @@
        down to the next one's. The last stop has nothing to reach, so it
        carries no line and the run ends on 2026 exactly as drawn. */
     .jstop::before{content:'';position:absolute;left:40px;top:24px;bottom:-77px;
-           width:2px;background:#E7E7E7;opacity:1;pointer-events:none}
+           width:2px;background:#E7E7E7;opacity:1;pointer-events:none;z-index:0}
+    /* the run is opaque now, so the pill has to sit in front of it or the line
+       is drawn straight through the year */
+    .jstop .jpill{position:relative;z-index:1}
     .jstop:last-child::before{display:none}
     /* the cards ride under their own milestone, still tilted, still the
        drawn 169.8 against the 353 column */
@@ -2404,11 +2416,12 @@
        same 169.8, so it shrinks with a narrower phone but never grows past
        the drawn size — otherwise the tilt lifts its corner into the copy on
        a wide window, and the pair stops reading as a stack. */
-    .jpol{display:block;position:static;grid-column:1 / -1;
+    .jpol{display:block;position:static;grid-column:1 / -1;grid-row:2;
           --pw:min(calc(var(--jbw) * .49292), 174px);
-          width:var(--pw);height:calc(var(--h) * var(--pw));
+          width:var(--pw);height:auto;
+          min-height:calc(var(--h) * var(--pw));
           font-size:var(--pw);
-          margin:var(--mtm, 32px) 0 0 var(--mxm, 0);
+          margin:calc(var(--mtm, 32px) + var(--pdm, 0px)) 0 0 var(--mxm, 0);
           transform:rotate(var(--rm, var(--r))) translateY(14px) scale(.94)}
     .jpol.lit,.jpol.jstill{transform:rotate(var(--rm, var(--r)))}
     .jpol.jpd{display:none}
@@ -2417,7 +2430,7 @@
     /* 520:36183 / 520:36193 — a pair is down-and-right, 51 lower and 133 over,
        not stacked. Pulling the second one up by its whole height buried the
        first one's caption. */
-    .jpol + .jpol{margin-top:calc(var(--pdm, 0px) - var(--h) * var(--pw))}
+
     .jstop .jpol:nth-of-type(1){z-index:3}
     .jstop .jpol:nth-of-type(2){z-index:2}
     /* the drawn pair overlaps 37 across. In the frame the upper card's
@@ -6588,15 +6601,15 @@
           <h3 class="stsub">My approach</h3>
           <ol class="stacc">
         <li class="swrow">
-          <div class="swhead" role="button" tabindex="0" aria-expanded="false"><span class="swlab"><p class="swn" aria-hidden="true">01</p><h4 class="swt">Connect &amp; create</h4></span><span class="swic" aria-hidden="true"></span></div>
+          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">01</p><h4 class="swt">Connect &amp; create</h4></span><span class="swic" aria-hidden="true"></span><button type="button" class="swtog" aria-expanded="false" aria-label="Connect and create"></button></div>
           <div class="swbody"><div><p>I like to get close to the people, the problem, and the context as early as I can. The more I understand what matters, the easier it is to move with intention.</p></div></div>
         </li>
         <li class="swrow">
-          <div class="swhead" role="button" tabindex="0" aria-expanded="false"><span class="swlab"><p class="swn" aria-hidden="true">02</p><h4 class="swt">Explore &amp; refine</h4></span><span class="swic" aria-hidden="true"></span></div>
+          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">02</p><h4 class="swt">Explore &amp; refine</h4></span><span class="swic" aria-hidden="true"></span><button type="button" class="swtog" aria-expanded="false" aria-label="Explore and refine"></button></div>
           <div class="swbody"><div><p>Starting early creates room to try directions, challenge assumptions, and push the details until the experience feels considered and complete.</p></div></div>
         </li>
         <li class="swrow">
-          <div class="swhead" role="button" tabindex="0" aria-expanded="false"><span class="swlab"><p class="swn" aria-hidden="true">03</p><h4 class="swt">Learn &amp; evolve</h4></span><span class="swic" aria-hidden="true"></span></div>
+          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">03</p><h4 class="swt">Learn &amp; evolve</h4></span><span class="swic" aria-hidden="true"></span><button type="button" class="swtog" aria-expanded="false" aria-label="Learn and evolve"></button></div>
           <div class="swbody"><div><p>Ship it. See how the work performs in the real world, and use what you learn to keep making it better.</p></div></div>
         </li>
           </ol>
@@ -6650,7 +6663,7 @@
               <figcaption>Me and my partner staying cool back home in Iceland</figcaption>
             </span>
           </figure>
-          <figure class="jpol p2 jstill" data-cy="115" style="--rm:4.02deg;--mxm:48.657%;--pdm:43px;--ox:74.393;--oy:10.155;--w:15.02;--h:1.17807;--cf:0.070684;--r:10.46deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
+          <figure class="jpol p2 jstill" data-cy="115" style="--mtm:64px;--rm:4.02deg;--mxm:48.657%;--pdm:43px;--ox:74.393;--oy:10.155;--w:15.02;--h:1.17807;--cf:0.070684;--r:10.46deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-marlowe.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
               <figcaption>Our pup Marlowe, battling the hills of San Francisco</figcaption>
@@ -6669,7 +6682,7 @@
               <figcaption>Late nighters at school, most likely trying to figure out AE</figcaption>
             </span>
           </figure>
-          <figure class="jpol p4" data-cy="649" style="--rm:-7.46deg;--mxm:56.995%;--pdm:0px;--ox:11.998;--oy:34.329;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
+          <figure class="jpol p4" data-cy="649" style="--mtm:77px;--rm:-7.46deg;--mxm:56.995%;--pdm:0px;--ox:11.998;--oy:34.329;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-mls.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
               <figcaption>Had the chance to train with an MLS team on the way</figcaption>
@@ -6721,7 +6734,7 @@
               <figcaption>Speaker shopping post JBLs last workshop session</figcaption>
             </span>
           </figure>
-            <figure class="jpol p7" data-cy="1210" style="--rm:-7.46deg;--mxm:56.995%;--pdm:0px;--ox:54.262;--oy:7.665;--w:15.40;--h:1.14414;--cf:0.055901;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
+            <figure class="jpol p7" data-cy="1210" style="--mtm:71px;--rm:-7.46deg;--mxm:56.995%;--pdm:0px;--ox:54.262;--oy:7.665;--w:15.40;--h:1.14414;--cf:0.055901;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-nfl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
               <figcaption>On site at the NFL, still a fan first</figcaption>
@@ -12375,17 +12388,14 @@
    a tap toggles the row, which is what turns the plus into a minus on the
    phone. Both write the same .open class, so the icon has one state. */
 (function(){
-  var heads=document.querySelectorAll('.stacc .swhead');
-  if(!heads.length) return;
-  function toggle(h){
-    var row=h.closest('.swrow');
-    var open=row.classList.toggle('open');
-    h.setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-  heads.forEach(function(h){
-    h.addEventListener('click', function(){ toggle(h); });
-    h.addEventListener('keydown', function(e){
-      if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(h); }
+  var togs=document.querySelectorAll('.stacc .swtog');
+  if(!togs.length) return;
+  Array.prototype.forEach.call(togs, function(t){
+    t.addEventListener('click', function(e){
+      e.preventDefault();
+      var row=t.closest('.swrow');
+      var open=row.classList.toggle('open');
+      t.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   });
 })();
