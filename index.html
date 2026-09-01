@@ -913,6 +913,10 @@
      the same way. What goes is the dead scroll: the cards used to land 2.75
      screens in with a further screen of nothing after them. They land inside
      two now, and the footer arrives on the last of it. */
+  /* Parked sections do not render at any width. One rule, no media queries,
+     and it outranks the section's own display because it has to survive
+     whatever the breakpoint sets. */
+  [data-parked]{display:none !important}
   .testi{position:relative;z-index:2;background:#F6F6F6;
          margin-top:-60svh;height:260svh}
   .testi.css-timeline{view-timeline-name:--testiTL;view-timeline-axis:block}
@@ -1335,13 +1339,25 @@
      stand in flow and bring their own air above the rule. */
   .tfend{position:static;background:var(--w-sur);
          padding:96px 40px calc(40px + var(--safe-b))}
+  /* ABOVE THE VEIL. The veil is a fixed, full-viewport #101010 overlay at
+     z-index 1, and every section that stands in front of it says so — the
+     work is 2, the clients 4. A footer left on z-auto is behind it: the box
+     hit-tests, the computed styles are all correct, and it paints nothing,
+     because a dark sheet is sitting on top of it. */
+  [data-parkfoot]{position:relative;z-index:4}
   .tfrule{--rule-c:#E7E7E7;width:100%;height:1px}
   [data-surface="dark"] .tfrule,
   .tfoot[data-surface="dark"] .tfrule{--rule-c:#1E1E1E}
 
   /* 512:23701 — 1360 on a 40 row, the two halves pushed apart */
-  .tfrow{display:flex;align-items:center;justify-content:space-between;
-         width:100%;height:40px}
+  /* WRAPS. Between the phone block's 720 and the desktop there is a band
+     where the links and the right-hand side do not both fit on one 40-tall
+     line, and the row simply ran off the page: at 768 it pushed the document
+     to 807. Above that band it still resolves to one line, so nothing on the
+     desktop moves. */
+  .tfrow{display:flex;flex-wrap:wrap;align-items:center;
+         justify-content:space-between;
+         width:100%;min-height:40px;row-gap:16px}
   /* 608:49944 — one 16 gap between every item, slashes included. tfpair is
      transparent to that gap here; it only becomes a box on the phone. */
   .tflinks{display:flex;align-items:center;gap:16px;white-space:nowrap}
@@ -1439,12 +1455,18 @@
       text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .me .meh .txt{display:block}
 
-  /* 24 on 125 in a 709 measure. Two-tone: the claims in Text White 1, the
-     joins in the menu ink — 660:51010 sets it as thirteen styled runs. */
+  /* 22 on 120 in a 709 measure — a step down from the frame's 24/125, at
+     Kris's ask. Two-tone: the claims in Text White 1, the joins in the menu
+     ink — 660:51010 sets it as thirteen styled runs. */
+  /* The measure is stated in EM, not pixels. 709 was the measure for the
+     frame's 24; the same 29.545em at 22 is 650, and the block holds the same
+     four lines on the same rag while getting 59 shorter. Written this way it
+     tracks the type at every width instead of being re-solved by hand every
+     time the size moves. */
   .me .melead{position:absolute;left:var(--m);top:41.889svh;margin:0;
-      width:49.236vw;max-width:709px;
-      font-family:var(--font-ui);font-size:min(1.6667vw, 24px);
-      font-weight:500;line-height:1.25;letter-spacing:0;color:#9CA1A4;
+      width:29.545em;max-width:calc(100% - var(--m) * 2);
+      font-family:var(--font-ui);font-size:min(1.5278vw, 22px);
+      font-weight:500;line-height:1.2;letter-spacing:0;color:#9CA1A4;
       text-box:trim-start cap;text-box-trim:trim-start;text-box-edge:cap alphabetic}
   .me .melead b{font-weight:500;color:#F8F8F8}
 
@@ -1527,8 +1549,10 @@
     .me .meh{margin:calc(var(--safe-t) + 128px) var(--m) 0;
              white-space:normal;
              font-size:min(24.4vw, 13svh);line-height:.95}
+    /* capped at the desktop's own 22 so the phone cannot set it larger than
+       the wide window does. Line height comes from the base rule. */
     .me .melead{margin:0 var(--m);width:auto;max-width:none;
-                font-size:clamp(16px,4.5802vw,24px)}
+                font-size:clamp(16px,4.5802vw,22px)}
     .me .mecta{margin:0 var(--m);align-self:flex-start}
     .me .mefacts{margin:0 var(--m);flex-wrap:wrap;gap:24px 40px}
     .me .medv{display:none}
@@ -1902,7 +1926,32 @@
          line-height:1.45;letter-spacing:0;color:#1A1A1A;
          text-box:trim-both cap alphabetic;
          text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .stgroup{display:flex;flex-direction:column;gap:32px}
+  /* 36 to the first row under each subhead, as both groups draw it. */
+  .stgroup{display:flex;flex-direction:column;gap:36px}
+
+  /* ---- 670:51237 - Awards & Recognitions ---------------------------
+     A row is four hugging cells on a 32 gap, all 18 Medium on 125: the
+     award in Text Dark 1 and the category, the project and the year in
+     Secondary Dark. It wraps rather than scrolls on a narrow column, so a
+     longer award name cannot push the year off the grid. */
+  /* Four columns on the drawn 132 / 170 / 50 / 44, 16 rows apart. The rule
+     between two cells is a 1.4 border sitting in the middle of a 32 gap, so
+     it is 16 either side and never needs its own element. */
+  /* 2147205877 - 20 between rows, up from the frame's earlier 16. */
+  .staw{margin:0;padding:0;list-style:none;
+        display:flex;flex-direction:column;gap:20px}
+  .stawrow{display:grid;align-items:baseline;max-width:88.97%;
+           grid-template-columns:132fr 170fr 50fr 44fr;column-gap:32px;
+           font-family:var(--font-ui);font-size:18px;font-weight:500;
+           line-height:1.25;letter-spacing:0;color:#777777}
+  .stawrow > span{position:relative;display:block;min-width:0}
+  /* The rule stands in the MIDDLE of the 32, not against the cell it
+     precedes: 132 + 16 puts it on the drawn 880. A border on the cell would
+     sit at 896 and take the text 16 further right with it, so it is drawn
+     rather than bordered. */
+  .stawrow > span + span::before{content:'';position:absolute;
+           left:-16.7px;top:0;bottom:0;width:1.4px;background:#E7E7E7}
+  .stawrow .stawn{color:#1A1A1A}
 
   /* ---- 521:37974 - the accordions ----------------------------------
      A row is 32 of air, the line, 32 of air, and a hairline under it. The
@@ -1916,22 +1965,37 @@
   .swrow:first-child{padding-top:0}
   .swrow::after{content:'';position:absolute;left:4px;right:0;bottom:0;
          height:1.4px;background:#E7E7E7}
-  .swhead{display:flex;align-items:flex-start;gap:20px}
-  /* 521:37977 / 521:37979 - 28 Medium on 1.1, the number Secondary Light and
-     the title Text Dark 1, both cap-trimmed */
-  .swn,.swt{margin:0;font-family:var(--font-ui);font-size:28px;font-weight:500;
-         line-height:1.1;letter-spacing:0;
+  .swhead{display:flex;align-items:baseline;justify-content:space-between;
+          gap:20px;max-width:89.33%}
+  .swlab{display:flex;align-items:baseline;gap:4px;min-width:0}
+  /* 521:37946 - a 15 x 12 down arrow in Text Dark 1 at the right end of the
+     row. It turns over when the row opens, so the arrow says which way the
+     body is about to go rather than sitting there as decoration. */
+  .swic{flex:none;align-self:center;display:flex;justify-content:center;
+        width:32px;height:12px;color:#1A1A1A;
+        transition:transform .46s cubic-bezier(.22,1,.3,1)}
+  .swic svg{display:block}
+  /* 521:37946 - 20 SemiBold on 145, not the old frame's 28 Medium on 1.1.
+     The row title is set at the SAME size as My approach above it now, and
+     the number takes the menu ink rather than Secondary Light. */
+  /* Scoped to .stcopy so it outranks `.stcopy p`, which is (0,1,1) and was
+     quietly holding the NUMBER at 18 Medium in Secondary Dark while the title
+     beside it took the 28. That is why 01 and its title never matched. */
+  .stcopy .swn,.stcopy .swt{margin:0;font-family:var(--font-ui);
+         font-size:20px;font-weight:600;
+         line-height:1.45;letter-spacing:0;
          text-box:trim-both cap alphabetic;
          text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .swn{flex:0 0 35px;color:#9F9F9F}
-  .swc{flex:1 1 auto;min-width:0}
+  .stcopy .swn{flex:0 0 28px;color:#71747B}
   .swt{color:#1A1A1A}
   /* The body is the only thing that opens. A grid row from 0fr to 1fr rather
      than a max-height guess: the row measures its own copy, so two lines and
      three lines both open to exactly their own height and neither snaps at
      the end of the transition. The 12 gap lives INSIDE the collapsing box,
      or it would hold the title 12 off nothing while closed. */
-  .swbody{display:grid;grid-template-rows:1fr;
+  /* Flush with the NUMBER, not indented under the title, and 494 of the
+     column's 553 as drawn. */
+  .swbody{display:grid;grid-template-rows:1fr;max-width:89.33%;
           transition:grid-template-rows .46s cubic-bezier(.22,1,.3,1)}
   /* the clip is a wrapper, not the paragraph: a 0fr track sets the CONTENT
      box to zero and padding still counts, so a padding-top on the paragraph
@@ -1944,6 +2008,7 @@
   @media (hover:hover) and (pointer:fine){
     .swbody{grid-template-rows:0fr}
     .swrow:hover .swbody{grid-template-rows:1fr}
+    .swrow:hover .swic{transform:rotate(180deg)}
   }
   @media (prefers-reduced-motion:reduce){
     .swbody{transition:none}
@@ -2184,7 +2249,23 @@
        sticky here would park the title on top of the copy under it */
     .stleft,.stcopy{flex:none;width:100%;position:static;top:auto}
     .stcopy{padding-top:0}
-    .stfacts{padding-right:0}
+    /* The guide was being paid TWICE: .st already pads by --m and .stwrap
+       then took another --m off each side through its own width formula, so
+       the whole section ran on a 233 measure at 393 while everything else on
+       the page ran on 313. The wrap takes the section's width here. */
+    .stwrap{width:100%;margin:0}
+    /* The column is the full width now, so the row and the body take it —
+       the 89% measures are the desktop's two-column composition. */
+    .swhead,.swbody{max-width:none}
+    /* Four columns will not fit a phone. The award takes a line of its own
+       and the category, the client and the year sit under it as three
+       columns, so the row can never wrap a rule onto a line by itself.
+       Not drawn — 521:37946 is a 1440 frame. */
+    .staw{gap:24px}
+    .stawrow{grid-template-columns:minmax(0,1fr) auto auto;
+             max-width:none;row-gap:4px}
+    .stawrow .stawn{grid-column:1 / -1}
+    .stawrow .stawn + span::before{display:none}
     /* ══ the phone's own board — 520:36067 ═════════════════════════════
        The routed line only means something at the width it was drawn for, so
        on the phone it becomes ONE vertical run down the pill centres and the
@@ -6233,7 +6314,11 @@
 
 <!-- room for the footer. Without it the grid is the last thing on the page, so
      its view() timeline can never reach cover 100% and the drift stops half-done. -->
-<section  data-surface="light" class="testi" id="testi">
+<!-- PARKED, not deleted. Kris is redoing the testimonials; the whole section
+     stays here word for word and comes back by deleting one attribute. While
+     it is parked the home page ends on the awards and takes the standing
+     footer below them, the same one every other page ends on. -->
+<section  data-surface="light" class="testi" id="testi" data-parked>
   <div class="tstage">
     <!-- 506:81888 - KUDOS, heart, KUDOS, running. Same loop as the hero:
          one measured cycle, a duration derived from it so the pace is the
@@ -6310,6 +6395,11 @@
   </div>
 </section>
 
+<!-- the home page's own footer while KUDOS is parked. Same component, same
+     fill as the awards above it, and it goes away again the moment the
+     section comes back. -->
+<footer class="tfoot tfend" data-tfoot data-surface="dark" data-parkfoot></footer>
+
 <div class="tail"></div>
 </main>
 
@@ -6377,84 +6467,65 @@
           <p class="steyebrow" id="stEyebrow"><span>Story</span><i>/</i><b>long version</b></p>
           <h2 class="sthead" id="stHead">The story behind the person doing the work.</h2>
         </div>
-        <!-- 521:37950 -->
-        <dl class="stfacts">
-          <div class="stfact"><dt>Location</dt><dd>San Francisco</dd></div>
-          <div class="stfact"><dt>Experience</dt><dd>8 Years</dd></div>
-          <div class="stfact"><dt>Title</dt><dd>Staff XD Designer</dd></div>
-          <div class="stfact"><dt>Company</dt><dd>Vemmo</dd></div>
-        </dl>
+        <!-- 521:37946 no longer draws the fact row here: LOCATION /
+             EXPERIENCE / TITLE / NOW moved up into the Story hero. -->
       </div>
       <div class="stcopy">
         <div class="stlede">
           <div class="stblock">
-            <h3 class="stsub">The work</h3>
+            <h3 class="stsub">As a creative</h3>
             <p>I’m drawn to the part of design where craft meets reality; navigating
               complex constraints and ambitious KPIs while still raising the standard
-              and delight. Because to me, craft isn’t a nice-to-have. It’s the baseline.</p>
+              and delight. What keeps me interested is the stretch after it works,
+              when the details start deciding whether a thing feels considered or
+              just finished.</p>
           </div>
           <div class="stblock">
-            <p>A lot of how I work has been shaped outside of design too. Soccer
-              brought me from Iceland to San Francisco and taught me early the
-              importance of team. Away from the screen, life is mostly fun stuff with
-              my girlfriend, caring for our dog Marlowe, and a huge appreciation for
-              food, Arsenal, and San Francisco.</p>
+            <p>I love picking something up. A new tool, an interaction problem, a
+              technique I’ve seen somewhere and want to understand properly. A lot of
+              what I bring to a project started as something I learned on the side and
+              later found a use for. Get inspired, keep inspiring, am I right?</p>
+          </div>
+          <div class="stblock">
+            <p>Lately most of that has gone into feeding my curiosity about AI. I run
+              agentic tools through my whole workflow now, daily, and I’m just as
+              interested in where they help the making itself: concepting faster,
+              prototyping, testing ideas that used to be too expensive to try.</p>
           </div>
         </div>
         <!-- 521:37972 - How I work. The body of each row opens on hover only. -->
         <div class="stgroup">
-          <h3 class="stsub">How I work</h3>
+          <h3 class="stsub">My approach</h3>
           <ol class="stacc">
         <li class="swrow">
-          <div class="swhead"><p class="swn" aria-hidden="true">01</p>
-            <div class="swc"><h4 class="swt">Connect &amp; create</h4>
-              <div class="swbody"><div><p>I like to get close to the people, the problem, and the context as early as I can. The more I understand what matters, the easier it is to move with intention.</p></div></div>
-            </div>
-          </div>
+          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">01</p><h4 class="swt">Connect &amp; create</h4></span><span class="swic" aria-hidden="true"><svg viewBox="0 0 15 12" width="15" height="12" fill="none"><path d="M7.5 1v10M2.6 6.4 7.5 11.3l4.9-4.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          <div class="swbody"><div><p>I like to get close to the people, the problem, and the context as early as I can. The more I understand what matters, the easier it is to move with intention.</p></div></div>
         </li>
         <li class="swrow">
-          <div class="swhead"><p class="swn" aria-hidden="true">02</p>
-            <div class="swc"><h4 class="swt">Explore &amp; refine</h4>
-              <div class="swbody"><div><p>Starting early creates room to try directions, challenge assumptions, and push the details until the experience feels considered and complete.</p></div></div>
-            </div>
-          </div>
+          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">02</p><h4 class="swt">Explore &amp; refine</h4></span><span class="swic" aria-hidden="true"><svg viewBox="0 0 15 12" width="15" height="12" fill="none"><path d="M7.5 1v10M2.6 6.4 7.5 11.3l4.9-4.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          <div class="swbody"><div><p>Starting early creates room to try directions, challenge assumptions, and push the details until the experience feels considered and complete.</p></div></div>
         </li>
         <li class="swrow">
-          <div class="swhead"><p class="swn" aria-hidden="true">03</p>
-            <div class="swc"><h4 class="swt">Learn &amp; evolve</h4>
-              <div class="swbody"><div><p>Ship it. See how the work performs in the real world, and use what you learn to keep making it better.</p></div></div>
-            </div>
-          </div>
+          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">03</p><h4 class="swt">Learn &amp; evolve</h4></span><span class="swic" aria-hidden="true"><svg viewBox="0 0 15 12" width="15" height="12" fill="none"><path d="M7.5 1v10M2.6 6.4 7.5 11.3l4.9-4.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          <div class="swbody"><div><p>Ship it. See how the work performs in the real world, and use what you learn to keep making it better.</p></div></div>
         </li>
           </ol>
         </div>
-        <!-- 521:37998 - Skills. The drawn rows still carry the component's
-             default copy; swap the three when you write them. -->
+        <!-- 670:51237 - Awards & Recognitions. One row per award, 32 apart:
+             the award in Text Dark 1, then the category, the project and the
+             year in Secondary Dark. The Skills group that used to sit here is
+             gone - it carried the component's default copy, the same three
+             rows as My approach word for word. -->
         <div class="stgroup">
-          <h3 class="stsub">Skills</h3>
-          <ol class="stacc">
-        <li class="swrow">
-          <div class="swhead"><p class="swn" aria-hidden="true">01</p>
-            <div class="swc"><h4 class="swt">Connect &amp; create</h4>
-              <div class="swbody"><div><p>I like to get close to the people, the problem, and the context as early as I can. The more I understand what matters, the easier it is to move with intention.</p></div></div>
-            </div>
-          </div>
-        </li>
-        <li class="swrow">
-          <div class="swhead"><p class="swn" aria-hidden="true">02</p>
-            <div class="swc"><h4 class="swt">Explore &amp; refine</h4>
-              <div class="swbody"><div><p>Starting early creates room to try directions, challenge assumptions, and push the details until the experience feels considered and complete.</p></div></div>
-            </div>
-          </div>
-        </li>
-        <li class="swrow">
-          <div class="swhead"><p class="swn" aria-hidden="true">03</p>
-            <div class="swc"><h4 class="swt">Learn &amp; evolve</h4>
-              <div class="swbody"><div><p>Ship it. See how the work performs in the real world, and use what you learn to keep making it better.</p></div></div>
-            </div>
-          </div>
-        </li>
-          </ol>
+          <h3 class="stsub">Awards &amp; Recognitions</h3>
+          <ul class="staw">
+            <li class="stawrow"><span class="stawn">ANA B2 Awards</span><span>Gold Experience</span><span>Volvo</span><span>2024</span></li>
+            <li class="stawrow"><span class="stawn">Shorty Awards</span><span>Gold Education</span><span>ETS</span><span>2025</span></li>
+            <li class="stawrow"><span class="stawn">Shorty Awards</span><span>Bronze: Website</span><span>NFL</span><span>2026</span></li>
+            <li class="stawrow"><span class="stawn">Webby Awards</span><span>Art Direction Nom.</span><span>JBL</span><span>2025</span></li>
+            <li class="stawrow"><span class="stawn">Webby Awards</span><span>Responsive UI Nom.</span><span>Volvo</span><span>2024</span></li>
+            <li class="stawrow"><span class="stawn">Webby Awards</span><span>Visual Design Nom.</span><span>NFL</span><span>2025</span></li>
+          </ul>
         </div>
       </div>
     </div>
