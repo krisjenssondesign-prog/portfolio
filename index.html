@@ -80,7 +80,7 @@
        lets .csrule still take the landing animation. */
     --stroke:1.4px;      /* the ring, and the space a rule occupies */
     --stroke-k:1.4;      /* the same number as a scale factor        */
-    --pulse:#48DCCD;                /* the beat */
+    --pulse:#3CDBCB;                /* the beat — 716:52400 */
     --paper:#F6F6F6;
     --m:40px;                       /* frame margin */
     --hl:clamp(57px,11.9444vw,222px);/* = 172px at 1440 — 404:46734 */
@@ -1639,10 +1639,22 @@
      narrow window while 9.7222vw holds the drawn size everywhere else.
      Tracking has opened to -2.8 on 140, which is -.02em - half what it was,
      and the words are 587 / 267 / 420 at that setting. */
+  /* 716:52400 — the drawn head is 158.6 on a 1440 frame (11.0139vw) and the
+     bottom row is the widest thing on the page, so the second term is the
+     measure: the row's own ink per unit of type, which lands it on the 40
+     guide both ends at every width. Every proportion inside the block is
+     stated as a ratio of the type, and the phone restates them because
+     720:52823 draws a different set. */
   .ab{--abcap:999px;
       --abtrack:-.02em;
+      --ab-gap:.075662;    /* 12 of 158.6 — between the rows        */
+      --ab-bgap:.126104;   /* 20            — THE / face / PULSE    */
+      --ab-bpad:.037831;   /*  6            — the row's left inset  */
+      --ab-pgap:.075662;   /* 12            — PULSE to the full stop*/
+      --ab-av:.882724;     /* 140           — the face              */
+      --ab-dot:.252207;    /*  40           — the full stop         */
       --abhl:clamp(40px,
-                   min(9.7222vw, calc((100vw - 80px) / 6.6071), var(--abcap)),
+                   min(11.0139vw, calc((100vw - 80px) / 6.72), var(--abcap)),
                    320px);
       /* Surface Dark, 513:24080. --w-sur is already #101010 in the tokens -
          this was painting raw #000 and ignoring it. */
@@ -1653,7 +1665,7 @@
       /* 81 top and bottom - the band at the foot is 80 plus its own hairline,
          and matching it above centres the group at 450 on a 900 window, which
          is exactly where 513:35367 is drawn. It still clears the 76 nav. */
-      padding:81px var(--m) 81px;
+      padding:76px var(--m) 62px;
       box-sizing:border-box}
   /* 513:35252 / 513:35368 - the wordmark's cap sits on 39 and the links' box
      on 38, so the row hangs from its top rather than centring a 22 */
@@ -1679,16 +1691,23 @@
     .abbar .brand{white-space:nowrap}
   }
 
+
   /* headline block sits on the 40 guide at y180; the row below it at y352 */
-  .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * .085714)} /* 12 */
+  .abhead{display:flex;flex-direction:column;gap:calc(var(--abhl) * var(--ab-gap))}
+  /* the wide window runs CRAFT and SETS on one line; the phone breaks after
+     CRAFT and carries SETS down to meet THE, so each grouping is its own row
+     and only one of the two is ever shown */
+  .abr1{margin:0;display:flex;align-items:center;
+        gap:calc(var(--abhl) * var(--ab-bgap))}
+  .abr2{display:none}
   .abline{font-size:var(--abhl);font-weight:900;letter-spacing:var(--abtrack);
           line-height:normal;color:var(--c-1);white-space:nowrap;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* the row is centred on the portrait, not on the type: the caps and the
      circle share a middle, which is what makes the face read as a word */
-  .abbot{display:flex;align-items:center;gap:calc(var(--abhl) * .142857);     /* 20 */
-         padding-left:calc(var(--abhl) * .042857)}                            /*  6 */
+  .abbot{display:flex;align-items:center;gap:calc(var(--abhl) * var(--ab-bgap));
+         padding-left:calc(var(--abhl) * var(--ab-bpad))}
   /* position:relative so the flap rack (.fx / .ch) can lay itself over the
      word — same rack the hero headline uses, so About gets the board for free */
   /* CSS lets the negative tracking run on past the last glyph; Figma stops it
@@ -1722,15 +1741,25 @@
      against the line's -2.8, so F|T is opened by 1.52 at 140. That pair was
      the one left alone up there because the crossbars interlock - this is the
      drawing asking for it, so it is taken from the drawing. */
-  .kf{margin-right:.010857em} /* F|T  +1.52 @140 */
-  .abpul{display:flex;align-items:flex-end;gap:calc(var(--abhl) * .085714)}   /* 12 */
+  /* 716:52400 pulls the F hard into the T — -8% against the line's -2%. In
+     Saans that closes an interlock; in the fallback the pair is ALREADY 8px
+     tighter than the H|E reference at 192, so the drawing's intent is met by
+     simply taking the old opening off and leaving the face's own fit. */
+  .kf{margin-right:0}
+  /* SETS is new. E|T measures 12.48 against the 17.6 reference at 192, the
+     tightest pair in the word, so it is opened by the difference on the same
+     .9 correction the others carry. T|S and S|E already sit on 17.6 and 14.4,
+     and S|E is what .ks is. */
+  .ke{margin-right:.0240em}   /* E|T  +4.6 @192 */
+  .abpul{display:flex;align-items:flex-end;gap:calc(var(--abhl) * var(--ab-pgap))}
   /* 140 on a 140 headline - the circle is exactly one type size now */
   /* The portrait is a flap card like every letter beside it: a blank disc on
      one face, the photograph on the other, turning on the same axis. The
      source lives here once, as a custom property, so both faces can wear it
      without the file carrying the image twice. */
   .abav{--abav:url(media/abav.webp);
-        flex:none;width:var(--abhl);height:var(--abhl);
+        flex:none;width:calc(var(--abhl) * var(--ab-av));
+        height:calc(var(--abhl) * var(--ab-av));
         border-radius:999px;display:block;perspective:var(--flip-persp)}
   .abavcard{position:relative;display:block;width:100%;height:100%;
             transform-style:preserve-3d;will-change:transform}
@@ -1741,7 +1770,8 @@
   .abavb{transform:rotateY(180deg)}
   /* the full stop is a drawn circle, so it can carry the pulse */
   .abdot{flex:none;display:block;
-         width:calc(var(--abhl) * .285714);height:calc(var(--abhl) * .285714);  /* 40 */
+         width:calc(var(--abhl) * var(--ab-dot));
+         height:calc(var(--abhl) * var(--ab-dot));
          border-radius:999px;background:var(--pulse);
          will-change:transform,opacity}
 
@@ -1753,13 +1783,13 @@
      rather than running off the grid. */
   /* 513:35367 - a flat 48 under the headline, and the fact grid is gone: the
      band at the foot of the page carries what it used to say. */
-  .abfoot{margin-top:40px;display:flex;align-items:flex-start}
+  .abfoot{margin-top:48px;display:flex;align-items:flex-start}
   /* 513:24169 - 20 Medium on 1.25 over 551, three lines. The colour alternates
      rather than splitting once: three clauses are Text White 1 and the two
      that join them are Secondary Light, so the sentence reads as its own
      emphasis. Same weight throughout - it is colour doing the work. */
-  .abcopy{flex:0 1 551px;max-width:551px;min-width:0;font-family:var(--font-ui);
-          font-size:20px;font-weight:500;line-height:1.25;letter-spacing:0;
+  .abcopy{flex:0 1 598px;max-width:598px;min-width:0;font-family:var(--font-ui);
+          font-size:22px;font-weight:500;line-height:1.25;letter-spacing:0;
           color:#9F9F9F;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -1770,22 +1800,26 @@
      across the full bleed. LOVE FOR is not a gap in the line any more: it is a
      chip in Surface Dark laid OVER it, 40 off the left edge, which is why the
      line simply stops being visible for the chip's width. */
-  .abrules{position:absolute;left:0;right:0;bottom:81px;height:0;z-index:1}
+  .abrules{position:absolute;left:0;right:0;bottom:62px;height:0;z-index:1}
   .abrules u{position:absolute;left:0;right:0;top:0;height:1px;
           background:#232323;display:block}
   /* 520:36312 - 16 Medium uppercase in Secondary Light, 8 between the slash
      and the words, 40 of Surface Dark either side of the pair */
-  .ablovefor{position:absolute;left:0;top:0;transform:translateY(-50%);
+  /* 716:52400 no longer runs the rule THROUGH the words — the chip stands 19
+     clear above the band's own top edge, mark first and the slash after it. */
+  .ablovefor{position:absolute;left:0;top:-19px;transform:translateY(-100%);
           display:flex;align-items:center;gap:8px;
-          padding:4px 40px;background:var(--w-sur);
+          padding:4px 16px 4px 40px;background:var(--w-sur);
           font-family:var(--font-ui);font-size:16px;font-weight:500;
           line-height:1;letter-spacing:0;text-transform:uppercase;
-          white-space:nowrap;color:#9F9F9F;
+          white-space:nowrap;color:#F8F8F8;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* the trim has to sit on the two boxes, not on the row: they are blocks of
      their own, so the row's trim never reaches the type inside them and the
      chip came out 24 tall instead of the drawn 20. */
+  .ablovefor i{order:2;color:#9CA1A4}
+  .ablovefor b{order:1}
   .ablovefor i,.ablovefor b{display:block;font-style:normal;font-weight:500;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -1793,17 +1827,38 @@
      is 40 now, the labels are Secondary Light rather than white, and the
      discs stay 24 on the first four and 20 on the last six - drawn, not a
      slip. Full bleed: the drawn frame runs from -178 to 1658. */
-  .abstrip{position:absolute;left:0;right:0;bottom:0;height:80px;
-           padding:28px 0;box-sizing:border-box;overflow:hidden}
-  .abtrack{gap:40px;align-items:center;height:24px;
+  .abstrip{position:absolute;left:0;right:0;bottom:0;height:62px;
+           padding:24px 0;box-sizing:border-box;overflow:hidden}
+  .abtrack{gap:40px;align-items:center;height:14px;
            font-family:var(--font-ui);font-size:18px;font-weight:500;
            line-height:1.45;letter-spacing:0;color:#9F9F9F;white-space:nowrap}
-  .abtrack .abdisc{flex:none;display:block;
-           width:calc(var(--d) * 1px);height:calc(var(--d) * 1px);
-           border-radius:999px;background:#FFFFFF}
+  /* 8 on the beat now, not a white disc that changed size down the row */
+  .abtrack .abdisc{flex:none;display:block;width:8px;height:8px;
+           border-radius:999px;background:var(--pulse)}
   .abtrack .ablabel{flex:none;display:block;
            text-box:trim-both cap alphabetic;
            text-box-trim:trim-both;text-box-edge:cap alphabetic}
+
+  /* 720:52823 — 68 on a 393 frame, broken CRAFT / SETS THE / face PULSE, and
+     every proportion inside it is the phone's own drawing rather than the
+     wide window's. */
+  @media (max-width:1080px){
+    .ab{--ab-gap:.117647;    /*  8 of 68 — between the rows   */
+        --ab-bgap:.117647;   /*  8       — face to PULSE      */
+        --ab-bpad:0;
+        --ab-pgap:.058824;   /*  4       — PULSE to the stop  */
+        --ab-av:.941176;     /* 64       — the face           */
+        --ab-dot:.294118;    /* 20       — the full stop      */
+        --abhl:clamp(32px, min(17.3028vw, calc((100vw - 80px) / 4.87)), 120px)}
+    .abr1 .abwide{display:none}
+    .abr2{display:flex;align-items:center;
+          gap:calc(var(--abhl) * var(--ab-gap) * 2)}
+    .abbot .abwide{display:none}
+    .abcopy{flex:0 1 100%;max-width:none;font-size:18px}
+    .abstrip{height:64px;padding:25px 0}
+    .abtrack{gap:16px}
+    .abrules{bottom:64px}
+  }
 
   /* every straight rule on the site, painted rather than bordered */
   [data-surface="light"]{--bar-ink:#1A1A1A}
@@ -1846,23 +1901,23 @@
     from{ opacity:0; filter:blur(var(--land-blur)); transform:translateY(var(--land-y)) }
     to  { opacity:1; filter:blur(0);                transform:none }
   }
-  .ab .abhead>.abline,.ab .abhead>.abbot,.ab .abbar,.ab .abfoot{opacity:0}
-  .abhead>.abline,.abhead>.abbot{
+  .ab .abhead>*,.ab .abbar,.ab .abfoot{opacity:0}
+  .abhead>*{
         --land-blur:calc(var(--abhl) * .12);
         --land-y:calc(var(--abhl) * .198)}
 
-  .page.landing .abhead>.abline,
-  .page.landing .abhead>.abbot{
+  .page.landing .abhead>*{
         animation:landInHead var(--land-dur) var(--land-spring) both}
   .page.landing .abbar,.page.landing .abfoot{
         animation:landIn var(--land-dur) var(--land-spring) both}
-  .page.landing .abhead>.abline{animation-delay:.06s}
-  .page.landing .abhead>.abbot {animation-delay:.15s}
+  .page.landing .abhead>.abr1{animation-delay:.06s}
+  .page.landing .abhead>.abr2{animation-delay:.11s}
+  .page.landing .abhead>.abbot{animation-delay:.15s}
   .page.landing .abfoot        {animation-delay:.26s}
   .page.landing .abbar         {animation-delay:.34s}
   /* landed is a finished marker, not a second run — carrying the animation
      into it restarts the whole thing at delay 0 the moment the class flips */
-  .page.landed .abhead>.abline,.page.landed .abhead>.abbot,
+  .page.landed .abhead>*,
   .page.landed .abbar,.page.landed .abfoot{
         opacity:1;filter:none;transform:none;animation:none}
 
@@ -1995,9 +2050,17 @@
      it is 16 either side and never needs its own element. */
   /* 2147205877 - 20 between rows, up from the frame's earlier 16. */
   .staw{margin:0;padding:0;list-style:none;
-        display:flex;flex-direction:column;gap:20px}
+        display:flex;flex-direction:column;gap:20px;--awgap:32px}
+  /* The drawn 132 / 170 / 50 / 44 are Saans measures. The fallback face runs
+     wider, so as a plain fr ratio the first and second cells came up short of
+     their own longest string the moment the column narrowed and the rows
+     started wrapping onto two lines. Each track now refuses to go under its
+     own content — the ratio still governs while there is room to spare, and
+     below that the columns hold their words instead of breaking them. */
   .stawrow{display:grid;align-items:baseline;max-width:88.97%;
-           grid-template-columns:132fr 170fr 50fr 44fr;column-gap:32px;
+           grid-template-columns:minmax(max-content,132fr) minmax(max-content,170fr)
+                                 minmax(max-content,50fr)  minmax(max-content,44fr);
+           column-gap:var(--awgap);
            font-family:var(--font-ui);font-size:18px;font-weight:500;
            line-height:1.25;letter-spacing:0;color:#777777}
   .stawrow > span{position:relative;display:block;min-width:0}
@@ -2006,8 +2069,17 @@
      sit at 896 and take the text 16 further right with it, so it is drawn
      rather than bordered. */
   .stawrow > span + span::before{content:'';position:absolute;
-           left:-16.7px;top:0;bottom:0;width:1.4px;background:#E7E7E7}
+           left:calc(var(--awgap) / -2 - .7px);top:0;bottom:0;
+           width:1.4px;background:#E7E7E7}
   .stawrow .stawn{color:#1A1A1A}
+
+  /* 376 of ink plus three gaps is 472, and 88.97% of the copy column drops
+     under that at about 1350. From there the row takes the column whole and
+     the gaps come in, which buys it down past the breakpoint. */
+  @media (max-width:1350px){
+    .staw{--awgap:16px}
+    .stawrow{max-width:none}
+  }
 
   /* ---- 521:37974 - the accordions ----------------------------------
      A row is 32 of air, the line, 32 of air, and a hairline under it. The
@@ -2024,8 +2096,12 @@
          height:1.4px;background:#E7E7E7}
   .swrow:first-child::before{content:'';position:absolute;left:4px;right:0;top:0;
          height:1.4px;background:#E7E7E7}
+  /* The head takes the whole row, not the body's 89.33% measure, so the plus
+     lands on the rule's own right end rather than 60 short of it. The body
+     keeps the drawn measure. */
   .swhead{position:relative;display:flex;align-items:baseline;
-          justify-content:flex-start;gap:80px;max-width:89.33%;cursor:pointer}
+          justify-content:space-between;gap:24px;max-width:none;
+          cursor:pointer}
   /* A REAL button, laid over the row's own head. A div with role=button does
      not reliably take a tap on iOS; a button always does. It carries no ink of
      its own — the head under it is the visible control. */
@@ -2035,8 +2111,7 @@
          font:inherit;color:inherit;cursor:pointer;
          touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   .swtog:focus-visible{outline:2px solid #1A1A1A;outline-offset:2px}
-  .swlab{display:flex;align-items:baseline;gap:4px;
-         flex:0 0 auto;min-width:200px}
+  .swlab{display:flex;align-items:baseline;gap:4px;flex:0 1 auto;min-width:0}
   /* 521:37946 - a 15 x 12 down arrow in Text Dark 1 at the right end of the
      row. It turns over when the row opens, so the arrow says which way the
      body is about to go rather than sitting there as decoration. */
@@ -2057,9 +2132,11 @@
   /* Scoped to .stcopy so it outranks `.stcopy p`, which is (0,1,1) and was
      quietly holding the NUMBER at 18 Medium in Secondary Dark while the title
      beside it took the 28. That is why 01 and its title never matched. */
+  /* Set to the BODY, not above it: same size, same weight, same leading, so
+     the only thing separating the row's title from its copy is the ink. */
   .stcopy .swn,.stcopy .swt{margin:0;font-family:var(--font-ui);
-         font-size:20px;font-weight:600;
-         line-height:1.45;letter-spacing:0;
+         font-size:18px;font-weight:500;
+         line-height:1.25;letter-spacing:0;
          text-box:trim-both cap alphabetic;
          text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .stcopy .swn{flex:0 0 28px;color:#1A1A1A}
@@ -2331,6 +2408,7 @@
   @media (prefers-reduced-motion:reduce){
     .jnwrap.afloat .jpolf{animation:none}
     .jpol{transition:none}
+    .jstop::before{transform:none;transition:none}
   }
 
   .jn .tfoot{position:static;margin-top:360px;padding:0 0 40px}
@@ -2352,7 +2430,7 @@
     .stwrap{width:100%;margin:0}
     /* The column is the full width now, so the row and the body take it —
        the 89% measures are the desktop's two-column composition. */
-    .swhead,.swbody{max-width:none}
+    .swbody{max-width:none}
     /* 678:51623 draws the rows with no rule between them, and 20 above / 21
        below each one rather than the wide window's 32 */
     .swrow::after,.swrow:first-child::before{display:none}
@@ -2365,8 +2443,7 @@
     .stsub{font-size:18px}
     .stcopy p,.swbody p,.stawrow{font-size:16px}
     /* the phone sets the row at 18, and the plus lands 22 after a 200 label */
-    .stcopy .swn,.stcopy .swt{font-size:18px}
-    .swhead{gap:22px}
+    .stcopy .swn,.stcopy .swt{font-size:16px}
     .swlab{gap:8px}
     /* Four columns will not fit a phone. The award takes a line of its own
        and the category, the client and the year sit under it as three
@@ -2423,8 +2500,13 @@
     /* 520:36181 — one 2px run at the pill's centre, from this stop's pill
        down to the next one's. The last stop has nothing to reach, so it
        carries no line and the run ends on 2026 exactly as drawn. */
+    /* the run grows out of its own pill rather than standing there waiting —
+       the phone's version of the board drawing itself */
     .jstop::before{content:'';position:absolute;left:40px;top:24px;bottom:-77px;
-           width:2px;background:#E7E7E7;opacity:1;pointer-events:none;z-index:0}
+           width:2px;background:#E7E7E7;opacity:1;pointer-events:none;z-index:0;
+           transform:scaleY(0);transform-origin:top center;
+           transition:transform .85s cubic-bezier(.22,1,.3,1)}
+    .jstop.lit::before{transform:scaleY(1)}
     /* the run is opaque now, so the pill has to sit in front of it or the line
        is drawn straight through the year */
     .jstop .jpill{position:relative;z-index:1}
@@ -6810,23 +6892,24 @@
     </div>
 
     <div class="abhead">
-      <h1 class="abline" id="abL1"><span class="txt"><span class="kc">C</span>RA<span class="kf">F</span>T <span class="ki">I</span>S</span></h1>
+      <h1 class="abr1" id="abL1"><span class="abline abword"><span class="txt"><span class="kc">C</span>RA<span class="kf">F</span>T</span></span><span class="abline abword abwide"><span class="txt">S<span class="ke">E</span>TS</span></span></h1>
+      <div class="abr2" aria-hidden="true"><span class="abline abword"><span class="txt">S<span class="ke">E</span>TS</span></span><span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span></div>
       <div class="abbot">
-        <span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span>
+        <span class="abline abword abwide"><span class="txt"><span class="kt">T</span>HE</span></span>
         <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span></span>
         <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span>E</span></span><i class="abdot" aria-hidden="true"></i></span>
       </div>
     </div>
 
     <div class="abfoot">
-      <p class="abcopy"><b>After 8+ years in design,</b> I’ve learned to <b>embrace constraints</b> and adapt as I go. But one thing has stayed constant: <b>delightful design isn’t a nice-to-have. It’s the baseline.</b></p>
+      <p class="abcopy"><b>A space for a few favourites</b>. Work that stretches a different set of skills, ranging from <b>school projects</b> to <b>client work</b>, and some that just have a <b>big meaning to me.</b> Page is still WIP.</p>
     </div>
 
     <!-- 520:36312 / 520:36359 - the rule, the chip that sits over it, and the
          band under both. Ten stops on a 40 gap, running off both edges; the
          track is built and paced in JS off the same cycle the hero uses. -->
-    <div class="abrules" aria-hidden="true"><u></u><span class="ablovefor"><i>/</i><b>Love for</b></span></div>
-    <div class="abstrip" aria-label="San Francisco, Code, Design, Motion, People, AI used right, Prototyping, Systems, Illustrations, 3D Design">
+    <div class="abrules" aria-hidden="true"><u></u><span class="ablovefor"><b>Love for</b><i>/</i></span></div>
+    <div class="abstrip" aria-label="Code, Design, Motion, Users, AI workflows, Prototyping, Systems, Illustrations, 3D Design">
       <span class="mqtrack abtrack" id="abTrack" aria-hidden="true"></span>
     </div>
   </section>
@@ -8679,7 +8762,9 @@
       /* the pill follows the page — or lets go of it entirely */
       if(window.__navSel) window.__navSel(segs.find(x=>x.dataset.page===STOP[name])||null);
 
-      if(name==='about'){ abFit(); requestAnimationFrame(()=>playLanding(to)); }
+      if(name==='about'){ abFit();
+        if(typeof window.__jnReset==='function') window.__jnReset();
+        requestAnimationFrame(()=>playLanding(to)); }
       else if(name==='resume'||name==='jbl'||name==='volvo'||name==='nfl'||name==='ets'){
         if(typeof window.__rzFit==='function') window.__rzFit();
         if(typeof window.__gwBuild==='function') window.__gwBuild();
@@ -10468,14 +10553,12 @@
     if(!track) return;
     const SPEED=46;
     /* the disc is 24 on the first four and 20 on the rest - drawn that way */
-    const STOPS=[['San Francisco',24],['Code',24],['Design',24],['Motion',24],
-                 ['People',20],['AI used right',20],['Prototyping',20],
-                 ['Systems',20],['Illustrations',20],['3D Design',20]];
+    const STOPS=['Code','Design','Motion','Users','AI workflows',
+                 'Prototyping','Systems','Illustrations','3D Design'];
     function seq(){
       const f=document.createDocumentFragment();
-      STOPS.forEach(([t,dia])=>{
+      STOPS.forEach(t=>{
         const d=document.createElement('span'); d.className='abdisc';
-        d.style.setProperty('--d',dia);
         const l=document.createElement('span'); l.className='ablabel'; l.textContent=t;
         f.appendChild(d); f.appendChild(l);
       });
@@ -10575,9 +10658,17 @@
 
       const pills=[...wrap.querySelectorAll('.jstop .jpill')];
       if(pills.length<7){ path.setAttribute('d',''); return; }
-      const box=el=>{ const r=el.getBoundingClientRect();
-        return {cx:r.left-wb.left+r.width/2, cy:r.top-wb.top+r.height/2,
-                bottom:r.bottom-wb.top}; };
+      /* OFFSETS, not client rects. A pill that has not been lit yet is sitting
+         14px low under its own reveal transform, and a rect reads that
+         transform — so the board was being routed off wherever the pills
+         happened to be mid-animation and the run came out under their centres
+         instead of through them. offsetLeft/offsetTop are layout positions and
+         no transform touches them, so the line is drawn to where the pills
+         END, every time. */
+      const box=el=>{ let x=0,y=0,n=el;
+        while(n && n!==wrap){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; }
+        return {cx:x+el.offsetWidth/2, cy:y+el.offsetHeight/2,
+                bottom:y+el.offsetHeight}; };
       const b=pills.map(box);
       const leftX=b[0].cx, rightX=b[2].cx;
       const y1=b[1].cy, y2=b[4].cy, y3=b[6].cy;
@@ -10721,17 +10812,34 @@
        360 of air under the board is what pays for it */
     const SLOW=1.12;
     let len=0, firstY=0, lastY=0, mark=[], pol=[], queued=false;
+    /* DOWN ONLY. The scrub is a pure function of scroll position, so on the
+       way back up it unwound — the stroke retracted and every stop went dark
+       again. This is the high-water mark: the tip is only ever allowed to
+       advance, so the board tells its story once and then holds it. */
+    let drawnMax=0;
+    /* the phone has no stroke to scrub, so its stops light off a reading line
+       instead — same one-way rule, and the run under each pill grows with it */
+    function flowTick(stops){
+      const line=innerHeight*.82;
+      for(let i=0;i<stops.length;i++)
+        if(!stops[i].classList.contains('lit') &&
+           stops[i].getBoundingClientRect().top<=line) stops[i].classList.add('lit');
+      wrap.querySelectorAll('.jpol:not(.lit)').forEach(el=>{
+        if(el.getBoundingClientRect().top<=line) el.classList.add('lit');
+      });
+    }
     function tick(){
       queued=false;
       const stops=[...wrap.querySelectorAll('.jstop')];
       /* the no-line cases come FIRST, before the length guard: with the line
          hidden there is no length, and bailing on that left every stop dark */
-      if(STILL.matches || getComputedStyle(svg).display==='none'){
+      if(STILL.matches){
         if(len) path.style.strokeDashoffset='0';
         stops.forEach(el=>el.classList.add('lit'));
         wrap.querySelectorAll('.jpol').forEach(el=>el.classList.add('lit'));
         return;
       }
+      if(getComputedStyle(svg).display==='none'){ flowTick(stops); return; }
       if(!len) return;
       const r=wrap.getBoundingClientRect();
       const a=innerHeight*READ-firstY;
@@ -10743,19 +10851,15 @@
       let travel=(lastY-firstY)*SLOW;
       travel=Math.max(1, Math.min(travel, (a-doc+maxScroll)*.94));
       const p=Math.min(1, Math.max(0, (a-r.top)/travel));
-      const drawn=len*p;
+      const drawn=drawnMax=Math.max(drawnMax, len*p);
       path.style.strokeDashoffset=(len-drawn).toFixed(2);
       /* and the copy, stop by stop, on the stroke's own arrival. The first
          stop's mark is zero - the line STARTS on it - so it takes the floor
          instead, or it would be lit from the top of the page. */
-      for(let i=0;i<stops.length;i++){
-        const on = drawn > 0 && drawn >= (mark[i]||0) - .5;
-        if(!on && stops[i].classList.contains('lit'))
-          stops[i].querySelectorAll('.jln').forEach(m=>m.style.overflow='');
-        stops[i].classList.toggle('lit', on);
-      }
+      for(let i=0;i<stops.length;i++)
+        if(drawn > 0 && drawn >= (mark[i]||0) - .5) stops[i].classList.add('lit');
       for(let i=0;i<pol.length;i++)
-        pol[i].el.classList.toggle('lit', drawn > 0 && drawn >= pol[i].at - .5);
+        if(drawn > 0 && drawn >= pol[i].at - .5) pol[i].el.classList.add('lit');
     }
     const STILL=matchMedia('(prefers-reduced-motion: reduce)');
     const onScroll=()=>{ if(!queued){ queued=true; requestAnimationFrame(tick); } };
@@ -10778,6 +10882,17 @@
         {rootMargin:'100px 0px'}).observe(wrap);
     } else wrap.classList.add('afloat');
 
+    /* Leaving the page and coming back scrolls to the top, and a board that
+       is already fully told is not what you want to arrive at — so the route
+       clears the high-water mark and the run starts over. */
+    window.__jnReset=function(){
+      drawnMax=0;
+      wrap.querySelectorAll('.jstop.lit,.jpol.lit').forEach(el=>{
+        el.classList.remove('lit');
+        el.querySelectorAll?.('.jln').forEach(m=>m.style.overflow='');
+      });
+      lastW=lastH=0; draw();
+    };
     if('ResizeObserver' in window) new ResizeObserver(draw).observe(wrap);
     addEventListener('resize',draw,{passive:true});
     addEventListener('scroll',onScroll,{passive:true});
