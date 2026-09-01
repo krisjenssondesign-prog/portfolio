@@ -1440,6 +1440,9 @@
   /* No padding on the section: the bar brings its own guide and every block
      under it is placed on left/right:var(--m) already. Padding here put the
      bar on 80 and pushed its right-hand links off the screen. */
+  /* The wrapper is a mobile-only device: on a wide window it is not a box at
+     all, so the four blocks keep their own absolute placements. */
+  .me .metxt{display:contents}
   .me{position:relative;box-sizing:border-box;
       min-height:100svh;overflow:hidden;
       background:#101010;color:#F8F8F8}
@@ -1542,25 +1545,64 @@
         gap:32px;padding:0 0 calc(var(--m) + var(--safe-b));overflow:visible}
     .me .meh,.me .melead,.me .mecta,.me .mefacts,.me .meport{
         position:static;left:auto;right:auto;top:auto;bottom:auto}
+    /* The copy is held while the portrait comes up past it. Both are carried
+       on the same 70svh of scroll and both END on nothing, so the hero is its
+       own plain stack again by the time it leaves: the copy is pushed back
+       down almost exactly as fast as the page takes it away (5px of travel in
+       the first 200), the picture is pulled up half again as fast as the page
+       and is fully on the screen inside 165, and from there the copy comes
+       back and the picture eases off until the two are square. */
+    .me .metxt{display:flex;flex-direction:column;align-items:stretch;
+        gap:32px;position:relative;z-index:1}
+    @keyframes meTxtM{
+      0%  {transform:translateY(0)}
+      30% {transform:translateY(14svh)}
+      40% {transform:translateY(16svh)}
+      100%{transform:translateY(0)} }
+    .me.css-timeline .metxt{will-change:transform;
+        animation:meTxtM linear both;
+        animation-timeline:scroll(root block);
+        animation-range:0 60svh}
     /* Two lines on the phone. Held on one line the word is 453 wide at any
        size worth setting it at, which pushed the whole page 57px sideways —
        the section does not clip on this side of the breakpoint. Sized to the
        longer word so STORY lands on the 20 guide both ends. */
     .me .meh{margin:calc(var(--safe-t) + 128px) var(--m) 0;
              white-space:normal;
-             font-size:min(24.4vw, 13svh);line-height:.95}
+             font-size:min(21.83vw, 13svh);line-height:.909}
     /* capped at the desktop's own 22 so the phone cannot set it larger than
        the wide window does. Line height comes from the base rule. */
     .me .melead{margin:0 var(--m);width:auto;max-width:none;
                 font-size:clamp(16px,4.5802vw,22px)}
+    /* 678:51593 — the bar over the dark hero: the mark is KRIS on its own,
+       and the two pills are 48 on Containers on Dark rather than the light
+       page's 40 on E7. */
+    .me .abbar .mefull{display:none}
+    .me .abbar .nvic{width:48px;height:48px;background:#1C1C1C;color:#F8F8F8}
+    .me .abbar .navric{height:48px}
+    /* 678:51593 — the four facts are a 2 x 2 grid on the phone, not a
+       wrapping row: two 169 columns 16 apart, labels at 14. */
+    .me .mefacts{margin:0 var(--m);display:grid;
+                 grid-template-columns:repeat(2,minmax(0,1fr));
+                 column-gap:16px;row-gap:40px}
+    .me .mecell dt{font-size:14px}
     .me .mecta{margin:0 var(--m);align-self:flex-start}
-    .me .mefacts{margin:0 var(--m);flex-wrap:wrap;gap:24px 40px}
     .me .medv{display:none}
     /* No ride here: the phone stacks, so there is no column beside it to be
        twice the speed of. */
+    /* it travels half again as fast as the page on the way in, then eases
+       back to its own place on the way out */
     .me .meport{margin:0 var(--m);width:auto;height:auto;max-width:none;
                 aspect-ratio:437 / 551.74;border-radius:12px;
-                animation:none;transform:none}
+                position:relative;z-index:2;transform:none}
+    @keyframes mePortM{
+      0%  {transform:translateY(0)}
+      35% {transform:translateY(-10svh)}
+      100%{transform:translateY(0)} }
+    .me.css-timeline .meport{will-change:transform;
+        animation:mePortM linear both;
+        animation-timeline:scroll(root block);
+        animation-range:0 60svh}
   }
 
   /* ── About / Landing — 124:3583 ──────────────────────────────────────
@@ -1962,19 +2004,30 @@
   .stacc{margin:0;padding:0;list-style:none;
          display:flex;flex-direction:column}
   .swrow{position:relative;padding:32px 0}
-  .swrow:first-child{padding-top:0}
+  /* 516:35686 draws the rule on the row's own TOP as well as its bottom, so
+     the list opens on a line rather than starting bare under the subhead. */
   .swrow::after{content:'';position:absolute;left:4px;right:0;bottom:0;
          height:1.4px;background:#E7E7E7}
-  .swhead{display:flex;align-items:baseline;justify-content:space-between;
-          gap:20px;max-width:89.33%}
-  .swlab{display:flex;align-items:baseline;gap:4px;min-width:0}
+  .swrow:first-child::before{content:'';position:absolute;left:4px;right:0;top:0;
+         height:1.4px;background:#E7E7E7}
+  .swhead{display:flex;align-items:baseline;justify-content:flex-start;
+          gap:80px;max-width:89.33%;cursor:pointer}
+  .swlab{display:flex;align-items:baseline;gap:4px;
+         flex:0 0 auto;min-width:200px}
   /* 521:37946 - a 15 x 12 down arrow in Text Dark 1 at the right end of the
      row. It turns over when the row opens, so the arrow says which way the
      body is about to go rather than sitting there as decoration. */
-  .swic{flex:none;align-self:center;display:flex;justify-content:center;
-        width:32px;height:12px;color:#1A1A1A;
+  /* 516:35686 - an 18 x 18 plus in two 2px strokes of #171717. It loses its
+     upright on open, which is the plus becoming a minus - one bar scaling to
+     nothing rather than two icons swapping. */
+  .swic{position:relative;flex:none;align-self:center;
+        width:18px;height:18px;color:#171717}
+  .swic::before,.swic::after{content:'';position:absolute;left:50%;top:50%;
+        background:currentColor;
         transition:transform .46s cubic-bezier(.22,1,.3,1)}
-  .swic svg{display:block}
+  .swic::before{width:2px;height:18px;transform:translate(-50%,-50%) scaleY(1)}
+  .swic::after{width:18px;height:2px;transform:translate(-50%,-50%)}
+  .swrow.open .swic::before{transform:translate(-50%,-50%) scaleY(0)}
   /* 521:37946 - 20 SemiBold on 145, not the old frame's 28 Medium on 1.1.
      The row title is set at the SAME size as My approach above it now, and
      the number takes the menu ink rather than Secondary Light. */
@@ -1986,7 +2039,7 @@
          line-height:1.45;letter-spacing:0;
          text-box:trim-both cap alphabetic;
          text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  .stcopy .swn{flex:0 0 28px;color:#71747B}
+  .stcopy .swn{flex:0 0 28px;color:#1A1A1A}
   .swt{color:#1A1A1A}
   /* The body is the only thing that opens. A grid row from 0fr to 1fr rather
      than a max-height guess: the row measures its own copy, so two lines and
@@ -1995,8 +2048,9 @@
      or it would hold the title 12 off nothing while closed. */
   /* Flush with the NUMBER, not indented under the title, and 494 of the
      column's 553 as drawn. */
-  .swbody{display:grid;grid-template-rows:1fr;max-width:89.33%;
+  .swbody{display:grid;grid-template-rows:0fr;max-width:89.33%;
           transition:grid-template-rows .46s cubic-bezier(.22,1,.3,1)}
+  .swrow.open .swbody{grid-template-rows:1fr}
   /* the clip is a wrapper, not the paragraph: a 0fr track sets the CONTENT
      box to zero and padding still counts, so a padding-top on the paragraph
      itself left 12px of it showing while closed. */
@@ -2005,10 +2059,11 @@
   /* Hover, and only hover - and only where a hover actually exists. On a
      touch screen there is nothing to hover with, so the rows simply stay
      open rather than being unreadable. */
+  /* Hover opens on a real pointer; a tap opens on a touch screen, which is
+     what the plus is for. */
   @media (hover:hover) and (pointer:fine){
-    .swbody{grid-template-rows:0fr}
     .swrow:hover .swbody{grid-template-rows:1fr}
-    .swrow:hover .swic{transform:rotate(180deg)}
+    .swrow:hover .swic::before{transform:translate(-50%,-50%) scaleY(0)}
   }
   @media (prefers-reduced-motion:reduce){
     .swbody{transition:none}
@@ -2040,13 +2095,13 @@
      is not broken by a Saans measure the fallback face cannot hold */
   .jnt{margin:0;width:fit-content;max-width:100%;
        font-family:var(--font-ui);font-size:40px;font-weight:500;
-       line-height:1.1;letter-spacing:0;color:#1A1A1A;
+       line-height:1.1;letter-spacing:0;color:#F8F8F8;
        text-box:trim-both cap alphabetic;
        text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* 513:35488 - 18 Medium on 1.25 over 593 */
   .jnlead{margin:0;width:min(620px,100%);
           font-family:var(--font-ui);font-size:18px;font-weight:500;
-          line-height:1.25;letter-spacing:0;color:#777777;text-wrap:balance}
+          line-height:1.25;letter-spacing:0;color:#9F9F9F;text-wrap:balance}
   /* 513:35491 - the Action Button, 40 tall */
   .jncta{display:inline-flex;align-items:center;align-self:center;
          height:40px;padding:0 24px;border-radius:999px;background:#1A1A1A;
@@ -2063,6 +2118,18 @@
 
   /* 516:35665 - the board. aspect-ratio holds the drawn 1130 x 1550 so every
      percentage below lands where it is drawn. */
+  /* --jbw IS the board's width, written as a function of the window rather
+     than read off the container. The line below computes the same number the
+     `width` does: .jn pads by --m, the wrap takes another --m off each side,
+     and the whole thing caps at the drawn 1130.
+
+     This exists because every size on this board used to be stated in `cqw`.
+     That is only correct where `container-type` establishes a container — and
+     where it does not, `cqw` silently resolves against the VIEWPORT instead,
+     which on a wide window blew the pill up to 160, the copy to 32px, and
+     stood every stop on top of the one below it. A board whose width is a
+     known function of the window does not need to ask a container for it. */
+  .jn{--jbw:min(1130px, calc(100vw - var(--m) * 4))}
   .jnwrap{position:relative;margin:120px auto 0;
           width:min(1130px, calc(100% - var(--m) * 2));
           aspect-ratio:1130 / 1550}
@@ -2073,27 +2140,31 @@
          align-items:flex-start}
   /* the two stops drawn as a column rather than a row - the pill sits ABOVE
      its copy instead of beside it */
-  .jstop[data-kind="b"]{flex-direction:column;gap:2.12389cqw}
+  .jstop[data-kind="b"]{flex-direction:column;gap:calc(var(--jbw) * .0212389)}
   /* 513:35511 - 91 x 48 on Divider Light, with a 2px ring in the section's own
      ground so the connector reads as passing BEHIND the pill */
   .jpill{flex:none;box-sizing:border-box;
          display:grid;place-items:center;
-         width:8.05310cqw;height:4.24779cqw;
-         border-radius:999px;background:#1E1E1E;
+         width:calc(var(--jbw) * .0805310);height:calc(var(--jbw) * .0424779);
+         border-radius:999px;background:#1C1C1C;
          box-shadow:inset 0 0 0 1.4px #F8F8F8, 0 0 0 3px #101010;
-         font-family:var(--font-ui);font-size:1.41593cqw;font-weight:600;
+         font-family:var(--font-ui);font-size:calc(var(--jbw) * .0141593);font-weight:600;
          line-height:1;letter-spacing:0;color:#F8F8F8;white-space:nowrap}
-  .jbody{flex:1 1 auto;min-width:0;padding-top:1.41593cqw;
-         display:flex;flex-direction:column;gap:1.06195cqw}
-  .jstop[data-kind="b"] .jbody{padding-top:0;padding-left:1.06195cqw;padding-right:1.06195cqw}
+  .jbody{flex:1 1 auto;min-width:0;padding-top:calc(var(--jbw) * .0141593);
+         display:flex;flex-direction:column;gap:calc(var(--jbw) * .0106195)}
+  .jstop[data-kind="b"] .jbody{padding-top:0;
+         padding-left:calc(var(--jbw) * .0106195);
+         padding-right:calc(var(--jbw) * .0106195)}
   /* 503:80719 - 20 SemiBold on 1.45 */
-  .jbody h3{margin:0;font-family:var(--font-ui);font-size:1.76991cqw;font-weight:600;
+  .jbody h3{margin:0;font-family:var(--font-ui);
+            font-size:calc(var(--jbw) * .0176991);font-weight:600;
             line-height:1.45;letter-spacing:0;color:#F8F8F8;
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* 503:80759 - 18 Medium on 1.25 in Secondary Dark */
-  .jbody p{margin:0;font-family:var(--font-ui);font-size:1.59292cqw;font-weight:500;
-           line-height:1.25;letter-spacing:0;color:#777777}
+  .jbody p{margin:0;font-family:var(--font-ui);
+           font-size:calc(var(--jbw) * .0159292);font-weight:500;
+           line-height:1.25;letter-spacing:0;color:#71747B}
   /* Each stop's copy is held until the STROKE reaches its pill - the class is
      set off the line's own progress, not off the block's position in the
      window, so the two can never drift apart.
@@ -2186,12 +2257,14 @@
      when they were placed against it directly. NOT --dx/--dy: the float
      animation below already owns those two names as its delays, and a time
      in a calc() that wants a length is an invalid declaration, silently. */
+  .jpol.jpm{display:none}
   .jpol{position:absolute;margin:0;z-index:2;pointer-events:none;
-        width:calc(var(--w) * 1cqw);
-        height:calc(var(--w) * var(--h) * 1cqw);
-        left:calc(var(--ox) * 1cqw - var(--w) * .5cqw);
-        top:calc(var(--oy) * 1cqw - var(--w) * var(--h) * .5cqw);
-        font-size:calc(var(--w) * 1cqw);
+        --u:calc(var(--jbw) / 100);          /* one board unit, was 1cqw */
+        width:calc(var(--w) * var(--u));
+        height:calc(var(--w) * var(--h) * var(--u));
+        left:calc(var(--ox) * var(--u) - var(--w) * var(--u) * .5);
+        top:calc(var(--oy) * var(--u) - var(--w) * var(--h) * var(--u) * .5);
+        font-size:calc(var(--w) * var(--u));
         opacity:0;
         transform:rotate(var(--r)) translateY(14px) scale(.94);
         transition:opacity .7s var(--rv-ease),
@@ -2257,11 +2330,21 @@
     /* The column is the full width now, so the row and the body take it —
        the 89% measures are the desktop's two-column composition. */
     .swhead,.swbody{max-width:none}
+    /* 678:51623 sets the phone's own ramp: the eyebrow and the fact labels at
+       14, the section titles at 32, the subheads at 18 and every body at 16 */
+    .steyebrow,.jneb{font-size:14px}
+    .sthead,.jnt{font-size:32px}
+    .stsub{font-size:18px}
+    .stcopy p,.swbody p,.stawrow{font-size:16px}
+    /* the phone sets the row at 18, and the plus lands 22 after a 200 label */
+    .stcopy .swn,.stcopy .swt{font-size:18px}
+    .swhead{gap:22px}
+    .swlab{gap:8px}
     /* Four columns will not fit a phone. The award takes a line of its own
        and the category, the client and the year sit under it as three
        columns, so the row can never wrap a rule onto a line by itself.
        Not drawn — 521:37946 is a 1440 frame. */
-    .staw{gap:24px}
+    .staw{gap:20px}
     .stawrow{grid-template-columns:minmax(0,1fr) auto auto;
              max-width:none;row-gap:4px}
     .stawrow .stawn{grid-column:1 / -1}
@@ -2285,6 +2368,9 @@
     .jnhead{width:100%;align-items:flex-start;gap:24px}
     .jnct{align-items:flex-start;text-align:left;gap:16px}
     .jnt,.jnlead{width:100%;max-width:none}
+    .jnlead{font-size:16px;color:#9CA1A4}
+    /* the board is the column here, so the unit is restated for it */
+    .jn{--jbw:calc(100vw - 40px)}
     .jnwrap{aspect-ratio:auto;margin-top:80px;width:100%}
     .jnline{display:none}
     .jnlist{position:static;display:flex;flex-direction:column;gap:53px}
@@ -2302,7 +2388,7 @@
        desktop's and would resolve to five pixels here. */
     .jstop .jbody{grid-column:2;grid-row:1;padding:16px 0 0;gap:20px}
     .jbody h3{font-size:18px;line-height:1.15}
-    .jbody p{font-size:16px;line-height:1.2}
+    .jbody p{font-size:16px;line-height:1.2;color:#9CA1A4}
     /* the desktop's column stops carry a 12 inset either side; on the phone
        every stop is the same row and the column is the same 255 */
     .jstop[data-kind="b"] .jbody{padding:16px 0 0;padding-left:0;padding-right:0}
@@ -2310,7 +2396,7 @@
        down to the next one's. The last stop has nothing to reach, so it
        carries no line and the run ends on 2026 exactly as drawn. */
     .jstop::before{content:'';position:absolute;left:40px;top:24px;bottom:-77px;
-           width:2px;background:#F8F8F8;opacity:.5;pointer-events:none}
+           width:2px;background:#E7E7E7;opacity:1;pointer-events:none}
     .jstop:last-child::before{display:none}
     /* the cards ride under their own milestone, still tilted, still the
        drawn 169.8 against the 353 column */
@@ -2319,19 +2405,21 @@
        the drawn size — otherwise the tilt lifts its corner into the copy on
        a wide window, and the pair stops reading as a stack. */
     .jpol{display:block;position:static;grid-column:1 / -1;
-          --pw:min(48.102cqw, 169.769px);
+          --pw:min(calc(var(--jbw) * .49292), 174px);
           width:var(--pw);height:calc(var(--h) * var(--pw));
           font-size:var(--pw);
-          margin:32px 0 0 var(--mx, 0);
-          transform:rotate(var(--r)) translateY(14px) scale(.94)}
-    .jpol.lit,.jpol.jstill{transform:rotate(var(--r))}
+          margin:var(--mtm, 32px) 0 0 var(--mxm, 0);
+          transform:rotate(var(--rm, var(--r))) translateY(14px) scale(.94)}
+    .jpol.lit,.jpol.jstill{transform:rotate(var(--rm, var(--r)))}
+    .jpol.jpd{display:none}
+    .jpol.jpm{display:block}
     .jpolf{height:100%}
     /* 520:36183 / 520:36193 — a pair is down-and-right, 51 lower and 133 over,
        not stacked. Pulling the second one up by its whole height buried the
        first one's caption. */
-    .jpol + .jpol{margin-top:calc(min(14.4476cqw, 51px) - var(--h) * var(--pw))}
-    .jstop .jpol:nth-of-type(1){--mx:min(22.946%, 81px);z-index:3}   /* 81 of 353  */
-    .jstop .jpol:nth-of-type(2){--mx:min(60.623%, 214px);z-index:2}  /* 214 of 353 */
+    .jpol + .jpol{margin-top:calc(var(--pdm, 0px) - var(--h) * var(--pw))}
+    .jstop .jpol:nth-of-type(1){z-index:3}
+    .jstop .jpol:nth-of-type(2){z-index:2}
     /* the drawn pair overlaps 37 across. In the frame the upper card's
        caption is one short line that clears it; ours run two, so the upper
        card sits on top and keeps its own caption readable. Nothing of the
@@ -6418,7 +6506,7 @@
        facts rather than a paragraph. -->
   <section  data-surface="dark" class="me" id="abMe">
     <div class="abbar">
-      <span class="brand ab-brand">KRIS JENSSON</span>
+      <span class="brand ab-brand">KRIS<span class="mefull"> JENSSON</span></span>
       <nav class="abr">
         <a href="https://www.linkedin.com/in/krisjensson/" target="_blank" rel="noopener" class="ablink">Linkedin</a>
         <span class="sep">/</span>
@@ -6432,6 +6520,7 @@
       </nav>
     </div>
 
+    <div class="metxt">
     <h1 class="meh"><span class="txt">MY STORY</span></h1>
 
     <p class="melead"><b>I build products</b> where the ambition is high and the
@@ -6451,6 +6540,7 @@
       <i class="medv" aria-hidden="true"></i>
       <div class="mecell"><dt>NOW</dt><dd>Venmo</dd></div>
     </dl>
+    </div>
 
     <figure class="meport">
       <img src="media/story-me.png" alt="Kris Jensson"
@@ -6498,15 +6588,15 @@
           <h3 class="stsub">My approach</h3>
           <ol class="stacc">
         <li class="swrow">
-          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">01</p><h4 class="swt">Connect &amp; create</h4></span><span class="swic" aria-hidden="true"><svg viewBox="0 0 15 12" width="15" height="12" fill="none"><path d="M7.5 1v10M2.6 6.4 7.5 11.3l4.9-4.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          <div class="swhead" role="button" tabindex="0" aria-expanded="false"><span class="swlab"><p class="swn" aria-hidden="true">01</p><h4 class="swt">Connect &amp; create</h4></span><span class="swic" aria-hidden="true"></span></div>
           <div class="swbody"><div><p>I like to get close to the people, the problem, and the context as early as I can. The more I understand what matters, the easier it is to move with intention.</p></div></div>
         </li>
         <li class="swrow">
-          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">02</p><h4 class="swt">Explore &amp; refine</h4></span><span class="swic" aria-hidden="true"><svg viewBox="0 0 15 12" width="15" height="12" fill="none"><path d="M7.5 1v10M2.6 6.4 7.5 11.3l4.9-4.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          <div class="swhead" role="button" tabindex="0" aria-expanded="false"><span class="swlab"><p class="swn" aria-hidden="true">02</p><h4 class="swt">Explore &amp; refine</h4></span><span class="swic" aria-hidden="true"></span></div>
           <div class="swbody"><div><p>Starting early creates room to try directions, challenge assumptions, and push the details until the experience feels considered and complete.</p></div></div>
         </li>
         <li class="swrow">
-          <div class="swhead"><span class="swlab"><p class="swn" aria-hidden="true">03</p><h4 class="swt">Learn &amp; evolve</h4></span><span class="swic" aria-hidden="true"><svg viewBox="0 0 15 12" width="15" height="12" fill="none"><path d="M7.5 1v10M2.6 6.4 7.5 11.3l4.9-4.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          <div class="swhead" role="button" tabindex="0" aria-expanded="false"><span class="swlab"><p class="swn" aria-hidden="true">03</p><h4 class="swt">Learn &amp; evolve</h4></span><span class="swic" aria-hidden="true"></span></div>
           <div class="swbody"><div><p>Ship it. See how the work performs in the real world, and use what you learn to keep making it better.</p></div></div>
         </li>
           </ol>
@@ -6554,16 +6644,16 @@
             <h3>Trading Iceland for Silicon Valley</h3>
             <p>I grew up in Iceland, splitting most of my time between school and a soccer field. In 2017, I moved to San Francisco to study interaction design and keep playing the game I’d grown up with.</p>
           </div>
-            <figure class="jpol p1 jstill" data-cy="85" style="--ox:59.440;--oy:7.522;--w:15.02;--h:1.17807;--cf:0.070684;--r:-9.80deg;--by:7.40s;--bx:10.30s;--dy:-2.10s;--dx:-4.60s;--fy:-11.5px;--fx:6.2px">
+            <figure class="jpol p1 jstill" data-cy="85" style="--rm:-8.51deg;--mxm:12.113%;--mtm:64px;--ox:59.440;--oy:7.522;--w:15.02;--h:1.17807;--cf:0.070684;--r:-9.80deg;--by:7.40s;--bx:10.30s;--dy:-2.10s;--dx:-4.60s;--fy:-11.5px;--fx:6.2px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-iceland.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
               <figcaption>Me and my partner staying cool back home in Iceland</figcaption>
             </span>
           </figure>
-          <figure class="jpol p2 jstill" data-cy="115" style="--ox:74.393;--oy:10.155;--w:15.02;--h:1.17807;--cf:0.070684;--r:10.46deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
+          <figure class="jpol p2 jstill" data-cy="115" style="--rm:4.02deg;--mxm:48.657%;--pdm:43px;--ox:74.393;--oy:10.155;--w:15.02;--h:1.17807;--cf:0.070684;--r:10.46deg;--by:8.60s;--bx:9.40s;--dy:-5.30s;--dx:-1.70s;--fy:9.8px;--fx:-5.4px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-marlowe.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-              <figcaption>Me and my pup Marlowe battling the hills of SF</figcaption>
+              <figcaption>Our pup Marlowe, battling the hills of San Francisco</figcaption>
             </span>
           </figure>
       </li>
@@ -6573,13 +6663,13 @@
             <h3>Soccer &amp; design, what a combo</h3>
             <p>Four years at Academy of Art meant design classes by day and goalkeeper gloves by night. I played for the university team for four year, captained for two, and made some of my best mates while doing it.</p>
           </div>
-            <figure class="jpol p3" data-cy="627" style="--ox:-4.030;--oy:32.355;--w:15.02;--h:1.17807;--cf:0.070684;--r:-7.01deg;--by:6.80s;--bx:10.90s;--dy:-3.40s;--dx:-6.20s;--fy:-12.4px;--fx:4.8px">
+            <figure class="jpol p3" data-cy="627" style="--rm:8.76deg;--mxm:1.456%;--mtm:77px;--ox:-4.030;--oy:32.355;--w:15.02;--h:1.17807;--cf:0.070684;--r:-7.01deg;--by:6.80s;--bx:10.90s;--dy:-3.40s;--dx:-6.20s;--fy:-12.4px;--fx:4.8px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-school.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-              <figcaption>Late nighters at school</figcaption>
+              <figcaption>Late nighters at school, most likely trying to figure out AE</figcaption>
             </span>
           </figure>
-          <figure class="jpol p4" data-cy="649" style="--ox:11.998;--oy:34.329;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
+          <figure class="jpol p4" data-cy="649" style="--rm:-7.46deg;--mxm:56.995%;--pdm:0px;--ox:11.998;--oy:34.329;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:9.30s;--bx:8.20s;--dy:-6.90s;--dx:-2.40s;--fy:10.6px;--fx:-6.7px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-mls.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
               <figcaption>Had the chance to train with an MLS team on the way</figcaption>
@@ -6599,10 +6689,10 @@
             <h3>The first real real gig</h3>
             <p>At YML, I went from internships and student projects to real products, real clients and real constraints. Biggest growth of my career, and where I really learned what great culture stood for.</p>
           </div>
-            <figure class="jpol p6" data-cy="954" style="--ox:12.440;--oy:27.869;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:10.20s;--bx:8.80s;--dy:-4.10s;--dx:-3.30s;--fy:12.0px;--fx:-7.3px">
+            <figure class="jpol p6" data-cy="954" style="--rm:8.76deg;--mxm:33.211%;--mtm:71px;--ox:12.440;--oy:27.869;--w:15.02;--h:1.17807;--cf:0.070684;--r:9.74deg;--by:10.20s;--bx:8.80s;--dy:-4.10s;--dx:-3.30s;--fy:12.0px;--fx:-7.3px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-yml.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-              <figcaption>First day at YML, mask on</figcaption>
+              <figcaption>First day at YML</figcaption>
             </span>
           </figure>
       </li>
@@ -6612,20 +6702,26 @@
             <h3>Design at full speed</h3>
             <p>Code and Theory threw me into ambitious work across brands, products and industries. JBL, NFL, Volvo, Lucid and plenty more taught me how to move fast without letting the craft disappear.</p>
           </div>
-            <figure class="jpol p5" data-cy="923" style="--ox:-13.221;--oy:10.240;--w:15.40;--h:1.14943;--cf:0.055901;--r:-5.40deg;--by:7.90s;--bx:11.60s;--dy:-1.20s;--dx:-7.80s;--fy:-13.1px;--fx:5.9px">
+            <figure class="jpol p5 jpd" data-cy="923" style="--ox:-13.221;--oy:10.240;--w:15.40;--h:1.14943;--cf:0.055901;--r:-5.40deg;--by:7.90s;--bx:11.60s;--dy:-1.20s;--dx:-7.80s;--fy:-13.1px;--fx:5.9px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-jbl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
-              <figcaption>Shopping a speaker post JBL presentation in Soho</figcaption>
+              <figcaption>Speaker shopping post JBLs last workshop session</figcaption>
             </span>
           </figure>
       </li>
         <li class="jstop js6" data-side="l" data-kind="a">
           <span class="jpill">2025</span>
           <div class="jbody">
-            <h3>Saying bye to agency life... for now</h3>
+            <h3>Bye bye to agency life... for now</h3>
             <p>After years of jumping between clients, industries and problems, I wanted to go deeper. One product, one team, and the chance to live with the decisions long after launch.</p>
           </div>
-            <figure class="jpol p7" data-cy="1210" style="--ox:54.262;--oy:7.665;--w:15.40;--h:1.14414;--cf:0.055901;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
+            <figure class="jpol p5m jpm" data-cy="923" style="--mxm:1.456%;--mtm:71px;--ox:-13.221;--oy:10.240;--w:15.40;--h:1.14943;--cf:0.055901;--r:8.76deg;--by:7.90s;--bx:11.60s;--dy:-1.20s;--dx:-7.80s;--fy:-13.1px;--fx:5.9px">
+            <span class="jpolf">
+              <span class="jpolm"><img src="media/story-jbl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
+              <figcaption>Speaker shopping post JBLs last workshop session</figcaption>
+            </span>
+          </figure>
+            <figure class="jpol p7" data-cy="1210" style="--rm:-7.46deg;--mxm:56.995%;--pdm:0px;--ox:54.262;--oy:7.665;--w:15.40;--h:1.14414;--cf:0.055901;--r:6.25deg;--by:7.10s;--bx:10.10s;--dy:-5.80s;--dx:-8.40s;--fy:-10.9px;--fx:6.6px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-nfl.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
               <figcaption>On site at the NFL, still a fan first</figcaption>
@@ -6638,7 +6734,7 @@
             <h3>Reimagining an app that I love</h3>
             <p>Today I’m helping rethink Venmo, an app I’d already loved and used for years. I still play and coach soccer on the side, and spend the rest of my time in San Francisco with my Aussie girlfriend and our little pup Marlowe aka Goose aka Chubby aka no barking, who is unquestionably in charge.</p>
           </div>
-            <figure class="jpol p8" data-cy="1607" style="--ox:-2.465;--oy:18.905;--w:15.40;--h:1.14414;--cf:0.055901;--r:8.76deg;--by:9.80s;--bx:9.20s;--dy:-2.60s;--dx:-5.10s;--fy:13.4px;--fx:-5.1px">
+            <figure class="jpol p8" data-cy="1607" style="--mxm:31.768%;--mtm:57px;--ox:-2.465;--oy:18.905;--w:15.40;--h:1.14414;--cf:0.055901;--r:8.76deg;--by:9.80s;--bx:9.20s;--dy:-2.60s;--dx:-5.10s;--fy:13.4px;--fx:-5.1px">
             <span class="jpolf">
               <span class="jpolm"><img src="media/story-venmo.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>
               <figcaption>Using the app I now get to help design</figcaption>
@@ -12273,6 +12369,26 @@
       chrome colour, and it is now #101010 rather than #000.
 
    Nothing here runs at scroll. There is nothing left to run. */
+</script>
+<script>
+/* My approach — the accordion. A pointer opens on hover through CSS alone;
+   a tap toggles the row, which is what turns the plus into a minus on the
+   phone. Both write the same .open class, so the icon has one state. */
+(function(){
+  var heads=document.querySelectorAll('.stacc .swhead');
+  if(!heads.length) return;
+  function toggle(h){
+    var row=h.closest('.swrow');
+    var open=row.classList.toggle('open');
+    h.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  heads.forEach(function(h){
+    h.addEventListener('click', function(){ toggle(h); });
+    h.addEventListener('keydown', function(e){
+      if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(h); }
+    });
+  });
+})();
 </script>
 </body>
 </html>
