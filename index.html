@@ -1651,7 +1651,13 @@
      padding-bottom opens room under the baseline and the negative margin gives
      the space straight back, so nothing in the row moves. */
   a,.mlab{color:inherit;text-decoration:none}
-  a:not(.nolnk),.mlab{position:relative;
+  /* A BUTTON IS NOT A LINK. The sweep is for text links; a pill that carries
+     its own fill and its own radius gets nothing. It was also costing them
+     5px of padding-bottom, which pushed their label off the pill's centre —
+     dropping the band gives that back. Anything with role="button" is covered
+     without having to be named. */
+  a:not(.nolnk):not(.tfic):not(.nvic):not(.cslive):not(.pgbtn):not([role="button"]),
+  .mlab{position:relative;
        padding-bottom:5px;margin-bottom:-5px;
        background-image:linear-gradient(currentColor,currentColor);
        background-repeat:no-repeat;
@@ -1659,10 +1665,12 @@
        background-size:0% 1.4px;
        transition:color .3s ease,
                   background-size .62s cubic-bezier(.22,1,.3,1)}
-  a:not(.nolnk):hover,.mlab:hover{background-position:left bottom;
+  a:not(.nolnk):not(.tfic):not(.nvic):not(.cslive):not(.pgbtn):not([role="button"]):hover,
+  .mlab:hover{background-position:left bottom;
        background-size:100% 1.4px}
   @media (prefers-reduced-motion:reduce){
-    a:not(.nolnk),.mlab{transition:color .3s ease} }
+    a:not(.nolnk):not(.tfic):not(.nvic):not(.cslive):not(.pgbtn):not([role="button"]),
+    .mlab{transition:color .3s ease} }
 
   /* ── About / Second section — 127:4279 ───────────────────────────────
      Redrawn. Two columns on the 1440 frame: the title holds the left at 618,
@@ -5802,8 +5810,8 @@
           <p class="cbody">A decade of shipping had left the app carrying every decision it ever made. I led the design work that rebuilt it as one system, and the staged rollout that put it in front of millions without breaking the habit they already had.</p>
         </div>
         <div class="kpi">
-          <span class="fig"><i>+</i><b>320</b><i>%</i></span>
-          <span class="cap">Increase in P2P transactions</span>
+          <span class="fig"><i>+</i><b>XXX</b><i>%</i></span>
+          <span class="cap">Impact to come</span>
         </div>
         <div class="cta" data-code="VENMO">
           <div class="card-cta" role="button" tabindex="0" aria-expanded="false">
@@ -5938,8 +5946,8 @@
             <p>System / Web. Turning 40+ scattered sites into one global voice</p>
           </div>
           <div class="gstat">
-            <span class="fig"><i>+</i><b>991</b><i>%</i></span>
-            <span class="cap">Jump-in referrals</span>
+            <span class="fig"><i>+</i><b>108</b><i>%</i></span>
+            <span class="cap">Page views post-launch</span>
           </div>
             <button class="gcta" type="button">Read more</button>
         </div>
@@ -5960,7 +5968,7 @@
             <p>System / Web / Brand Transforming ETS into a global leader in education</p>
           </div>
           <div class="gstat">
-            <span class="fig"><i>+</i><b>991</b><i>%</i></span>
+            <span class="fig"><i>+</i><b>888</b><i>%</i></span>
             <span class="cap">User growth with ETS Solutions</span>
           </div>
             <button class="gcta" type="button">Read more</button>
