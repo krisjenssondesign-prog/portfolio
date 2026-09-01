@@ -1658,14 +1658,22 @@
                    320px);
       /* Surface Dark, 513:24080. --w-sur is already #101010 in the tokens -
          this was painting raw #000 and ignoring it. */
-      position:relative;min-height:100svh;background:var(--w-sur);color:var(--c-1);
+      /* one screen: the Craft page carries the hero alone for now, so the
+         section IS the page. min-height rather than height, so a window too
+         short for the composition can still scroll instead of clipping it. */
+      position:relative;min-height:100svh;
+      background:var(--w-sur);color:var(--c-1);
       display:flex;flex-direction:column;justify-content:center;
       /* the group is centred in the band the bar and the nav leave it, not in
          the window — that is what keeps the air even top and bottom */
       /* 81 top and bottom - the band at the foot is 80 plus its own hairline,
          and matching it above centres the group at 450 on a 900 window, which
          is exactly where 513:35367 is drawn. It still clears the 76 nav. */
-      padding:76px var(--m) 62px;
+      /* 62 for the band, 39 for the LOVE FOR chip that stands over it, and 24
+         of air under the copy. The chip and the band are both out of flow, so
+         the group has to be told they are there or it centres straight through
+         them on a short window. */
+      padding:100px var(--m) 125px;
       box-sizing:border-box}
   /* 513:35252 / 513:35368 - the wordmark's cap sits on 39 and the links' box
      on 38, so the row hangs from its top rather than centring a 22 */
@@ -1748,7 +1756,7 @@
      face needing a correction. The margin carries only the DIFFERENCE, since
      letter-spacing has already paid the -2%. */
   .kf{margin-right:var(--k-ft, -.06em)}   /* F|T  -8% total */
-  .ke{margin-right:var(--k-et, -.03em)}   /* E|T  -5% total */
+  .ke{margin-right:var(--k-et, -.04em)}   /* E|T  -6% total — a point past the drawn -5%, which is where the two top arms actually meet in the fallback face */
   .abpul{display:flex;align-items:flex-end;gap:calc(var(--abhl) * var(--ab-pgap))}
   /* 140 on a 140 headline - the circle is exactly one type size now */
   /* The portrait is a flap card like every letter beside it: a blank disc on
@@ -2843,13 +2851,48 @@
       0%   { transform:scale(1)    }
       8%   { transform:scale(1.28) }
      16%   { transform:scale(1)    }
-     24%   { transform:scale(1.16) }
+     24%   { transform:scale(1.20) }
      32%   { transform:scale(1)    }
     100%   { transform:scale(1)    }
   }
   .abdot{animation:abPulse 2.4s cubic-bezier(.4,0,.2,1) infinite}
+
+  /* ── the bleed ───────────────────────────────────────────────────────
+     The beat does not stop at the full stop. A second copy of the E is laid
+     exactly over the first, painted with a radial gradient and clipped to the
+     GLYPH rather than to a box, so the only thing that can take colour is ink
+     that is already there — the letter is never covered, its right arms just
+     catch the wash as it passes.
+
+     The circle is centred on the dot, not on the letter: 100% is the E's own
+     right edge, and from there it is the gap plus the dot's radius across, and
+     the dot's radius up off the baseline. The radius is what animates, on the
+     same two beats and the same 2.4s, so the wash arrives with the scale-up
+     and is gone before the next one. Registered with @property or a length
+     cannot interpolate; where that is unsupported it simply rests at 0 and
+     the E stays white. */
+  @property --peR{syntax:'<length>';inherits:false;initial-value:0px}
+  .pe{position:relative;display:inline-block}
+  .pe::after{content:'E';position:absolute;left:0;top:0;width:100%;height:100%;
+        pointer-events:none;color:transparent;
+        -webkit-background-clip:text;background-clip:text;
+        background-repeat:no-repeat;
+        background-image:radial-gradient(circle at
+              calc(100% + (var(--ab-pgap) + var(--ab-dot) / 2 + .02) * 1em)
+              calc(.971em - var(--ab-dot) * .5em),
+              var(--pulse) 0 var(--peR), transparent var(--peR))}
+  @keyframes abBleed{
+      0%   { --peR:0px }
+      8%   { --peR:calc(var(--abhl) * var(--ab-dot) * 1.85) }
+     16%   { --peR:0px }
+     24%   { --peR:calc(var(--abhl) * var(--ab-dot) * 1.56) }
+     32%   { --peR:0px }
+    100%   { --peR:0px }
+  }
+  .pe::after{animation:abBleed 2.4s cubic-bezier(.4,0,.2,1) infinite}
   @media (prefers-reduced-motion:reduce){
     .abdot{animation:none}
+    .pe::after{animation:none;--peR:0px}
     .ab .abbar,.ab .abfoot{opacity:1;animation:none}
   }
 
@@ -6897,7 +6940,7 @@
       <div class="abbot">
         <span class="abline abword abwide"><span class="txt"><span class="kt">T</span>HE</span></span>
         <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span></span>
-        <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span>E</span></span><i class="abdot" aria-hidden="true"></i></span>
+        <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span><span class="pe">E</span></span></span><i class="abdot" aria-hidden="true"></i></span>
       </div>
     </div>
 
@@ -6914,7 +6957,9 @@
     </div>
   </section>
 
-  <section  data-surface="dark" class="gw">
+  <!-- parked until the Craft page has a body of its own. Nothing is thrown
+       away: data-parked is display:none, the device the Kudos section uses. -->
+  <section  data-surface="dark" class="gw" data-parked>
     <div class="gwtop">
       <span class="brand u"><span class="txt">Kris Jensson</span></span>
       <nav class="gwlinks">
@@ -7016,7 +7061,7 @@
         </div>
     </div>
   </section>
-  <footer class="tfoot tfend" data-tfoot data-surface="dark"></footer>
+  <footer class="tfoot tfend" data-tfoot data-surface="dark" data-parked></footer>
 </main>
 
 <!-- ── navigation — 226:7888 ────────────────────────────────────────────
@@ -8702,8 +8747,12 @@
       /* the block is 1.8144 units tall - a .7287 cap, a .0857 gap and a
          portrait that is a full unit - and the section's own padding is 81
          top and bottom rather than 87 and 80. */
+      /* 100 of nav clearance, 125 of band and chip, 48 between the head and the
+         copy, and the copy's own height. What is left is the head's, and the
+         head is 1.6871 of its own cap: a cap row, the .075662 gap and a bottom
+         row that stands as tall as the portrait at .882724. */
       ab.style.setProperty('--abcap',
-        Math.max(56,(innerHeight-304-fh)/1.814414).toFixed(2)+'px');
+        Math.max(56,(innerHeight-273-fh)/1.6871).toFixed(2)+'px');
     }
     addEventListener('resize',abFit);
     (document.fonts?document.fonts.ready:Promise.resolve()).then(abFit);
@@ -8766,6 +8815,10 @@
         if(typeof window.__jnReset==='function') window.__jnReset();
         requestAnimationFrame(()=>playLanding(to)); }
       else if(name==='resume'||name==='jbl'||name==='volvo'||name==='nfl'||name==='ets'){
+        /* the pulse hero moved to the Craft page, and Craft is this route — it
+           was still being fitted only when About was opened, so the head never
+           shrank on a short window and the copy ran into the band */
+        if(name==='resume') abFit();
         if(typeof window.__rzFit==='function') window.__rzFit();
         if(typeof window.__gwBuild==='function') window.__gwBuild();
         if(typeof window.__stgKick==='function') requestAnimationFrame(window.__stgKick);
@@ -10738,22 +10791,43 @@
     /* Each visual line into its own clipped box. Re-run on a width change
        because that is when the breaks move; the raw text is kept on the node
        so the split is always taken from the original, never from a split. */
-    let splitW=0;
+    let splitW=0, splitM=0;
     /* `force` exists for the FONT. The guard below is a width guard, and the
        width does not change when a webfont lands — the WRAPPING does. So the
        split stayed frozen at whatever the fallback face broke the lines at,
        which ran the 2019 paragraph to eight lines against the drawn six and
        pushed its tail down into the polaroid below it. Re-split when the
        fonts resolve, not only when the board resizes. */
+    /* THE MEASURE, not the board. The split is decided by where each word
+       lands, and the guard used to watch the BOARD's width — so a pass taken
+       while a stop had not been given its own width yet was committed and
+       never revisited, because the board's width had not changed. It watches
+       the first paragraph's own measure now, and it refuses to commit a pass
+       that came out one word per line: that only happens when the box was
+       measured at nothing, and the answer is to try again on the next frame,
+       not to leave the copy standing in a column. */
+    let splitTries=0;
+    function measure(){
+      const el=wrap.querySelector('.jbody p');
+      return el ? Math.round(el.getBoundingClientRect().width) : 0;
+    }
     function split(force){
-      const w=wrap.getBoundingClientRect().width;
-      if(!w || (!force && Math.abs(w-splitW)<1)) return;
-      splitW=w;
+      const w=wrap.getBoundingClientRect().width, m=measure();
+      if(!w || (!force && Math.abs(w-splitW)<1 && m===splitM)) return;
+      splitW=w; splitM=m;
+      let bad=false;
       wrap.querySelectorAll('.jstop').forEach(stop=>{
         /* 1, not 0 — the year pill takes 0 and leads the copy in */
         let n=1;
         stop.querySelectorAll('.jbody h3, .jbody p').forEach(el=>{
           if(!el.dataset.raw) el.dataset.raw=el.textContent;
+          /* PUT THE BOX BACK FIRST. The last pass left this element as a
+             column flex container, and the whole method depends on measuring
+             where each word lands in normal flow — inside a column every word
+             IS its own row, so every re-split after the first one came out
+             one word per line and stayed that way. A resize, a late webfont
+             or a second visit to the page was enough to trigger it. */
+          el.style.display=''; el.style.flexDirection='';
           const words=el.dataset.raw.trim().split(/\s+/);
           el.textContent='';
           const sp=words.map((t,i)=>{
@@ -10767,6 +10841,9 @@
             if(top===null||Math.abs(t-top)>2){ rows.push([]); top=t; }
             rows[rows.length-1].push(x);
           });
+          /* one word per row on anything longer than a caption is not a line
+             break, it is a box that was zero wide when it was read */
+          if(words.length>3 && rows.length===words.length) bad=true;
           el.textContent='';
           const cs=getComputedStyle(el);
           /* VENTED BOTH SIDES, and on every line - not just the trimmed ones.
@@ -10805,6 +10882,13 @@
           });
         });
       });
+      /* a bad pass is not kept: the guard is cleared so the next attempt is
+         allowed through, and it is retried on the next frame. Bounded, because
+         a paragraph that genuinely IS one word wide would otherwise spin. */
+      if(bad && splitTries<12){
+        splitTries++; splitW=0; splitM=-1;
+        requestAnimationFrame(()=>split(true));
+      } else if(!bad){ splitTries=0; }
     }
 
     const READ=.62;
@@ -10886,7 +10970,10 @@
        is already fully told is not what you want to arrive at — so the route
        clears the high-water mark and the run starts over. */
     window.__jnReset=function(){
-      drawnMax=0;
+      drawnMax=0; splitTries=0;
+      /* the page was hidden a moment ago, so the measure it was split against
+         may never have existed — take it again now that it is on screen */
+      splitW=0; splitM=-1; split(true);
       wrap.querySelectorAll('.jstop.lit,.jpol.lit').forEach(el=>{
         el.classList.remove('lit');
         el.querySelectorAll?.('.jln').forEach(m=>m.style.overflow='');
