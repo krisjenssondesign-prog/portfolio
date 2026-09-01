@@ -1654,7 +1654,7 @@
       --ab-av:.882724;     /* 140           — the face              */
       --ab-dot:.252207;    /*  40           — the full stop         */
       --abhl:clamp(40px,
-                   min(11.0139vw, calc((100vw - 80px) / 6.72), var(--abcap)),
+                   min(11.0139vw, calc((100vw - var(--m) * 2) / 6.72), var(--abcap)),
                    320px);
       /* Surface Dark, 513:24080. --w-sur is already #101010 in the tokens -
          this was painting raw #000 and ignoring it. */
@@ -1673,7 +1673,7 @@
          of air under the copy. The chip and the band are both out of flow, so
          the group has to be told they are there or it centres straight through
          them on a short window. */
-      padding:100px var(--m) 125px;
+      padding:100px var(--m) calc(125px + var(--abclear, 0px));
       box-sizing:border-box}
   /* 513:35252 / 513:35368 - the wordmark's cap sits on 39 and the links' box
      on 38, so the row hangs from its top rather than centring a 22 */
@@ -1778,7 +1778,7 @@
   .abdot{flex:none;display:block;
          width:calc(var(--abhl) * var(--ab-dot));
          height:calc(var(--abhl) * var(--ab-dot));
-         border-radius:999px;background:var(--pulse);
+         border-radius:999px;background:var(--beat, var(--pulse));
          will-change:transform,opacity}
 
   /* ── the foot — copy left, a 2x2 of facts right ─────────────────── */
@@ -1840,7 +1840,7 @@
            line-height:1.45;letter-spacing:0;color:#9F9F9F;white-space:nowrap}
   /* 8 on the beat now, not a white disc that changed size down the row */
   .abtrack .abdisc{flex:none;display:block;width:8px;height:8px;
-           border-radius:999px;background:var(--pulse)}
+           border-radius:999px;background:var(--beat, var(--pulse))}
   .abtrack .ablabel{flex:none;display:block;
            text-box:trim-both cap alphabetic;
            text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -1855,7 +1855,13 @@
         --ab-pgap:.058824;   /*  4       — PULSE to the stop  */
         --ab-av:.941176;     /* 64       — the face           */
         --ab-dot:.294118;    /* 20       — the full stop      */
-        --abhl:clamp(32px, min(17.3028vw, calc((100vw - 80px) / 4.87)), 120px)}
+        /* --abcap belongs in here too: without it the phone's head could not
+           shrink on a short screen and the page stopped being one screen. And
+           the measure is the gutter the phone actually uses, not a copy of the
+           desktop's 80. */
+        --abhl:clamp(32px, min(17.3028vw,
+                               calc((100vw - var(--m) * 2) / 4.87),
+                               var(--abcap)), 120px)}
     /* 720:52823 pulls the F to -4% here, not the wide window's -8% */
     .ab{--k-ft:-.02em}
     .abr1 .abwide{display:none}
@@ -1863,9 +1869,16 @@
           gap:calc(var(--abhl) * var(--ab-gap) * 2)}
     .abbot .abwide{display:none}
     .abcopy{flex:0 1 100%;max-width:none;font-size:18px}
-    .abstrip{height:64px;padding:25px 0}
+    /* The bar floats over the foot of the phone, and the loop was running
+       underneath it. Cleared by the bar itself rather than by a number — its
+       own bottom offset, its pill, and the 24 the Home hero uses — so when
+       the bar shrinks on a narrower phone the loop follows it down. */
+    .ab{--abclear:calc(var(--nav-bottom) + var(--seg-h) + 2 * var(--nav-pad)
+                       + max(env(safe-area-inset-bottom, 0px),
+                             var(--safe-b) - var(--nav-ui-trim)) + 24px)}
+    .abstrip{height:64px;padding:25px 0;bottom:var(--abclear)}
     .abtrack{gap:16px}
-    .abrules{bottom:64px}
+    .abrules{bottom:calc(var(--abclear) + 64px)}
   }
 
   /* every straight rule on the site, painted rather than bordered */
@@ -2857,6 +2870,34 @@
   }
   .abdot{animation:abPulse 2.4s cubic-bezier(.4,0,.2,1) infinite}
 
+  /* ── the turn ────────────────────────────────────────────────────────
+     The beat turns colour ON the second bounce's way UP — it starts moving
+     when the scale starts moving, at 16% of the 2.4s cycle, and has arrived
+     by the time the dot is at the top of the bounce at 24%. That is 192ms of
+     travel, so the colour reads as a change rather than a cut, and it holds
+     flat for the rest of the cycle and all of the next.
+
+     Three cycles make the loop, so the animation is 7.2s: the rises fall at
+     5.3333→8%, 38.6666→41.3333% and 72→74.6667%. Each colour is written
+     TWICE, once at the top of its rise and once at the foot of the next, so
+     a registered <color> — which interpolates — holds between them instead
+     of crossfading through mud for two seconds.
+
+     Same easing as the scale, so the colour rides the bounce rather than
+     running its own curve underneath it.
+
+     One declaration on the section, inherited: the full stop, the nine discs
+     in the loop and the wash on the E all read the same token, so they turn
+     together. */
+  @property --beat{syntax:'<color>';inherits:true;initial-value:#3CDBCB}
+  @keyframes abBeatTurn{
+      0%,5.3333%         { --beat:#3CDBCB }
+      8%,38.6666%        { --beat:#DB3CB1 }
+     41.3333%,71.9999%   { --beat:#ABFA01 }
+     74.6667%,100%       { --beat:#3CDBCB }
+  }
+  .ab{animation:abBeatTurn 7.2s cubic-bezier(.4,0,.2,1) infinite}
+
   /* ── the bleed ───────────────────────────────────────────────────────
      The beat does not stop at the full stop. A second copy of the E is laid
      exactly over the first, painted with a radial gradient and clipped to the
@@ -2880,7 +2921,7 @@
         background-image:radial-gradient(circle at
               calc(100% + (var(--ab-pgap) + var(--ab-dot) / 2 + .02) * 1em)
               calc(.971em - var(--ab-dot) * .5em),
-              var(--pulse) 0 var(--peR), transparent var(--peR))}
+              var(--beat, var(--pulse)) 0 var(--peR), transparent var(--peR))}
   @keyframes abBleed{
       0%   { --peR:0px }
       8%   { --peR:calc(var(--abhl) * var(--ab-dot) * 1.85) }
@@ -2892,6 +2933,7 @@
   .pe::after{animation:abBleed 2.4s cubic-bezier(.4,0,.2,1) infinite}
   @media (prefers-reduced-motion:reduce){
     .abdot{animation:none}
+    .ab{animation:none}
     .pe::after{animation:none;--peR:0px}
     .ab .abbar,.ab .abfoot{opacity:1;animation:none}
   }
@@ -3057,6 +3099,10 @@
   /* #101010, not #000. This is the one fixed element with an opaque
      background-color standing at first render, so it is the colour
      Safari 26 samples for its own toolbar and keeps for the visit. */
+  .chromepad{position:fixed;left:0;right:0;height:1px;z-index:-1;
+             pointer-events:none;background-color:var(--w-sur)}
+  .chromepad.top{top:0}
+  .chromepad.bot{bottom:0}
   .loader{position:fixed;inset:0;z-index:100;background:#101010;
           will-change:transform}
   /* visibility, not just the transform. This is a full-screen fixed box with
@@ -3064,9 +3110,15 @@
      above the fold for the rest of the visit, where Safari 26 still counts it
      when it decides whether to drop a solid block behind its own toolbar. The
      flip is delayed by the whole slide, so the exit is untouched. */
-  .loader.out{transform:translateY(-100%);visibility:hidden;
-              transition:transform .62s cubic-bezier(.76,0,.16,1),
-                         visibility 0s linear .62s}
+  /* It slides off and then STANDS THERE, off screen, painted, for the rest of
+     the visit. It is the one fixed element on the page carrying an opaque
+     background-color, which on Safari 26 is what the browser samples to tint
+     its own bars — so it has to still be there, and still be painted, or the
+     tint falls through to the body and the body is Paper. visibility:hidden
+     used to be set here, from the round where the ask was NO band; the ask is
+     a dark band now, so it is painted and made inert instead. */
+  .loader.out{transform:translateY(-100%);pointer-events:none;
+              transition:transform .62s cubic-bezier(.76,0,.16,1)}
   /* Set exactly as the KRIS logo is: the display face at 800, -.04em, 22/22,
      uppercase. Same values, not similar ones. */
   .lmark{position:absolute;left:50%;top:50%;translate:-50% -50%;
@@ -6254,6 +6306,17 @@
     .pgrow.no{animation:none}
   }
 
+  /* ── the phone's frame margin ────────────────────────────────────────
+     Every mobile frame in the file sits its content on 20, not 40: the Home
+     hero, Home / Work, Story / Mobile and Craft / Mobile all start at x20 in
+     a 393 board. Only the Home hero had been given it, so every other page
+     was carrying the desktop 40 onto a 393 screen and the copy read as an
+     island. Stated once, last, so it lands on everything the token feeds.
+     The desktop keeps its 40. */
+  @media (max-width:1080px){
+    :root{--m:20px}
+  }
+
 </style>
 </head>
 <body>
@@ -6261,6 +6324,16 @@
 <div class="cur" id="cur" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24"/><text x="24" y="24" text-anchor="middle" dominant-baseline="central">Read more</text></svg></div>
 
 
+<!-- Two hairlines pinned to the physical top and bottom edges, painted in
+     Surface Dark. They exist for one reader: Safari 26, which tints its own
+     bars from a fixed element's background-color. The loader is the primary
+     sampler and it now stays for the visit, but it ends up off screen, and
+     an off-screen element being sampled is the one part of the mechanism I
+     could not verify — these two are on the edge, which is the arrangement
+     that IS known to be sampled. z-index -1 keeps them under every section,
+     so nothing shows them. -->
+<div class="chromepad top" aria-hidden="true"></div>
+<div class="chromepad bot" aria-hidden="true"></div>
 <div class="loader" id="loader">
   <p class="lmark" id="lmark">Kris Jensson Design Portfolio</p>
 </div>
@@ -8747,12 +8820,16 @@
       /* the block is 1.8144 units tall - a .7287 cap, a .0857 gap and a
          portrait that is a full unit - and the section's own padding is 81
          top and bottom rather than 87 and 80. */
-      /* 100 of nav clearance, 125 of band and chip, 48 between the head and the
-         copy, and the copy's own height. What is left is the head's, and the
-         head is 1.6871 of its own cap: a cap row, the .075662 gap and a bottom
-         row that stands as tall as the portrait at .882724. */
+      /* The section already states what it is holding back for the nav, the
+         band and the chip — read it rather than keeping a second copy here
+         that drifts the moment the padding changes. What is left after the
+         padding, the 48 under the head and the copy itself is the head's, and
+         the head is 1.6871 of its own cap: a cap row, the .075662 gap, and a
+         bottom row that stands as tall as the portrait at .882724. */
+      const cs=getComputedStyle(ab);
+      const pad=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
       ab.style.setProperty('--abcap',
-        Math.max(56,(innerHeight-273-fh)/1.6871).toFixed(2)+'px');
+        Math.max(40,(innerHeight-pad-48-fh)/1.6871).toFixed(2)+'px');
     }
     addEventListener('resize',abFit);
     (document.fonts?document.fonts.ready:Promise.resolve()).then(abFit);
@@ -12443,7 +12520,9 @@
 
   function runLoader(){
     if(noMotion || !loader || !lmark){
-      loader&&loader.remove(); hero.classList.add('landing'); bootDone();
+      if(loader){ loader.classList.add('out');
+                  loader.setAttribute('aria-hidden','true'); loader.inert=true; }
+      hero.classList.add('landing'); bootDone();
       window.__navWake&&window.__navWake(); return;
     }
     scrollTo(0,0);
@@ -12483,7 +12562,11 @@
          one change it exists for and the bar fades in over .45s anyway. */
       void document.documentElement.offsetWidth;
       bootDone();
-      setTimeout(()=>{loader.remove(); window.__navWake&&window.__navWake();}, LOAD_LIFT+120);
+      /* PARKED, not removed — see .loader.out. Taking it out of the document
+         leaves nothing opaque and fixed for Safari to sample, and the chrome
+         falls back to the body, which is Paper. */
+      setTimeout(()=>{loader.setAttribute('aria-hidden','true'); loader.inert=true;
+                      window.__navWake&&window.__navWake();}, LOAD_LIFT+120);
     };
     setTimeout(finish, spread+LM_LET+LOAD_HOLD);
     /* hard stop. However the frames fall, the black is on its way out by the
