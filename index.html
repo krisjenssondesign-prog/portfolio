@@ -4183,6 +4183,20 @@
     .ln-in{transform:none;opacity:1;transition:none}
   }
 
+  /* THE RAIL RUNS ITS OWN NUMBERS. The three project cards used to arrive
+     twice over: the whole card riding in on a blur-and-fade wave scrubbed by
+     the wheel, and the copy rising 85% of a line out of a clipping box on top
+     of it. Two arrivals through a blur is the soft wash that read as a
+     gradient. The card is simply THERE now, and the only thing that moves is
+     the copy — title, line, impact — each on its own beat, 4px up.
+
+     4px does not need a clipping box, and a clip would shear the descenders
+     for the length of the move, so the rail's masks are opened up. The vent
+     they carry is harmless once nothing is being clipped. */
+  .rcard{--lr-dur:420ms;--lr-stg:60ms;--lr-rise:4px;--lr-block:60ms;
+         --lr-ease:cubic-bezier(.22,1,.36,1)}
+  .rcard .ln-mask{overflow:visible}
+
   /* ── the case-study button — 216:7402 ────────────────────────────────
      Sized outright, not stretched to the row. `align-self:stretch` with
      `aspect-ratio:1` looks like the tidy answer — the button would take its
@@ -12249,7 +12263,11 @@
       const statLines = stat ? wrapBlock(stat) : [];
       const cta=card.querySelector('.card-main > .cta, .gtext > .gcta');
       const ctaLines = cta ? [wrapSelf(cta)] : [];
-      const stg=num('--lr-stg'), blk=num('--lr-block');
+      /* read off the CARD, not off :root — the rail sets its own pace and a
+         value taken from the document would hand it the case studies' */
+      const cs=getComputedStyle(card);
+      const cnum=n=>parseFloat(cs.getPropertyValue(n))||0;
+      const stg=cnum('--lr-stg')||num('--lr-stg'), blk=cnum('--lr-block');
       const statD = seq.length*stg + blk;
       seq.forEach((el,i)=> el.style.setProperty('--d', (i*stg)+'ms'));
       statLines.forEach(el=> el.style.setProperty('--d', statD+'ms'));
@@ -12263,6 +12281,8 @@
          a screen below the fold. A rail card is half a window tall, so its
          own box is the anchor and the words start as the row arrives rather
          than a third of a screen later. */
+      /* A rail card is the anchor in its own right — the trigger is the
+         whole card being in view, so there is nothing smaller to watch. */
       card.__lrAnchor = card.classList.contains('rcard')
         ? card
         : (card.querySelector('.card-main h3, .gtext h3') || card);
@@ -12276,9 +12296,9 @@
        once the real face is in, keeping whatever has already fired. */
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{
       const on = CARDS.filter(c=>c.classList.contains('lr-go'));
-      CARDS.forEach(c=>io.unobserve(c.__lrAnchor));
+      CARDS.forEach(unwatch);
       buildAll();
-      CARDS.forEach(c=>io.observe(c.__lrAnchor));
+      CARDS.forEach(watch);
       requestAnimationFrame(()=>on.forEach(c=>c.classList.add('lr-go')));
     });
 
@@ -12298,14 +12318,39 @@
           CARDS.forEach(c=>{ if(c.classList.contains('rcard')) c.classList.add('lr-go'); });
       });
     },{rootMargin:'0px 0px -14% 0px', threshold:0});
-    CARDS.forEach(c=>io.observe(c.__lrAnchor));
+
+    /* THE RAIL WAITS FOR THE WHOLE CARD. Not a fraction of it crossing a line
+       — the card has to be all the way in, with 32px of air left under it, and
+       only then does its copy start. That is a ratio of 1 against a root
+       inset 32px at the bottom, which is exactly what rootMargin and a
+       threshold of 1 say. The fallback on the second line is for a window
+       shorter than the card: a ratio of 1 can never happen there, so filling
+       the visible height counts instead and the copy is not left in the dark
+       on a small screen. */
+    const ioFull=new IntersectionObserver(es=>{
+      es.forEach(e=>{
+        const full = e.intersectionRatio >= 0.99 ||
+              (e.rootBounds && e.intersectionRect.height >= e.rootBounds.height - 1);
+        if(!full) return;
+        /* The rail is a HORIZONTAL scroller. On a phone cards two and three
+           sit outside the window to the right, so an observer with the
+           viewport as its root never calls them intersecting and their copy
+           would stay in its mask for the whole visit. The row arrives as one
+           line, so whichever of them lands first lands all three. */
+        CARDS.forEach(c=>{ if(c.classList.contains('rcard')) c.classList.add('lr-go'); });
+      });
+    },{rootMargin:'0px 0px -32px 0px', threshold:[0,.5,.99,1]});
+
+    const watch = c => (c.classList.contains('rcard') ? ioFull : io).observe(c.__lrAnchor);
+    const unwatch = c => (c.classList.contains('rcard') ? ioFull : io).unobserve(c.__lrAnchor);
+    CARDS.forEach(watch);
 
     let t;
     addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=>{
       const on = CARDS.filter(c=>c.classList.contains('lr-go'));
-      CARDS.forEach(c=>io.unobserve(c.__lrAnchor));
+      CARDS.forEach(unwatch);
       buildAll();
-      CARDS.forEach(c=>io.observe(c.__lrAnchor));
+      CARDS.forEach(watch);
       requestAnimationFrame(()=>on.forEach(c=>c.classList.add('lr-go')));
     }, 220); }, {passive:true});
   })();
@@ -12442,40 +12487,18 @@
     addEventListener('scroll', onRailScroll, {passive:true});
     onRailScroll();
 
-    /* CARD WAVE. Identical parameters to the JBL bites — .90 -> .20 with a
-       .48 lag on a 30px lift — so the three studies arrive here the way the
-       three bites arrive there. The host is the TRACK, not the stage: the
-       stage is a full 100svh box, so a range hung on it would be most of the
-       way through before a card was on screen.
+    /* NO CARD WAVE ANY MORE. They used to ride in on a scrubbed
+         blur-and-fade wave — .95 to .60 of the track's own range, 30px and
+         a .05em blur — while the copy inside them rose out of its masks at
+         the same time. Two arrivals stacked on one another, and the blur is
+         what read as a gradient wash over the row.
 
-       lag rather than overlap, because what you see is the gap between
-       neighbours, not the share of the range each one gets. On a 30px travel
-       .48 puts them about 20px apart at the middle of the wave. */
-    if(!noMotion && window.__rv){
-      const rv=window.__rv;
-      /* the picture keeps the wave; the words have the line reveal, and
-         a card that fades in while its lines rise is two arrivals */
-      /* the WHOLE card rides, not the picture. Moving only the media meant a
-         30px translate slid it down over its own title, and the hover tilt —
-         which writes transform on the same element — clobbered the ride the
-         moment a pointer landed. The line reveal transforms .ln-in inside the
-         card, so the two never touch. */
-      const cards=[...railTrack.querySelectorAll('.rcard')];
-      cards.forEach(c=>c.classList.add('soft'));
-      /* no `once`. The rule was that objects latch and type does not, and
-         that held while this row arrived on its own clock and stayed put.
-         It is scrubbed by scroll now, so latching means the second pass down
-         has nothing in it — the cards are simply already standing. Reversing
-         is the honest behaviour for something driven by where you are. */
-      /* .95 → .60 on a .26 lag, not .90 → .20 on .48. The old range ran
-         until the track's top was a fifth of the way up the window, and the
-         third card in the wave finished later still — by which point the row
-         was already pinned and you had scrolled most of the way past it. The
-         row now stands while it is arriving, not after. */
-      rv.add({els:cards, host:railTrack, downOnly:true,
-              from:.95, to:.60, lag:.26, dy:30, ease:'soft'});
-      rv.tick();
-    }
+         The row is now simply standing when you reach it, and the arrival is
+         the copy alone: each card's title, line and impact figure, on their
+         own beat, once the whole card is in view with 32px under it. If the
+         pictures ever want a move of their own again it belongs on .gmedia's
+         inner <i> and not on .rcard — the hover tilt writes transform on
+         .gmedia itself and would clobber anything put there. */
 
     /* The four award cards take the LOGOBANK's wave, not the rail's — they are
        one line, so they arrive as one line. Same numbers the bank's first row
