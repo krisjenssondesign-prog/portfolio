@@ -55,6 +55,12 @@
        Text White 1 / Secondary Light / Surface Dark / Containers on Dark /
        Secondary Light on Container. Scoped to the work section only — the
        rest of the page still runs on --c-1..4. */
+    /* DARK SURFACE / TEXT LIGHT 1 and 2. Every piece of copy standing on the
+       dark ground reads one of these two and nothing else. It had drifted to
+       five greys — #9CA1A4 on the Story lead and the fact labels, #71747B
+       (which is the LIGHT surface's secondary) on the journey stops, #A9A9A9
+       on the award captions, #808080 on one eyebrow — so a title and the
+       subtext under it could disagree from page to page. */
     --w-1:#F8F8F8; --w-2:#9F9F9F;
     --w-sur:#101010; --w-cont:#1C1C1C; --w-onc:#A9A9A9;
     --c-rule:rgba(255,255,255,.15);
@@ -295,13 +301,30 @@
      JENSSON sat above KRIS. Two flex items stretch to one row and render on
      one baseline, with no arithmetic to get wrong. */
   .brand > .txt{display:inline-flex;align-items:stretch}
+
+  /* TWO BEATS, NOT ONE FADE. The room opens first and the letters arrive into
+     it after — the same order the Anthropic mark runs, where the inner letters
+     go before the mark closes and land after it has opened. Running width and
+     opacity together is what made this read as a wash: everything happened at
+     once and nothing led.
+
+     So: width leads on the way in and the letters follow it 170ms later, each
+     22ms behind the one before, which gives the surname a direction across the
+     mark rather than a single flat lift. On the way out the delays swap — the
+     letters go first, fast, and the room only closes once they have — because
+     a box collapsing over live type reads as a clip, not a close. */
   .bfull{display:block;width:0;overflow:hidden;white-space:nowrap;
-         opacity:0;
-         transition:width .38s cubic-bezier(.22,1,.36,1),opacity .24s ease}
+         transition:width .28s cubic-bezier(.22,1,.36,1) .12s}
+  .bfull i{font-style:normal;opacity:0;
+         transition:opacity .12s linear}
   .brand:hover .bfull,
-  .brand:focus-visible .bfull{width:var(--bf, auto);opacity:1}
+  .brand:focus-visible .bfull{width:var(--bf, auto);
+         transition:width .28s cubic-bezier(.22,1,.36,1) 0s}
+  .brand:hover .bfull i,
+  .brand:focus-visible .bfull i{opacity:1;
+         transition:opacity .16s linear calc(170ms + var(--i, 0) * 22ms)}
   @media (prefers-reduced-motion:reduce){
-    .bfull{transition:none}
+    .bfull,.bfull i{transition:none}
   }
   /* The headline's faces are cap-trimmed because .ln is a cap-trimmed block,
      so face-top and text-top are the same edge there. .brand is NOT trimmed —
@@ -765,8 +788,8 @@
   .cblock + .cblock{margin-top:64px}
   .ceyebrow{display:flex;gap:9px;align-items:center;
             font-size:18px;font-weight:500;letter-spacing:var(--track);
-            line-height:1;text-transform:uppercase;color:#fff}
-  .ceyebrow .dim{color:rgba(255,255,255,.5)}
+            line-height:1;text-transform:uppercase;color:var(--w-1)}
+  .ceyebrow .dim{color:var(--w-2)}
 
   /* ── logobank — 97:3374 ──────────────────────────────────────────────
      Not a grid. Sixteen marks laid out by hand across a 1360×152 board, each
@@ -878,7 +901,7 @@
   .acap{margin:0;font-family:var(--font-ui);
         font-size:clamp(17px,1.6667vw,30px);                         /* 24  */
         font-weight:600;line-height:1.45;letter-spacing:0;
-        color:var(--w-onc);white-space:nowrap;
+        color:var(--w-2);white-space:nowrap;
         text-box:trim-both cap alphabetic;
         text-box-trim:trim-both;text-box-edge:cap alphabetic}
   /* the hidden sizer holds the box at the final digit's width so the card
@@ -1134,7 +1157,7 @@
            width:100%}
   .jtmname{margin:0;width:min(438px,100%);text-align:center;
            font-family:var(--font-display);font-size:40px;font-weight:400;
-           line-height:1.1;letter-spacing:-.02em;color:#FFFFFF;
+           line-height:1.1;letter-spacing:-.02em;color:var(--w-1);
            text-box:trim-both cap alphabetic;
            text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .jtmrole{margin:0;width:100%;display:flex;align-items:center;
@@ -1350,7 +1373,7 @@
          --tf-glyph:#1A1A1A}
   [data-surface="dark"] .tfoot,
   .tfoot[data-surface="dark"]{--tf-ink:#F8F8F8;--tf-sl:#515151;
-         --tf-by:#9CA1A4;--tf-pill:#1C1C1C;--tf-glyph:#F8F8F8}
+         --tf-by:var(--w-2);--tf-pill:#1C1C1C;--tf-glyph:#F8F8F8}
   /* three of these sit inside a section that already reserves the space for
      them, which is why .tfoot is absolute. The four on the case studies and
      the resume have no such host — they close the page themselves, so they
@@ -1487,7 +1510,7 @@
   .me .melead{position:absolute;left:var(--m);top:41.889svh;margin:0;
       width:29.545em;max-width:calc(100% - var(--m) * 2);
       font-family:var(--font-ui);font-size:min(1.5278vw, 22px);
-      font-weight:500;line-height:1.2;letter-spacing:0;color:#9CA1A4;
+      font-weight:500;line-height:1.2;letter-spacing:0;color:var(--w-2);
       text-box:trim-start cap;text-box-trim:trim-start;text-box-edge:cap alphabetic}
   .me .melead b{font-weight:500;color:#F8F8F8}
 
@@ -1510,7 +1533,7 @@
   .me .mecell{display:flex;flex-direction:column;justify-content:center;
       gap:12px;padding:4px 0;min-width:0}
   .me .mecell dt{margin:0;font-family:var(--font-ui);font-size:16px;
-      font-weight:500;line-height:1;letter-spacing:0;color:#9CA1A4;
+      font-weight:500;line-height:1;letter-spacing:0;color:var(--w-2);
       text-box:trim-both cap alphabetic;
       text-box-trim:trim-both;text-box-edge:cap alphabetic}
   .me .mecell dd{margin:0;font-family:var(--font-ui);font-size:18px;
@@ -1929,7 +1952,7 @@
   /* the trim has to sit on the two boxes, not on the row: they are blocks of
      their own, so the row's trim never reaches the type inside them and the
      chip came out 24 tall instead of the drawn 20. */
-  .ablovefor i{order:2;color:#9CA1A4}
+  .ablovefor i{order:2;color:var(--w-2)}
   .ablovefor b{order:1}
   .ablovefor i,.ablovefor b{display:block;font-style:normal;font-weight:500;
           text-box:trim-both cap alphabetic;
@@ -2311,7 +2334,7 @@
   /* 513:35482 - the 16/14 SemiBold pair in Secondary Light, 8 apart */
   .jneb{margin:0;display:flex;align-items:center;gap:8px;
         font-family:var(--font-ui);font-size:16px;font-weight:600;
-        line-height:1.45;color:#9CA1A4;text-transform:uppercase;
+        line-height:1.45;color:var(--w-2);text-transform:uppercase;
         white-space:nowrap}
   .jneb i{font-style:normal;font-size:14px}
   .jneb b{font-weight:600;color:#F8F8F8}
@@ -2390,7 +2413,7 @@
   /* 503:80759 - 18 Medium on 1.25 in Secondary Dark */
   .jbody p{margin:0;font-family:var(--font-ui);
            font-size:calc(var(--jbw) * .0159292);font-weight:500;
-           line-height:1.25;letter-spacing:0;color:#71747B}
+           line-height:1.25;letter-spacing:0;color:var(--w-2)}
   /* Each stop's copy is held until the STROKE reaches its pill - the class is
      set off the line's own progress, not off the block's position in the
      window, so the two can never drift apart.
@@ -2599,7 +2622,7 @@
     .jnhead{width:100%;align-items:flex-start;gap:24px}
     .jnct{align-items:flex-start;text-align:left;gap:16px}
     .jnt,.jnlead{width:100%;max-width:none}
-    .jnlead{font-size:16px;color:#9CA1A4}
+    .jnlead{font-size:16px;color:var(--w-2)}
     /* the board is the column here, so the unit is restated for it */
     .jn{--jbw:calc(100vw - 40px)}
     .jnwrap{aspect-ratio:auto;margin-top:80px;width:100%}
@@ -2619,7 +2642,7 @@
        desktop's and would resolve to five pixels here. */
     .jstop .jbody{grid-column:2;grid-row:1;padding:16px 0 0;gap:20px}
     .jbody h3{font-size:18px;line-height:1.15}
-    .jbody p{font-size:16px;line-height:1.2;color:#9CA1A4}
+    .jbody p{font-size:16px;line-height:1.2;color:var(--w-2)}
     /* the desktop's column stops carry a 12 inset either side; on the phone
        every stop is the same row and the column is the same 255 */
     .jstop[data-kind="b"] .jbody{padding:16px 0 0;padding-left:0;padding-right:0}
@@ -3439,6 +3462,7 @@
             letter-spacing:0;text-transform:uppercase;
             line-height:1.45;white-space:nowrap;color:var(--c-1)}
   .weyebrow .dim{color:var(--c-3)}
+  [data-surface="dark"] .weyebrow .dim{color:var(--w-2)}
   /* the slash is a step under the words either side of it */
   .weyebrow > :nth-child(2){font-size:18px}
   /* 2:366 — the work eyebrow moved onto the new ramp: the trail is
@@ -3707,6 +3731,19 @@
   .card-cta.gatebtn{width:auto;justify-content:center;gap:0;
                     background:#1C1C1C;box-shadow:none}
   .card-cta.gatebtn:hover{background:#262626;box-shadow:none}
+  /* the arrow is not part of the resting mark — it opens out of the label on
+     hover, the way the surname opens out of KRIS, so the button says where it
+     goes only once you have asked it */
+  .card-cta.gatebtn .gbar{display:flex;align-items:center;overflow:hidden;
+            flex:none;width:0;margin-left:0;opacity:0;
+            transition:width .3s var(--ind-ease),margin-left .3s var(--ind-ease),
+                       opacity .2s ease}
+  .card-cta.gatebtn .gbar svg{display:block;flex:none;width:15px;height:10px}
+  .card-cta.gatebtn:hover .gbar,
+  .card-cta.gatebtn:focus-visible .gbar{width:15px;margin-left:10px;opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .card-cta.gatebtn .gbar{transition:none}
+  }
   /* lock and field are one group on a 4 gap — the pill's own 16 is between
      that group and the arrow, not between the lock and the word */
   .ctagrp{display:flex;align-items:center;gap:4px;min-width:0;flex:1 1 auto}
@@ -3827,6 +3864,7 @@
      video sits exactly on top of it the day the mp4 arrives. */
   .card-phone.art{background:url("media/venmo-phone.webp") center/contain no-repeat;
                   box-shadow:none;border-radius:0}
+  .card-phone.art.nfl{background-image:url("media/nfl-phone.webp")}
   /* the device art carries its own corners, so the prototype clip-path and
      white plate above must not apply to it */
   .card-phone.art > video.phoneart{clip-path:none;background:none;
@@ -5738,9 +5776,15 @@
        top. Anchored to the top it opened a 187 hole above the band on a 900
        window — the block belongs to the band, so it rides with it. The band's
        own height is .727 of its type, measured off the rendered line. */
+    /* 64 ABOVE THE HEADLINE, MEASURED. This used to be placed off an ESTIMATE
+       of the headline's height — .727 of its type — and the estimate drifted
+       with the width: the gap came out 8.5px at 1440, 4.3 at 1200 and 1.9 at
+       1100, against the 64 the frame draws. .lines and .byline are absolutely
+       positioned in the same box, so the only number the byline needs is what
+       .lines actually measures, and a ResizeObserver keeps it true through the
+       fit, the flap and the webfont landing. */
     .byline{position:absolute;left:var(--m);bottom:calc(
-              40.15px + (var(--hl-fit, var(--hl)) * var(--hl-scale, 1) * .727)
-              + 34px);
+              var(--lines-top, 161px) + 64px);
             top:auto;
             display:flex;flex-direction:column;align-items:flex-start;gap:3px;
             width:auto;margin:0;text-transform:none;letter-spacing:0}
@@ -5757,7 +5801,16 @@
             white-space:nowrap;
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
-    .byline .byl2{display:flex;align-items:baseline;gap:8px}
+    /* The trim goes on the two SPANS as well as the lines. text-box-trim
+       collapses a block's own line box, and a flex row has none — so the row
+       kept the handle's full 27.5 and the block's bottom edge sat 11px below
+       the last ink. Measured off that edge, a stated 64 of air came out at 53.
+       Trimmed children, untrimmed row, and the box ends where the type does. */
+    .byline .byl2{display:flex;align-items:baseline;gap:8px;
+            text-box:normal;text-box-trim:none;text-box-edge:auto}
+    .byline .byl2 > span{display:block;
+            text-box:trim-both cap alphabetic;
+            text-box-trim:trim-both;text-box-edge:cap alphabetic}
     .byline .at{font-size:22px;line-height:1.25;letter-spacing:.02em;
             color:#71747B}
 
@@ -6060,7 +6113,7 @@
               font-weight:600;line-height:1.45;text-transform:none}
     .weyebrow > :nth-child(2){font-size:14px}
     .work-in .weyebrow{color:#F8F8F8}
-    .work-in .weyebrow .dim{color:#9CA1A4}
+    .work-in .weyebrow .dim{color:var(--w-2)}
     /* 503:80992 — 32 Medium on 110% in the frame's own 353 column, and it
        WRAPS: the drawn box is 93 tall, which is three lines cap-trimmed, not
        the two the desktop draws. So the authored <br> after "of," comes out
@@ -6597,17 +6650,25 @@
              scrim, the same one a locked row in the menu raises. So this is
              now just a button that hands the page over. -->
         <div class="cta">
-          <button class="card-cta gatebtn" type="button" data-gate="nfl">View work</button>
+          <button class="card-cta gatebtn" type="button" data-gate="nfl">View work<span class="gbar" aria-hidden="true"><svg viewBox="0 0 15 10" width="15" height="10" fill="none"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
       </div>
     </div>
-    <div class="card-phone-wrap"><div class="phoneskew"><div class="card-phone"><div class="card-screen">
-      <!-- Drop the prototype recording in here. Poster shows before it decodes:
-      <video muted loop autoplay playsinline preload="metadata" poster="Media/venmo.jpg">
-        <source src="Media/venmo.webm" type="video/webm">
-        <source src="Media/venmo.mp4"  type="video/mp4">
-      </video> -->
-    </div></div></div></div>
+    <div class="card-phone-wrap"><div class="phoneskew"><div class="card-phone art nfl">
+      <!-- Kris's own device art, same as Venmo's. The recording is anamorphic
+           the same way — 1786x1080 stored on a 540:1871 pixel aspect, which
+           displays 516x1080, or 0.4774 against the wrap's 0.4760. The WebM is
+           the same footage resampled to SQUARE pixels at the display size, so
+           it is first: a browser that takes it needs no pixel-aspect at all,
+           and it is a third the weight. The mp4 behind it is the file he
+           exported, untouched, and it is what Safari plays. -->
+      <video class="phoneart" muted loop autoplay playsinline
+             preload="metadata" aria-hidden="true"
+             poster="media/nfl-phone.webp">
+        <source src="media/nfl-phone.webm" type="video/webm">
+        <source src="media/nfl-phone.mp4" type="video/mp4">
+      </video>
+    </div></div></div>
   </div>
 </section>
 
@@ -6894,8 +6955,7 @@
     <div class="metxt">
     <h1 class="meh"><span class="txt">MY STORY</span></h1>
 
-    <p class="melead"><b>I build products</b> where the ambition is high and the
-      constraints are real. After <b>8+ years</b> designing for the likes of
+    <p class="melead">After <b>8+ years</b> designing for the likes of
       <b>NFL, JBL</b>, and <b>Volvo</b>, I’m now <b>at Venmo</b>, shaping its
       <b>biggest redesign in a decade.</b>  That’s the short version.
       There’s <b>more below.</b></p>
@@ -7159,7 +7219,7 @@
     </div>
 
     <div class="abfoot">
-      <p class="abcopy"><b>A space for a few favourites</b>. Work that stretches a different set of skills, ranging from <b>school projects</b> to <b>client work</b>, and some that just have a <b>big meaning to me.</b> Page is still WIP.</p>
+      <p class="abcopy"><b>A space for a few favourites</b>. Work that stretches a different set of skills, ranging from <b>school projects</b> to <b>client work</b>.</p>
     </div>
 
     <!-- 520:36312 / 520:36359 - the rule, the chip that sits over it, and the
@@ -12755,6 +12815,45 @@
      spent against the clock, and a late font would spend it invisibly */
   (document.fonts?.ready ?? Promise.resolve()).then(runLoader);
 
+  /* ── how tall the headline actually is ───────────────────────────────
+     One number, written once, so the byline can stand a stated 64 above it
+     instead of above a guess at it. */
+  (function(){
+    const lines=document.querySelector('.hero .lines');
+    if(!lines) return;
+    const root=document.documentElement;
+    let last=0;
+    /* what is wanted is the headline's VISUAL top, measured up from the hero's
+       own bottom edge — .lines carries a scale transform for the fit, so its
+       drawn box and its layout box are not the same thing and a formula built
+       on the layout one drifts with the width */
+    const by=document.querySelector('.hero .byline');
+    /* Measured, then CORRECTED against itself. The hero's bottom edge and the
+       byline's containing block are not the same edge, and .lines carries a
+       scale transform for the fit — so the first pass lands close and the
+       second reads the gap that actually resulted and closes on 64 exactly.
+       One extra frame, and it is right at every width instead of near. */
+    function fit(){
+      const hero=lines.closest('.hero'); if(!hero||!by) return;
+      const t=hero.getBoundingClientRect().bottom - lines.getBoundingClientRect().top;
+      if(!t) return;
+      if(Math.abs(t-last)>.5){ last=t; root.style.setProperty('--lines-top', t.toFixed(2)+'px'); }
+      let pass=0;
+      (function close(){
+        const g=lines.getBoundingClientRect().top - by.getBoundingClientRect().bottom;
+        if(!g) return;
+        if(Math.abs(g-64)<=.5 || ++pass>4) return;
+        const cur=parseFloat(root.style.getPropertyValue('--lines-top'))||t;
+        root.style.setProperty('--lines-top',(cur+(64-g)).toFixed(2)+'px');
+        requestAnimationFrame(close);
+      })();
+    }
+    fit();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit);
+    addEventListener('resize', fit, {passive:true});
+    if(window.ResizeObserver) new ResizeObserver(fit).observe(lines);
+  })();
+
   /* ── KRIS, and KRIS JENSSON ──────────────────────────────────────────
      The split-flap that used to run here is retired. The mark is a wordmark
      you can click, so what it owes you on hover is legibility and an
@@ -12782,7 +12881,13 @@
       txt.textContent='Kris';
       const full=document.createElement('span');
       full.className='bfull';
-      full.textContent='\u00a0Jensson';     /* a hard space — a leading one collapses */
+      full.appendChild(document.createTextNode('\u00a0'));  /* hard space — a leading one collapses */
+      /* one element a letter, so they can arrive in order */
+      'Jensson'.split('').forEach((ch,i)=>{
+        const l=document.createElement('i');
+        l.textContent=ch; l.style.setProperty('--i', i);
+        full.appendChild(l);
+      });
       txt.appendChild(full);
       el.setAttribute('role','link');
       el.setAttribute('aria-label','Kris Jensson, home');
@@ -12792,18 +12897,30 @@
         if(e.key==='Enter'||e.key===' '){ e.preventDefault(); home(); }
       });
     });
-    function measure(){
-      marks.forEach(el=>{
-        const f=el.querySelector('.bfull'); if(!f) return;
-        f.style.width='auto';
-        const w=f.getBoundingClientRect().width;
-        f.style.width='';
-        el.style.setProperty('--bf', w.toFixed(2)+'px');
-      });
+    /* MEASURE WHAT CAN BE MEASURED, AND ASK AGAIN LATER. Every route but the
+       one you land on is display:none, so a mark inside one reports zero — and
+       a zero written into --bf is a hover that opens onto nothing. That is
+       what left the wordmark dead on every dark page: Craft, About and all
+       four case studies. A zero is never kept, and the mark takes its own
+       measurement the first time a pointer or a focus ring reaches it, by
+       which time its page is on screen and has a width to give. */
+    function measure(el){
+      const f=el.querySelector('.bfull'); if(!f) return 0;
+      f.style.width='auto';
+      const w=f.getBoundingClientRect().width;
+      f.style.width='';
+      if(w) el.style.setProperty('--bf', w.toFixed(2)+'px');
+      return w;
     }
-    measure();
-    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
-    addEventListener('resize', measure, {passive:true});
+    function measureAll(){ marks.forEach(measure); }
+    measureAll();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measureAll);
+    addEventListener('resize', measureAll, {passive:true});
+    marks.forEach(el=>{
+      const late=()=>{ if(!parseFloat(el.style.getPropertyValue('--bf'))) measure(el); };
+      el.addEventListener('pointerenter', late);
+      el.addEventListener('focus', late, true);
+    });
   })();
 
 })();
