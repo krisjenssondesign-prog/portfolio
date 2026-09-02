@@ -4193,7 +4193,14 @@
      4px does not need a clipping box, and a clip would shear the descenders
      for the length of the move, so the rail's masks are opened up. The vent
      they carry is harmless once nothing is being clipped. */
-  .rcard{--lr-dur:420ms;--lr-stg:60ms;--lr-rise:4px;--lr-block:60ms;
+  /* 95ms between lines, not 60. 60 ran them almost as one gesture — the
+     stagger was there but you could not read it, so the block arrived rather
+     than the lines. 95 is far enough apart to see each one land and still
+     inside a second for the whole stop. The block gap matches the step, so
+     the impact figure and the button take the next two beats rather than
+     opening a hole. The duration is deliberately unchanged: what was too fast
+     was the gap between lines, not the move itself. */
+  .rcard{--lr-dur:420ms;--lr-stg:95ms;--lr-rise:4px;--lr-block:95ms;
          --lr-ease:cubic-bezier(.22,1,.36,1)}
   .rcard .ln-mask{overflow:visible}
 
