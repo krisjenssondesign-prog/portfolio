@@ -282,8 +282,27 @@
   .topbar{position:absolute;left:var(--m);right:var(--m);top:var(--m);height:22px;
           display:flex;justify-content:space-between;align-items:center;
           letter-spacing:var(--track);line-height:1;white-space:nowrap}
-  .brand{position:relative;font-size:20px;font-weight:900;
-         letter-spacing:-.04em;cursor:default}
+  .brand{position:relative;font-size:24px;font-weight:900;
+         letter-spacing:-.04em;cursor:pointer}
+  /* KRIS at rest; the surname opens beside it on hover and on keyboard focus.
+     Width, not opacity alone — a reserved box would leave a hole after the
+     mark at rest, and 0 to a measured width is the only way the reveal stops
+     exactly where the word ends. --bf is written by the script that owns the
+     mark, because only it knows the number in the face that actually loaded. */
+  /* The surname rides in a flex row, not as an inline-block. An inline-block
+     with overflow:hidden takes its BASELINE from its own bottom margin edge —
+     so aligned to the parent's baseline it hangs a whole line-height high, and
+     JENSSON sat above KRIS. Two flex items stretch to one row and render on
+     one baseline, with no arithmetic to get wrong. */
+  .brand > .txt{display:inline-flex;align-items:stretch}
+  .bfull{display:block;width:0;overflow:hidden;white-space:nowrap;
+         opacity:0;
+         transition:width .38s cubic-bezier(.22,1,.36,1),opacity .24s ease}
+  .brand:hover .bfull,
+  .brand:focus-visible .bfull{width:var(--bf, auto);opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .bfull{transition:none}
+  }
   /* The headline's faces are cap-trimmed because .ln is a cap-trimmed block,
      so face-top and text-top are the same edge there. .brand is NOT trimmed —
      its box is the full line box — so a trimmed face inside it put the caps
@@ -294,7 +313,6 @@
      there is no offset left to get wrong. */
   .brand .face{text-box-trim:none;text-box-edge:auto;text-box:normal;
                line-height:inherit}
-  .brand.flipping > .txt{visibility:hidden}
   .navr{display:flex;gap:16px;align-items:center;
         font-family:var(--font-ui);font-size:16px;font-weight:500;
         letter-spacing:-.04em;text-transform:uppercase}
@@ -1185,7 +1203,7 @@
      Both are cap-trimmed, so their boxes ARE their cap heights (14 and 12)
      and the drawn 41 / 40 tops are what the margins set. */
   .cs .cstop{height:60px;align-items:center;margin-top:16px}
-  .cs .cstop .brand{font-family:var(--font-ui);font-size:20px;font-weight:700;
+  .cs .cstop .brand{font-family:var(--font-ui);font-size:24px;font-weight:700;
         line-height:1.45;letter-spacing:-.02em;color:var(--bar-ink);
         text-transform:uppercase;
         text-box:trim-both cap alphabetic;
@@ -2789,7 +2807,7 @@
          letter-spacing:var(--track);line-height:1;white-space:nowrap}
   /* 521:37680 - the same wordmark as every other page: 20 Bold on -2%,
      not 22 at 800 on -4%. */
-  .gwtop .brand{color:var(--bar-ink);font-size:20px;font-weight:700;
+  .gwtop .brand{color:var(--bar-ink);font-size:24px;font-weight:700;
                 letter-spacing:-.02em;text-transform:uppercase}
   .gwlinks{display:flex;gap:16px;align-items:center;
            font-family:var(--font-ui);font-size:16px;font-weight:500;
@@ -3611,6 +3629,13 @@
                color:var(--w-2)}
   .card[data-study="nfl"] .card-main p{max-width:21.8056vw}    /* 314 @1440 */
 
+  /* Venmo's last line, where the pill used to be: the paragraph's own size and
+     leading, in the primary ink rather than the secondary, so it reads as the
+     card's status and not as more body copy. */
+  .csoon{margin:0;font-family:var(--font-ui);
+         font-size:clamp(16px,1.5278vw,30px);
+         font-weight:500;line-height:1.25;letter-spacing:0;color:var(--w-1)}
+
   /* ── the stat line — 410:52777 ────────────────────────────────────
      The same Impact / In-Line component the rail carries: Inter Regular sign,
      Saans Regular number on POSITIVE tracking, Inter unit two steps down.
@@ -4193,16 +4218,21 @@
      4px does not need a clipping box, and a clip would shear the descenders
      for the length of the move, so the rail's masks are opened up. The vent
      they carry is harmless once nothing is being clipped. */
-  /* 95ms between lines, not 60. 60 ran them almost as one gesture — the
-     stagger was there but you could not read it, so the block arrived rather
-     than the lines. 95 is far enough apart to see each one land and still
-     inside a second for the whole stop. The block gap matches the step, so
-     the impact figure and the button take the next two beats rather than
-     opening a hole. The duration is deliberately unchanged: what was too fast
-     was the gap between lines, not the move itself. */
-  .rcard{--lr-dur:420ms;--lr-stg:95ms;--lr-rise:4px;--lr-block:95ms;
+  /* ONE SET OF NUMBERS FOR EVERY PROJECT CARD — the two case studies and the
+     three on the rail. 95ms between lines, not 60: 60 ran them almost as one
+     gesture, the stagger there but not readable, so what arrived was the block
+     rather than the lines. 95 is far enough apart to see each one land and
+     still inside a second for the whole card. The block gap matches the step,
+     so the impact figure and the button take the next two beats rather than
+     opening a hole in the middle. 420ms on each line, because what was too
+     fast was the gap between lines, not the move itself.
+
+     4px does not need a clipping box, and a clip would shear the descenders
+     for the length of the move, so the masks are opened up. The vent they
+     carry is harmless once nothing is being clipped. */
+  .rcard,.card{--lr-dur:420ms;--lr-stg:95ms;--lr-rise:4px;--lr-block:95ms;
          --lr-ease:cubic-bezier(.22,1,.36,1)}
-  .rcard .ln-mask{overflow:visible}
+  .rcard .ln-mask,.card .ln-mask{overflow:visible}
 
   /* ── the case-study button — 216:7402 ────────────────────────────────
      Sized outright, not stretched to the row. `align-self:stretch` with
@@ -5797,7 +5827,13 @@
 
     /* the 322 measure is a DESKTOP measure — in vw it resolves to 88px on the
        phone, which stands every paragraph on its end */
-    .card-main p,.gtext p{max-width:none}
+    /* NFL's 314 is a measure drawn at 1440, and `.card[data-study="nfl"]
+       .card-main p` outranks a bare `.card-main p` — so 21.8vw survived down
+       here and set the paragraph 86px wide at 393. It broke to five lines of
+       one or two words: "Turning / NFL into / a D2C / growth / engine". The
+       per-study measure has to be released by name, at the same weight. */
+    .card-main p,.gtext p,
+    .card[data-study] .card-main p{max-width:none}
     /* 624:50538 / 624:50540 / 624:50541 — 32 / 20 / 16, all Medium */
     .card-main h3{font-size:clamp(26px,8.1425vw,44px);      /* 32 @393 */
                   font-weight:500;line-height:1.1;letter-spacing:0}
@@ -5916,7 +5952,8 @@
 
     /* 616:50311 — 353 wide at 20/39, the mark against a pair of 40 pills */
     .topbar{top:calc(39px + var(--safe-t));height:40px}
-    .bfull{display:inline}
+    /* the surname used to be forced open below 1080 — the mark is KRIS at
+       every width now, and the reveal is the only thing that opens it */
     .brand{font-family:var(--font-ui);font-size:24px;font-weight:700;
            letter-spacing:-.02em;line-height:1.45;text-transform:uppercase}
     .navr > a.u,.navr > .sep{display:none}
@@ -6500,26 +6537,11 @@
           <p>Leading work for Venmo's biggest redesign in a decade</p>
           <p class="cbody">A decade of shipping had left the app carrying every decision it ever made. I led the design work that rebuilt it as one system, and the staged rollout that put it in front of millions without breaking the habit they already had.</p>
         </div>
-        <div class="kpi">
-          <span class="fig"><i>+</i><b>XXX</b><i>%</i></span>
-          <span class="cap">Impact to come</span>
-        </div>
-        <div class="cta" data-code="VENMO">
-          <div class="card-cta" role="button" tabindex="0" aria-expanded="false">
-            <span class="ctagrp">
-              <span class="ctalock" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M8 1.75C8 5.2 10.8 8 14.25 8C10.8 8 8 10.8 8 14.25C8 10.8 5.2 8 1.75 8C5.2 8 8 5.2 8 1.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <span class="ctaslot">
-              <span class="ctalabel">Coming soon</span>
-              <input class="ctainput" type="text" placeholder="Enter code"
-                     aria-label="Access code" autocomplete="off"
-                     spellcheck="false" tabindex="-1">
-              </span>
-            </span>
-            <button class="ctago" type="button" tabindex="-1"
-                    aria-label="Open the Venmo case study"><svg viewBox="0 0 15 10" width="15" height="10" fill="none" aria-hidden="true"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          </div>
-          <button class="ctaget" type="button" tabindex="-1">Get code</button>
-        </div>
+        <!-- 2:406 draws the Venmo card with no impact row and no pill: the
+             number is not real yet, and a locked pill on a study that has
+             nothing behind it is a door to nowhere. One line of plain copy
+             says the same thing and takes the last beat of the reveal. -->
+        <p class="csoon">Coming soon</p>
       </div>
     </div>
     <div class="card-phone-wrap"><div class="phoneskew"><div class="card-phone art">
@@ -6553,9 +6575,8 @@
         <div class="cta" data-code="casestudy2krisj#" data-page="nfl">
           <div class="card-cta" role="button" tabindex="0" aria-expanded="false">
             <span class="ctagrp">
-              <span class="ctalock" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M11.3322 7.08333V5.08333C11.3322 3.24238 9.83981 1.75 7.99886 1.75C6.15791 1.75 4.66553 3.24238 4.66553 5.08333V7.08333M5.86553 13.75H10.1322C11.2523 13.75 11.8124 13.75 12.2402 13.532C12.6165 13.3403 12.9225 13.0343 13.1142 12.658C13.3322 12.2302 13.3322 11.6701 13.3322 10.55V10.2833C13.3322 9.16323 13.3322 8.60318 13.1142 8.17535C12.9225 7.79903 12.6165 7.49307 12.2402 7.30132C11.8124 7.08333 11.2523 7.08333 10.1322 7.08333H5.86553C4.74542 7.08333 4.18537 7.08333 3.75755 7.30132C3.38122 7.49307 3.07526 7.79903 2.88351 8.17535C2.66553 8.60318 2.66553 9.16323 2.66553 10.2833V10.55C2.66553 11.6701 2.66553 12.2302 2.88351 12.658C3.07526 13.0343 3.38122 13.3403 3.75755 13.532C4.18537 13.75 4.74542 13.75 5.86553 13.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               <span class="ctaslot">
-              <span class="ctalabel">Read more</span>
+              <span class="ctalabel">View work</span>
               <input class="ctainput" type="text" placeholder="Enter code"
                      aria-label="Access code" autocomplete="off"
                      spellcheck="false" tabindex="-1">
@@ -9864,8 +9885,6 @@
     return {slot,card,front:f,back:b};
   }
 
-  const brandEl=document.querySelector('.brand');
-
 
   /* ── logobank flap — 97:3374 ─────────────────────────────────────────
      The board Kris drew is sixteen marks at sixteen hand-set positions, each
@@ -10328,8 +10347,8 @@
   (function(){
     const cur=document.getElementById('cur');
     if(!cur || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
-    const HOT='a,button,[role="button"],input,textarea,select,summary,label,'+
-              '.card-cta,.seg,.gmedia,.tcard,[data-cursor]';
+    const HOT='a,button,[role="button"],[role="link"],input,textarea,select,'+
+              'summary,label,.card-cta,.seg,.gmedia,.tcard,.brand,[data-cursor]';
     let x=0,y=0,queued=false;
     function paint(){ queued=false;
       cur.style.transform='translate3d('+x+'px,'+y+'px,0)'; }
@@ -12264,11 +12283,19 @@
 
     function build(card){
       const seq=[];
-      card.querySelectorAll('.card-main h3, .gtext h3').forEach(e=>seq.push(...splitLines(e)));
-      card.querySelectorAll('.card-main > .tblock > p, .gtext p').forEach(e=>seq.push(...splitLines(e)));
+      /* .cbody is display:none — the long paragraph is drawn but not shipped.
+         Split anyway it counted as one line, took a 95ms slot of its own and
+         left a dead beat in the middle of every case study: title, line, line,
+         NOTHING, stat. Nothing that is not laid out gets a beat. */
+      const shown = e => getComputedStyle(e).display !== 'none';
+      card.querySelectorAll('.card-main h3, .gtext h3')
+          .forEach(e=>{ if(shown(e)) seq.push(...splitLines(e)); });
+      card.querySelectorAll('.card-main > .tblock > p, .gtext p')
+          .forEach(e=>{ if(shown(e)) seq.push(...splitLines(e)); });
       const stat=card.querySelector('.kpi, .gstat');
       const statLines = stat ? wrapBlock(stat) : [];
-      const cta=card.querySelector('.card-main > .cta, .gtext > .gcta');
+      /* .csoon is Venmo's stand-in for the pill, and it takes the pill's slot */
+      const cta=card.querySelector('.card-main > .cta, .card-main > .csoon, .gtext > .gcta');
       const ctaLines = cta ? [wrapSelf(cta)] : [];
       /* read off the CARD, not off :root — the rail sets its own pace and a
          value taken from the document would hand it the case studies' */
@@ -12276,9 +12303,12 @@
       const cnum=n=>parseFloat(cs.getPropertyValue(n))||0;
       const stg=cnum('--lr-stg')||num('--lr-stg'), blk=cnum('--lr-block');
       const statD = seq.length*stg + blk;
+      /* with no impact row there is no slot to step over — Venmo would sit
+         through two block gaps of silence before its last line otherwise */
+      const ctaD  = stat ? statD + blk : statD;
       seq.forEach((el,i)=> el.style.setProperty('--d', (i*stg)+'ms'));
       statLines.forEach(el=> el.style.setProperty('--d', statD+'ms'));
-      ctaLines.forEach(el=> el.style.setProperty('--d', (statD + blk)+'ms'));
+      ctaLines.forEach(el=> el.style.setProperty('--d', ctaD+'ms'));
       card.__lr = seq.concat(statLines, ctaLines);
       /* fire off the FIRST LINE, not the card box: these cards are twice the
          height of the window, so 25% of the card is met while the copy is
@@ -12288,11 +12318,15 @@
          a screen below the fold. A rail card is half a window tall, so its
          own box is the anchor and the words start as the row arrives rather
          than a third of a screen later. */
-      /* A rail card is the anchor in its own right — the trigger is the
-         whole card being in view, so there is nothing smaller to watch. */
+      /* WHAT HAS TO BE IN VIEW. A rail card is small enough to be the anchor
+         in its own right — the whole thing, picture included. A case study is
+         twice the height of the window and never will be, so its anchor is
+         the COPY COLUMN: the block that is actually about to animate. Both
+         then mean the same thing — the words are all on screen, with room
+         under them, before the first one moves. */
       card.__lrAnchor = card.classList.contains('rcard')
         ? card
-        : (card.querySelector('.card-main h3, .gtext h3') || card);
+        : (card.querySelector('.card-main, .gtext') || card);
     }
 
     let raf=0;
@@ -12309,36 +12343,27 @@
       requestAnimationFrame(()=>on.forEach(c=>c.classList.add('lr-go')));
     });
 
-    const io=new IntersectionObserver(es=>{
-      es.forEach(e=>{
-        if(!e.isIntersecting) return;
-        const card = CARDS.find(c=>c.__lrAnchor===e.target);
-        if(!card) return;
-        card.classList.add('lr-go');
-        /* The rail is a HORIZONTAL scroller. On a phone cards two and three
-           sit outside the window to the right, so an observer with the
-           viewport as its root never calls them intersecting and their copy
-           stayed in its mask for the whole visit — the cards were there and
-           the words were not. The row arrives as one line, so whichever of
-           them lands first lands all three. */
-        if(card.classList.contains('rcard'))
-          CARDS.forEach(c=>{ if(c.classList.contains('rcard')) c.classList.add('lr-go'); });
-      });
-    },{rootMargin:'0px 0px -14% 0px', threshold:0});
-
-    /* THE RAIL WAITS FOR THE WHOLE CARD. Not a fraction of it crossing a line
-       — the card has to be all the way in, with 32px of air left under it, and
-       only then does its copy start. That is a ratio of 1 against a root
-       inset 32px at the bottom, which is exactly what rootMargin and a
+    /* EVERY CARD WAITS TO BE ALL THE WAY IN. Not a fraction of it crossing a
+       line — the block has to be fully on screen with 32px of air left under
+       it, and only then does its copy start. That is a ratio of 1 against a
+       root inset 32px at the bottom, which is exactly what rootMargin and a
        threshold of 1 say. The fallback on the second line is for a window
-       shorter than the card: a ratio of 1 can never happen there, so filling
+       shorter than the block: a ratio of 1 can never happen there, so filling
        the visible height counts instead and the copy is not left in the dark
-       on a small screen. */
+       on a small screen.
+
+       A case study fires on its own. The rail fires as a row: it is a
+       HORIZONTAL scroller, so on a phone cards two and three sit outside the
+       window to the right and an observer rooted in the viewport would never
+       call them in — their copy would stay dark for the whole visit. The row
+       arrives as one line, so whichever of them lands first lands all three. */
     const ioFull=new IntersectionObserver(es=>{
       es.forEach(e=>{
         const full = e.intersectionRatio >= 0.99 ||
               (e.rootBounds && e.intersectionRect.height >= e.rootBounds.height - 1);
         if(!full) return;
+        const own = CARDS.find(c=>c.__lrAnchor===e.target);
+        if(own && !own.classList.contains('rcard')){ own.classList.add('lr-go'); return; }
         /* The rail is a HORIZONTAL scroller. On a phone cards two and three
            sit outside the window to the right, so an observer with the
            viewport as its root never calls them intersecting and their copy
@@ -12348,8 +12373,8 @@
       });
     },{rootMargin:'0px 0px -32px 0px', threshold:[0,.5,.99,1]});
 
-    const watch = c => (c.classList.contains('rcard') ? ioFull : io).observe(c.__lrAnchor);
-    const unwatch = c => (c.classList.contains('rcard') ? ioFull : io).unobserve(c.__lrAnchor);
+    const watch = c => ioFull.observe(c.__lrAnchor);
+    const unwatch = c => ioFull.unobserve(c.__lrAnchor);
     CARDS.forEach(watch);
 
     let t;
@@ -12699,58 +12724,56 @@
      spent against the clock, and a late font would spend it invisibly */
   (document.fonts?.ready ?? Promise.resolve()).then(runLoader);
 
-  /* ── KRIS, one flap on hover ─────────────────────────────────────────
-     Same rack as the headline, but each letter turns exactly once and lands
-     on the glyph it started with — no cycling. It isn't a link and it doesn't
-     go anywhere; it just answers when you touch it. */
-  /* Three turns, not one, over three times the clock, on a quartic in-out —
-     it leaves and arrives far more gently than the headline's slap. */
-  const BRAND_SPIN=900, BRAND_TURNS=3, BRAND_STAG=64;
-  const easeInOutQ=t=>t<.5?8*t*t*t*t:1-Math.pow(-2*t+2,4)/2;
+  /* ── KRIS, and KRIS JENSSON ──────────────────────────────────────────
+     The split-flap that used to run here is retired. The mark is a wordmark
+     you can click, so what it owes you on hover is legibility and an
+     invitation, not a trick: the surname opens out of zero width beside it
+     and the cursor takes its interactive state.
 
-  /* The faces are cap-trimmed, so dropping them at the element's top put KRIS
-     3px high the moment you hovered it — the headline gets away with top:0
-     only because .ln is cap-trimmed too, and .brand is not.
-     The offset is read straight off the live text: .brand > .txt carries the
-     same cap trim, so its own rect IS the cap box, in flow, in the real font.
-     Font arithmetic would have worked too, but only while the canvas and the
-     DOM agree on which face they resolved — and this page loads a webfont. */
-  let brandFlapping=false;
-
-  brandEl.addEventListener('pointerenter',()=>{
-    if(brandFlapping||noMotion) return;
-    brandFlapping=true;
-
-    const txt=brandEl.querySelector('.txt'), word=txt.textContent;
-    const node=txt.firstChild, base=brandEl.getBoundingClientRect();
-    const CAP=base.height, fx=document.createElement('span');
-    fx.className='fx';
-    const cards=[];
-    for(let i=0;i<word.length;i++){
-      const r=document.createRange(); r.setStart(node,i); r.setEnd(node,i+1);
-      const b=r.getBoundingClientRect();
-      const s=makeSlot({left:b.left-base.left,width:b.width},CAP,word[i]);
-      s.back.textContent=word[i];             /* lands on itself */
-      fx.appendChild(s.slot);
-      cards.push({card:s.card,at:performance.now()+i*BRAND_STAG});
-    }
-    brandEl.appendChild(fx); brandEl.classList.add('flipping');
-
-    requestAnimationFrame(function step(t){
-      let alive=false;
-      for(const c of cards){
-        const p=(t-c.at)/BRAND_SPIN;
-        if(p<0){ alive=true; continue; }
-        if(p<1){
-          alive=true;
-          const e=easeInOutQ(p);
-          c.card.style.transform='rotate'+AXIS+'('+(180*BRAND_TURNS*e).toFixed(1)+'deg)';
-        } else c.card.style.transform='rotate'+AXIS+'('+(180*BRAND_TURNS)+'deg)';
+     The width is measured, not guessed at in em — the reveal has to stop
+     exactly where the word ends or it runs on into empty space, and the face
+     is a webfont, so it is taken again once that face has landed and on every
+     resize. The markup for the mark is not the same in all eight places it
+     appears, so the shape is normalised here rather than in eight edits. */
+  (function(){
+    const marks=[...document.querySelectorAll('.brand')];
+    if(!marks.length) return;
+    const home=()=>{
+      if(typeof window.__goTo==='function') window.__goTo('work');
+      else scrollTo({top:0, behavior:'smooth'});
+    };
+    marks.forEach(el=>{
+      let txt=el.querySelector('.txt');
+      if(!txt){
+        txt=document.createElement('span'); txt.className='txt';
+        el.textContent=''; el.appendChild(txt);
       }
-      if(alive){ requestAnimationFrame(step); return; }
-      fx.remove(); brandEl.classList.remove('flipping'); brandFlapping=false;
+      txt.textContent='Kris';
+      const full=document.createElement('span');
+      full.className='bfull';
+      full.textContent='\u00a0Jensson';     /* a hard space — a leading one collapses */
+      txt.appendChild(full);
+      el.setAttribute('role','link');
+      el.setAttribute('aria-label','Kris Jensson, home');
+      if(!el.hasAttribute('tabindex')) el.tabIndex=0;
+      el.addEventListener('click', home);
+      el.addEventListener('keydown', e=>{
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); home(); }
+      });
     });
-  });
+    function measure(){
+      marks.forEach(el=>{
+        const f=el.querySelector('.bfull'); if(!f) return;
+        f.style.width='auto';
+        const w=f.getBoundingClientRect().width;
+        f.style.width='';
+        el.style.setProperty('--bf', w.toFixed(2)+'px');
+      });
+    }
+    measure();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
+    addEventListener('resize', measure, {passive:true});
+  })();
 
 })();
 </script>
