@@ -3697,6 +3697,16 @@
                        background-color .4s ease,box-shadow .4s ease}
   .card-cta:hover{background:rgba(255,255,255,.1);
                   box-shadow:inset 0 0 0 1px #fff}
+  /* THE GATE BUTTON IS FILLED, NOT RINGED. 2:406 draws it as a solid #1C1C1C
+     on the section's own #101010 with no stroke at all — sampled off the
+     frame, not guessed. The outlined pill was the old inline gate's shape,
+     where the ring had to read as a field about to open. This one opens
+     nothing in place: it hands the study to the scrim. It has no arrow to
+     hold the far edge either, so it hugs its label instead of standing at a
+     drawn 248. */
+  .card-cta.gatebtn{width:auto;justify-content:center;gap:0;
+                    background:#1C1C1C;box-shadow:none}
+  .card-cta.gatebtn:hover{background:#262626;box-shadow:none}
   /* lock and field are one group on a 4 gap — the pill's own 16 is between
      that group and the arrow, not between the lock and the word */
   .ctagrp{display:flex;align-items:center;gap:4px;min-width:0;flex:1 1 auto}
@@ -6572,20 +6582,14 @@
             <span class="cap">Acquisition for NFL+</span>
           </div>
         </div>
-        <div class="cta" data-code="casestudy2krisj#" data-page="nfl">
-          <div class="card-cta" role="button" tabindex="0" aria-expanded="false">
-            <span class="ctagrp">
-              <span class="ctaslot">
-              <span class="ctalabel">View work</span>
-              <input class="ctainput" type="text" placeholder="Enter code"
-                     aria-label="Access code" autocomplete="off"
-                     spellcheck="false" tabindex="-1">
-              </span>
-            </span>
-            <button class="ctago" type="button" tabindex="-1"
-                    aria-label="Open the NFL case study"><svg viewBox="0 0 15 10" width="15" height="10" fill="none" aria-hidden="true"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          </div>
-          <button class="ctaget" type="button" tabindex="-1">Get code</button>
+        <!-- ONE LOCK ON THE SITE. This card used to carry its own inline
+             gate — a string passcode in the markup, a field that grew out of
+             the pill, its own Get code button. NFL is a locked study exactly
+             like Volvo, and a locked study asks in one place: the four-seat
+             scrim, the same one a locked row in the menu raises. So this is
+             now just a button that hands the page over. -->
+        <div class="cta">
+          <button class="card-cta gatebtn" type="button" data-gate="nfl">View work</button>
         </div>
       </div>
     </div>
@@ -10631,6 +10635,21 @@
     }
     window.__pinAsk=open;
     window.__pinOpen=k=>opened.has(k);
+
+    /* A card button carrying data-gate asks the same question the menu asks.
+       Already answered this session, it just goes — the gate never asks twice
+       for the same study. */
+    document.querySelectorAll('[data-gate]').forEach(btn=>{
+      const key=btn.getAttribute('data-gate');
+      btn.addEventListener('click', e=>{
+        e.preventDefault();
+        if(opened.has(key)){
+          if(typeof window.__goTo==='function') window.__goTo(key);
+          return;
+        }
+        open(key, btn);
+      });
+    });
     window.__pinClose=close;
 
     ins.forEach((inp,n)=>{
@@ -10684,10 +10703,14 @@
       else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
     },true);
 
+    /* WHAT IS LOCKED. Both studies behind the code, in one place, so a card
+       and a menu row can never disagree about which of them is shut. */
+    const LOCKED=new Set(['volvo','nfl']);
+
     /* the rail asks the same question. The card used to answer it itself;
        now it hands the page over and stops routing until the gate says so. */
     window.__cardGate=function(key,card){
-      if(key!=='volvo' || opened.has(key)) return false;
+      if(!LOCKED.has(key) || opened.has(key)) return false;
       if(typeof window.__railHideChip==='function') window.__railHideChip();
       const media=card && card.querySelector('.gmedia');
       const v=media && media.querySelector('video');
@@ -10700,7 +10723,7 @@
     if(typeof window.__goTo==='function'){
       const g=window.__goTo;
       window.__goTo=function(k){
-        if(k==='volvo'){ opened.add('volvo'); root.classList.add('volvo-open'); }
+        if(LOCKED.has(k)){ opened.add(k); root.classList.add(k+'-open'); }
         return g.apply(this,arguments);
       };
     }
