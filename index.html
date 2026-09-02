@@ -1796,10 +1796,6 @@
      by area sank him into the disc and the cap stopped breaking out over the
      top. Pupil separation is 58.3 on the mock's 352 disc and 81.5 on the 640
      frame, which sets the size, and their midpoint sets the position. */
-  /* Fitted on his PUPILS, not on silhouette area: matching the visible teal
-     by area sank him into the disc and the cap stopped breaking out over the
-     top. Pupil separation is 58.3 on the mock's 352 disc and 81.5 on the 640
-     frame, which sets the size, and their midpoint sets the position. */
   .abch{position:absolute;left:-11.47%;top:-26.62%;
         width:130.10%;height:130.10%;
         pointer-events:none;z-index:1;
@@ -1822,11 +1818,14 @@
         -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
         -webkit-mask-composite:source-over;mask-composite:add}
   .abch.on{opacity:1}
-  /* ONE video, held paused. Its own mask is the character's silhouette, taken
-     as the intersection of every frame's matte so the clip's white ground can
-     never sit outside it; the frames underneath are composited on the page's
-     own dark, so a leaked pixel leaks black rather than white. The circle clip
-     above is a separate layer on the parent, which keeps each mask to one job. */
+  /* ONE video. Its own mask is the character's silhouette, taken as the
+     intersection of every frame's matte — the head does not translate in this
+     take (the top edge moves one pixel across 97 frames), so the intersection
+     holds 97.4% of him and is guaranteed to sit inside every single frame.
+     Under it, every pixel outside him carries the colour of the nearest pixel
+     of him, so neither 4:2:0 chroma nor the downscale to 448 can pull the
+     clip's white ground into the edge. The circle clip above is a separate
+     layer on the parent, which keeps each mask to one job. */
   .abvid{display:block;width:100%;height:100%;object-fit:contain;
         -webkit-mask-image:url(media/abgaze-mask.png);
         mask-image:url(media/abgaze-mask.png);
@@ -11619,9 +11618,12 @@
   (function(){
     /* the Next-up plate runs on its own rule below — the governor's
        geometry test is wrong for a sticky element that is painted
-       behind everything until the very end of the page */
+       behind everything until the very end of the page.
+       #abGaze is out too: its playhead IS the interaction, driven by the
+       mouse, so a governor that starts it on sight would run it to the end
+       and leave him staring wherever the clip happens to finish. */
     const vids=[...document.querySelectorAll('video')]
-                 .filter(v=>!v.closest('.nu'));
+                 .filter(v=>!v.closest('.nu') && v.id!=='abGaze');
     if(!vids.length||!('IntersectionObserver' in window)) return;
     const want=new Set();
 
@@ -12753,139 +12755,235 @@
 </script>
 <script>
 /* ── the gaze ─────────────────────────────────────────────────────────
-   ONE video, held paused, and the mouse moves its playhead. Nothing else on
-   the page moves: not the element, not the head, not a sprite. The only thing
-   under control is which moment of the clip is on screen.
+   ONE video, PLAYED. Not cut into frames, not reordered, not stitched: this
+   is the take exactly as it was rendered, in its own chronological order,
+   with the head drift, the settle and the blink still in it. The mouse never
+   scrubs it. The mouse only says roughly where he should be looking; the clip
+   then TRAVELS there under its own steam and stops when it arrives.
 
-   THE TRACK IS ORDERED BY GAZE, NOT BY THE CLIP'S CLOCK. The take runs centre
-   -> right -> blink -> left, so its own timeline cannot map onto a cursor —
-   dragging left would send his eyes right first, then blink. The frames are
-   re-encoded in order of where the pupils actually sit, blinks dropped, so the
-   timeline IS the gaze axis: t=0 is the furthest left, t=2.75 the furthest
-   right, and it is monotone in between. That also removes the wrap problem —
-   there are no two ends to travel between the long way round.
+   WHAT THE TAKE DOES, measured frame by frame off the source rather than
+   assumed: centre at f1, swinging to his far right by f20, back through
+   centre near f37, far left at f51, back out right through f78, a blink at
+   f81-85, and settled centre for the last ten. So the timeline is NOT a gaze
+   axis — every direction appears in it two or three times over. Each of those
+   is a legitimate way to arrive, and the one nearest the playhead wins, which
+   is what keeps a small mouse move a short piece of film instead of a
+   two-second journey. Blinks are never a destination; travelling through one
+   is fine, because that is a real blink and it reads as one.
 
-   Every frame is a keyframe (encoded -g 1), which is what makes seeking exact
-   and instant instead of decoding forward from the last I-frame. Two encodes:
-   VP9 for Chrome and Firefox, H.264 behind it for Safari.
+   HOW IT MOVES. A new mouse position becomes a target 80ms later, and a
+   change under 0.05 of the gaze range is not a request at all — that is what
+   stops him twitching at every pixel. Velocity is then eased toward the
+   target with a 130ms time constant, capped at 0.72x playback and wound down
+   as the distance closes: he leans into the move, travels, slows, settles.
+   A new target mid-move simply replaces the old one — nothing restarts, so a
+   reversal bleeds through zero instead of snapping.
 
-   Measured on the source: the pupils travel 26.8px across and 5.4px down, so
-   the horizontal is the axis worth mapping — the vertical works out under two
-   pixels at the size he is drawn and rides along with it.
+   Forward is real playback: play() with playbackRate, so the browser's own
+   decoder runs the film. Backwards is the same velocity walked over
+   currentTime, one seek per displayed frame and never more. The encode is
+   GOP-4, so a landing in either direction costs about a millisecond.
 
-        LEFT   t 0.000      CENTRE  t 0.750      RIGHT  t 2.750
-   The nine directions are not evenly spaced across that, so the cursor is
-   mapped through a lookup taken from the real per-frame pupil positions
-   rather than a straight line — his eyes then move in step with the mouse
-   instead of racing and stalling. */
+   Rest is f65 — the most neutral face in the middle of the take, taken from
+   there rather than either end so no direction is more than a second away.
+   That is where he sits with no mouse, on a touch screen, and under
+   prefers-reduced-motion. */
 (function(){
   var av = document.getElementById('abCh'), v = document.getElementById('abGaze');
   if (!av || !v) return;
 
-  var FPS = 24, DUR = 2.7917, FRAME = 1/FPS;
-  var CENTRE = 0.75;
-  /* Cursor -1..1 across, through a lookup taken from the real per-frame pupil
-     positions rather than a straight line, so his eyes move IN STEP with the
-     mouse instead of racing where the clip is dense and stalling where it is
-     thin. 33 samples is finer than the eye can read at this size. */
-  var LUT = [0,0.101,0.4414,0.578,0.5978,0.6145,0.6753,0.7097,0.7142,0.7186,
-             0.7231,0.7276,0.7321,0.7366,0.741,0.7455,0.75,1.0018,1.0188,1.0359,
-             1.0584,1.0834,1.0941,1.1048,1.1154,1.1307,1.178,1.2153,1.2897,
-             1.4903,1.8178,2.495,2.75];
-  function timeFor(u){
-    var x = (u + 1) / 2 * (LUT.length - 1);
-    var i = Math.max(0, Math.min(LUT.length - 2, Math.floor(x)));
-    return LUT[i] + (LUT[i+1] - LUT[i]) * (x - i);
-  }
+  var FPS = 24, N = 97, FRAME = 1/FPS, DUR = N/FPS;
+  /* where the pupils sit in every frame of the take, normalised -1..1 across
+     and down. Measured, not guessed: the two irises tracked through the clip
+     with a template match and a shortest-path pass over the candidates, so
+     the run is continuous rather than 97 independent detections. */
+  var NX = [0.031,0.046,0.074,0.107,0.143,0.183,0.237,0.311,0.416,0.546,0.675,0.775,0.842,0.886,
+              0.922,0.946,0.966,0.979,0.992,1.000,0.996,0.977,0.941,0.903,0.870,0.851,0.842,0.830,
+              0.817,0.783,0.735,0.666,0.586,0.485,0.353,0.193,0.008,-0.190,-0.384,-0.558,-0.687,-0.777,
+              -0.832,-0.876,-0.909,-0.937,-0.954,-0.969,-0.981,-0.995,-1.000,-1.000,-0.992,-0.974,-0.935,-0.876,
+              -0.813,-0.750,-0.685,-0.603,-0.504,-0.393,-0.281,-0.164,-0.050,0.065,0.172,0.277,0.380,0.465,
+              0.534,0.576,0.607,0.620,0.628,0.632,0.633,0.628,0.607,0.571,0.517,0.454,0.385,0.317,
+              0.252,0.194,0.149,0.113,0.082,0.057,0.038,0.029,0.025,0.025,0.025,0.025,0.025];
+  var NY = [-0.456,-0.456,-0.456,-0.456,-0.456,-0.456,-0.456,-0.466,-0.492,-0.532,-0.573,-0.603,-0.623,-0.634,
+              -0.639,-0.639,-0.645,-0.649,-0.655,-0.649,-0.629,-0.563,-0.436,-0.273,-0.125,-0.023,0.064,0.160,
+              0.272,0.374,0.455,0.516,0.568,0.679,0.832,0.995,1.000,0.842,0.568,0.297,0.114,0.002,
+              -0.054,-0.105,-0.145,-0.186,-0.227,-0.267,-0.298,-0.324,-0.354,-0.394,-0.430,-0.440,-0.420,-0.384,
+              -0.359,-0.354,-0.364,-0.380,-0.404,-0.436,-0.476,-0.532,-0.609,-0.705,-0.792,-0.874,-0.934,-0.980,
+              -1.000,-1.000,-0.990,-0.975,-0.965,-0.960,-0.960,-0.950,-0.918,-0.854,-0.768,-0.669,-0.570,-0.471,
+              -0.393,-0.347,-0.345,-0.364,-0.394,-0.426,-0.446,-0.456,-0.456,-0.456,-0.456,-0.456,-0.456];
+  var SHUT = '0000000000000000000000000000000000001100000000000000000000000000000000000000000011111000000000000';
+  var REST = (64 + 0.5) * FRAME;         /* f65 */
+
+  var DELAY  = 80,     /* ms of thinking time before a target is committed */
+      TWITCH = 0.05,   /* anything smaller is not a request */
+      TOP    = 0.72,   /* fastest it will ever run for an ordinary move */
+      TOPFAR = 1.15,   /* ... and for a long haul, see below */
+      FLOOR  = 0.11,
+      REACH  = 0.55,   /* distance, in seconds of film, that earns full speed */
+      ACC    = 0.13,   /* seconds to lean into a move, and out of one */
+      STOPD  = FRAME * 0.6,
+      PLAYD  = 0.18;   /* forward moves longer than this are real playback */
 
   var STILL = matchMedia('(prefers-reduced-motion: reduce)');
   var FINE  = matchMedia('(hover: hover) and (pointer: fine)');
-  var EX = 0.4797, EY = 0.4997;      /* the pupils' own middle in the frame */
+  var EX = 0.4797, EY = 0.4997;          /* the pupils' own middle in the frame */
   var DEAD = 0.16;
   var page = document.getElementById('pgResume');
+  var now = function(){ return window.performance ? performance.now() : Date.now(); };
 
-  var mx = 0, my = 0, have = false, ready = false;
-  var targetTime = CENTRE, shownTime = CENTRE, lastSeek = -1;
-  var raf = 0, last = 0, seeking = false, wantFrame = -1;
+  var ready = false, shown_once = false, canPlay = true, armed = false;
+  var have = false, mx = 0, my = 0;
+  var pend = false, pendAt = 0, pux = 0, puy = 0, pendRest = false;
+  var lastux = 99, lastuy = 99;
+  var target = REST, shown = REST, vel = 0, mode = 'idle';
+  var raf = 0, last = 0, seeking = false, seekFrame = -1;
 
-  v.addEventListener('seeking', function(){ seeking = true; });
-  /* a seek landing is what lets the next one go, so the loop has to be woken
-     by it — otherwise the last position asked for while one was in flight is
-     simply dropped and the playhead stops short */
-  v.addEventListener('seeked',  function(){ seeking = false; want(); });
+  /* the nearest frame that looks where the mouse is asking — nearest in gaze
+     first, and among equals, nearest in the film, so he takes the short way.
 
-  function seek(t){
-    /* it must never actually run. A paused video that slips into playback
-       walks the playhead on its own and the eyes read as a loop. */
-    if (!v.paused) { try { v.pause(); } catch(e){} }
-    /* one frame is 41.7ms — never ask for a seek finer than the source can
-       answer, and never queue one while the last is still landing */
-    wantFrame = Math.max(0, Math.min(Math.round(FPS*DUR) - 1, Math.round(t * FPS)));
-    if (wantFrame === lastSeek || seeking) return;
-    lastSeek = wantFrame;
-    v.currentTime = (wantFrame + 0.5) / FPS;   /* mid-frame, so rounding cannot alias */
+     The vertical is CENTRED on the take's own median (-0.456) rather than on
+     zero, because his eyes sit high through most of it: judged against a raw
+     zero, a cursor level with his face reads as "look down a bit", and that
+     pulled the horizontal off its extremes — a hard right landed one frame
+     short of the furthest right in the clip. It also carries less weight than
+     the horizontal, which is the axis the take actually spends itself on. */
+  var VMID = -0.456, VGAIN = 0.45;
+  function targetFor(ux, uy, from){
+    var vy = Math.max(-1, Math.min(1, VMID + uy * VGAIN));
+    var best = 0, bc = 1e9;
+    for (var f = 0; f < N; f++){
+      if (SHUT.charCodeAt(f) === 49) continue;
+      var dx = NX[f] - ux, dy = NY[f] - vy, t = (f + 0.5) * FRAME;
+      var c = dx*dx + 0.12*dy*dy + 0.020*Math.abs(t - from);
+      if (c < bc){ bc = c; best = f; }
+    }
+    return (best + 0.5) * FRAME;
   }
 
-  function want(){ if (!raf){ last = 0; raf = requestAnimationFrame(tick); } }
+  function seek(t){
+    var f = Math.max(0, Math.min(N - 1, Math.floor(t * FPS)));
+    if (f === seekFrame || seeking) return;
+    seekFrame = f;
+    try { v.currentTime = (f + 0.5) * FRAME; } catch(e){}
+  }
+  v.addEventListener('seeking', function(){ seeking = true; });
+  v.addEventListener('seeked', function(){
+    seeking = false;
+    if (!shown_once){ shown_once = true; av.classList.add('on'); }
+    if (mode === 'step') wake();
+  });
+
+  function wake(){ if (!raf){ last = 0; raf = requestAnimationFrame(tick); } }
+
+  function halt(){ if (mode === 'play'){ try { v.pause(); } catch(e){} } mode = 'step'; }
+  function settle(){ halt(); shown = target; vel = 0; seek(target); }
 
   function tick(ts){
     raf = 0;
-    var dt = last ? Math.min(64, ts - last) : 16.7; last = ts;
+    var dt = last ? Math.min(0.05, (ts - last) / 1000) : 1/60; last = ts;
 
-    if (have && ready && !(page && page.hidden)){
-      var r = av.getBoundingClientRect();
-      if (r.width){
-        var ox = r.left + r.width * EX, oy = r.top + r.height * EY;
-        var R = Math.max(260, Math.min(innerWidth, innerHeight) * 0.55);
-        var ux = (mx - ox) / R, uy = (my - oy) / R;
-        var len = Math.hypot(ux, uy);
-        if (len < DEAD) targetTime = CENTRE;
-        else {
-          if (len > 1){ ux /= len; uy /= len; }
-          targetTime = timeFor(ux);
-        }
+    if (mode === 'play') shown = v.currentTime;
+
+    if (pend && ts >= pendAt){
+      pend = false;
+      target = pendRest ? REST : targetFor(pux, puy, shown);
+    }
+    if (page && page.hidden) target = REST;
+
+    var dist = target - shown, ad = Math.abs(dist);
+    if (ad <= STOPD){
+      /* ARRIVED. Hold the frame and drop the velocity on the spot. Carrying a
+         velocity through arrival is what walks the playhead straight back off
+         the target — and since sign(0) is not positive, it walks BACKWARDS,
+         which is how a move to his right used to land on a look to his left.
+         The deceleration has already happened on the way in: speed is tied to
+         the distance left, so he is down to 0.11x by the time he gets here. */
+      settle();
+      /* a request still inside its 80ms of thinking time is a request; ending
+         the loop here is what would drop it */
+      if (!pend){ mode = 'idle'; return; }
+      raf = requestAnimationFrame(tick); return;
+    }
+
+    /* Ordinary moves run at 0.72x — slow enough to have weight. A long haul
+       gets a higher ceiling, because some gaze changes genuinely cost two
+       seconds of film: the take only looks hard right around f20-28, so
+       arriving there from the settled centre means playing the whole left
+       swing on the way. At 0.72x that reads as a stall; the ramp brings it in
+       around two seconds, which reads as him looking round the room. */
+    var top = TOP + (TOPFAR - TOP) * Math.max(0, Math.min(1, (ad - 0.6) / 1.2));
+    var sp = Math.min(top, Math.max(FLOOR, ad / REACH));
+    vel += ((dist > 0 ? sp : -sp) - vel) * (1 - Math.exp(-dt / ACC));
+
+    if (canPlay && vel > 0 && dist > PLAYD && !(page && page.hidden)){
+      if (mode !== 'play'){
+        mode = 'play';
+        var p = v.play();
+        if (p && p.then) p.then(null, function(){ canPlay = false; mode = 'step'; });
       }
-    } else targetTime = CENTRE;
+      try { v.playbackRate = Math.max(0.0625, Math.min(4, vel)); } catch(e){}
+      if (v.currentTime > DUR - FRAME) halt();
+    } else {
+      halt();
+      shown += vel * dt;
+      if ((dist > 0 && shown > target) || (dist < 0 && shown < target)) shown = target;
+      if (shown < FRAME * 0.5){ shown = FRAME * 0.5; vel = 0; }
+      if (shown > DUR - FRAME * 0.5){ shown = DUR - FRAME * 0.5; vel = 0; }
+      seek(shown);
+    }
+    raf = requestAnimationFrame(tick);
+  }
 
-    /* the trail: framerate-independent, so it feels the same at 60 and 120 */
-    var k = 1 - Math.pow(1 - 0.16, dt / 16.7);
-    shownTime += (targetTime - shownTime) * k;
-    if (ready) seek(shownTime);
+  function request(ux, uy, isRest){
+    if (isRest){ ux = 99; uy = 99; }
+    if (Math.abs(ux - lastux) < TWITCH && Math.abs(uy - lastuy) < TWITCH) return;
+    lastux = ux; lastuy = uy; pux = ux; puy = uy; pendRest = isRest;
+    pend = true; pendAt = now() + DELAY;
+    wake();
+  }
 
-    /* keep going while the eased time is still travelling OR while the frame
-       on screen is not yet the one asked for */
-    if (Math.abs(targetTime - shownTime) > FRAME * 0.25 || wantFrame !== lastSeek || seeking)
-      raf = requestAnimationFrame(tick);
+  function aim(){
+    if (!ready) return;
+    if (!have || (page && page.hidden)){ request(0, 0, true); return; }
+    var r = av.getBoundingClientRect();
+    if (!r.width) return;
+    var ox = r.left + r.width * EX, oy = r.top + r.height * EY;
+    var R = Math.max(260, Math.min(innerWidth, innerHeight) * 0.55);
+    var ux = (mx - ox) / R, uy = (my - oy) / R;
+    var len = Math.hypot(ux, uy);
+    if (len < DEAD){ request(0, 0, true); return; }
+    if (len > 1){ ux /= len; uy /= len; }
+    request(ux, uy, false);
   }
 
   function start(){
+    if (ready) return;
     ready = true;
+    v.loop = false;
     try { v.pause(); } catch(e){}
-    lastSeek = -1; seek(CENTRE);
-    av.classList.add('on');
+    target = shown = REST; seekFrame = -1; seek(REST);
+    /* if the seek never lands (a decoder that will not answer), still show him */
+    setTimeout(function(){ if (!shown_once){ shown_once = true; av.classList.add('on'); } }, 600);
   }
-  /* held paused from the moment it can paint. Seeking a loaded video is what
-     makes it show a frame — no play() is needed, and calling one is what let
-     it run away. */
-  v.addEventListener('loadeddata', function(){ try { v.pause(); } catch(e){} start(); });
-  v.addEventListener('play', function(){ try { v.pause(); } catch(e){} });
-  if (v.readyState >= 2) v.dispatchEvent(new Event('loadeddata'));
+  v.addEventListener('loadeddata', start);
+  if (v.readyState >= 2) start();
+
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) halt(); });
 
   function arm(){
-    if (STILL.matches || !FINE.matches){
-      have = false; targetTime = shownTime = CENTRE; if (ready) seek(CENTRE);
-      return;
-    }
+    if (STILL.matches || !FINE.matches){ have = false; request(0, 0, true); return; }
+    if (armed) return;
+    armed = true;
     addEventListener('pointermove', function(e){
       if (e.pointerType && e.pointerType !== 'mouse') return;
-      mx = e.clientX; my = e.clientY; have = true; want();
+      mx = e.clientX; my = e.clientY; have = true; aim();
     }, {passive:true});
-    var off = function(){ have = false; want(); };
+    var off = function(){ have = false; aim(); };
     addEventListener('pointerleave', off, {passive:true});
     addEventListener('blur', off);
     document.addEventListener('mouseleave', off, {passive:true});
-    addEventListener('scroll', function(){ if (have) want(); }, {passive:true});
-    addEventListener('resize', function(){ if (have) want(); }, {passive:true});
+    addEventListener('scroll', function(){ if (have) aim(); }, {passive:true});
+    addEventListener('resize', function(){ if (have) aim(); }, {passive:true});
   }
   arm();
   if (STILL.addEventListener) STILL.addEventListener('change', arm);
