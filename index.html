@@ -1818,19 +1818,25 @@
         -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
         -webkit-mask-composite:source-over;mask-composite:add}
   .abch.on{opacity:1}
-  /* ONE video. Its own mask is the character's silhouette, taken as the
-     intersection of every frame's matte — the head does not translate in this
-     take (the top edge moves one pixel across 97 frames), so the intersection
-     holds 97.4% of him and is guaranteed to sit inside every single frame.
-     Under it, every pixel outside him carries the colour of the nearest pixel
-     of him, so neither 4:2:0 chroma nor the downscale to 448 can pull the
-     clip's white ground into the edge. The circle clip above is a separate
-     layer on the parent, which keeps each mask to one job. */
-  .abvid{display:block;width:100%;height:100%;object-fit:contain;
-        -webkit-mask-image:url(media/abgaze-mask.png);
-        mask-image:url(media/abgaze-mask.png);
-        -webkit-mask-size:100% 100%;mask-size:100% 100%;
-        -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+  /* ONE video, and it carries its own alpha. It was masked with a single
+     silhouette before — the intersection of all 97 mattes — and that is what
+     was slicing his cheek: he is not rigid in this take, so his outline moves
+     9 to 16px at the jaw and up to 45px through the hair, and no one static
+     shape can fit every frame. Anything narrow enough never to leak is narrow
+     enough to cut.
+
+     So the film is 448 wide by 896 tall: the picture on top, that frame's own
+     matte underneath. A canvas draws them back together, sampling the top half
+     for colour and the bottom half for alpha, which means the alpha travels
+     WITH the picture. Under the matte, every pixel outside him already carries
+     the colour of the nearest pixel of him, so neither 4:2:0 chroma nor the
+     downscale to 448 can pull the clip's white ground into the edge. The
+     circle clip stays on the parent, one job per layer. */
+  .abvid{display:block;width:100%;height:100%}
+  /* the source stays in the document — a display:none video stops feeding
+     frames — but it is never the thing you look at */
+  .abgsrc{position:absolute;left:0;top:0;width:1px;height:1px;
+        opacity:0;pointer-events:none}
   /* the full stop is a drawn circle, so it can carry the pulse */
   .abdot{flex:none;display:block;
          width:calc(var(--abhl) * var(--ab-dot));
@@ -7074,7 +7080,7 @@
       <div class="abr2" aria-hidden="true"><span class="abline abword"><span class="txt">S<span class="ke">E</span>TS</span></span><span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span></div>
       <div class="abbot">
         <span class="abline abword abwide"><span class="txt"><span class="kt">T</span>HE</span></span>
-        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span><span class="abch" id="abCh" aria-hidden="true"><video class="abvid" id="abGaze" muted playsinline preload="auto" disablepictureinpicture disableremoteplayback><source src="media/abgaze.webm" type="video/webm"><source src="media/abgaze.mp4" type="video/mp4"></video></span></span>
+        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span><span class="abch" id="abCh" aria-hidden="true"><canvas class="abvid" id="abGazeC" width="448" height="448"></canvas><video class="abgsrc" id="abGaze" muted playsinline preload="auto" disablepictureinpicture disableremoteplayback><source src="media/abgaze.webm" type="video/webm"><source src="media/abgaze.mp4" type="video/mp4"></video></span></span>
         <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span><span class="pe">E</span></span></span><i class="abdot" aria-hidden="true"></i></span>
       </div>
     </div>
@@ -12789,10 +12795,78 @@
    That is where he sits with no mouse, on a touch screen, and under
    prefers-reduced-motion. */
 (function(){
-  var av = document.getElementById('abCh'), v = document.getElementById('abGaze');
-  if (!av || !v) return;
+  var av = document.getElementById('abCh'), v = document.getElementById('abGaze'),
+      cv = document.getElementById('abGazeC');
+  if (!av || !v || !cv) return;
 
   var FPS = 24, N = 97, FRAME = 1/FPS, DUR = N/FPS;
+
+  /* ── putting the film back together ──────────────────────────────────
+     The source is double height: picture on top, that frame's matte below.
+     A shader samples both in one pass and writes premultiplied colour, so the
+     alpha is per-frame and costs one texture upload a draw. A 2D path stands
+     behind it for anything without WebGL — same result, a pixel loop instead
+     of a shader. */
+  var gl = null, tex = null, twoD = null, off = null, offc = null, buf = null;
+  try {
+    gl = cv.getContext('webgl', {alpha:true, premultipliedAlpha:true,
+                                 antialias:false, depth:false, stencil:false});
+  } catch(e){ gl = null; }
+  if (gl){
+    var vs = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vs, 'attribute vec2 p;varying vec2 u;void main(){' +
+      'u=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}');
+    gl.compileShader(vs);
+    var fs = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fs, 'precision mediump float;varying vec2 u;uniform sampler2D t;' +
+      'void main(){float y=u.y*.5;vec3 c=texture2D(t,vec2(u.x,y)).rgb;' +
+      'float a=texture2D(t,vec2(u.x,y+.5)).r;gl_FragColor=vec4(c*a,a);}');
+    gl.compileShader(fs);
+    var pr = gl.createProgram();
+    gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) gl = null;
+    else {
+      gl.useProgram(pr);
+      var vb = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+      var loc = gl.getAttribLocation(pr, 'p');
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.viewport(0, 0, cv.width, cv.height);
+      cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); gl = null; });
+    }
+  }
+  if (!gl){
+    twoD = cv.getContext('2d');
+    off = document.createElement('canvas'); off.width = 448; off.height = 896;
+    offc = off.getContext('2d', {willReadFrequently:true});
+  }
+  function paint(){
+    if (v.readyState < 2) return;
+    if (gl){
+      try {
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, v);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      } catch(e){}
+      return;
+    }
+    try {
+      offc.drawImage(v, 0, 0, 448, 896);
+      var top = offc.getImageData(0, 0, 448, 448), bot = offc.getImageData(0, 448, 448, 448);
+      var d = top.data, m = bot.data;
+      for (var i = 0, n = d.length; i < n; i += 4) d[i+3] = m[i];
+      if (!buf) buf = top;
+      twoD.putImageData(top, 0, 0);
+    } catch(e){}
+  }
   /* where the pupils sit in every frame of the take, normalised -1..1 across
      and down. Measured, not guessed: the two irises tracked through the clip
      with a template match and a shortest-path pass over the candidates, so
@@ -12814,13 +12888,24 @@
   var SHUT = '0000000000000000000000000000000000001100000000000000000000000000000000000000000011111000000000000';
   var REST = (64 + 0.5) * FRAME;         /* f65 */
 
-  var DELAY  = 80,     /* ms of thinking time before a target is committed */
-      TWITCH = 0.05,   /* anything smaller is not a request */
-      TOP    = 0.72,   /* fastest it will ever run for an ordinary move */
-      TOPFAR = 1.15,   /* ... and for a long haul, see below */
-      FLOOR  = 0.11,
-      REACH  = 0.55,   /* distance, in seconds of film, that earns full speed */
-      ACC    = 0.13,   /* seconds to lean into a move, and out of one */
+  /* SPEED IS A FRAME RATE. The source is 24fps, so playing it at 0.25x shows
+     six distinct frames a second and reads as a slideshow however smoothly the
+     playhead is being driven. That is the whole of the stagger: an earlier cut
+     tied speed to the distance left, which meant every short move, and the
+     tail of every long one, crawled — measured at 6.1 displayed fps going
+     backwards and a 300ms gap between the last two frames going forwards.
+     So there is now a floor under the rate, not just a ceiling: nothing ever
+     travels below 0.85x, which holds the picture at 20fps or better. The
+     weight he asked for comes from the response delay and the ease, not from
+     running the film slowly enough to see its frames. */
+  var DELAY  = 45,     /* ms of thinking time before a target is committed */
+      TWITCH = 0.045,  /* anything smaller is not a request */
+      TOP    = 1.00,   /* an ordinary move runs at the take's own speed */
+      TOPFAR = 1.50,   /* ... a long haul is allowed to hurry, see below */
+      FLOOR  = 0.85,   /* and nothing ever crawls: 0.85x is 20 frames a second */
+      REACH  = 0.90,
+      ACC    = 0.07,   /* seconds to lean into a move, and out of one */
+      KICK   = 0.35,   /* leaves idle already moving, so the first step is not slow */
       STOPD  = FRAME * 0.6,
       PLAYD  = 0.18;   /* forward moves longer than this are real playback */
 
@@ -12854,7 +12939,11 @@
     for (var f = 0; f < N; f++){
       if (SHUT.charCodeAt(f) === 49) continue;
       var dx = NX[f] - ux, dy = NY[f] - vy, t = (f + 0.5) * FRAME;
-      var c = dx*dx + 0.12*dy*dy + 0.020*Math.abs(t - from);
+      /* forward costs a little less than backward, because forward is real
+         playback and backward is a seek per frame — same cadence when both
+         keep up, but the decoder has the easier job of the two */
+      var d = t - from, trav = d >= 0 ? d * 0.020 : -d * 0.027;
+      var c = dx*dx + 0.12*dy*dy + trav;
       if (c < bc){ bc = c; best = f; }
     }
     return (best + 0.5) * FRAME;
@@ -12869,6 +12958,7 @@
   v.addEventListener('seeking', function(){ seeking = true; });
   v.addEventListener('seeked', function(){
     seeking = false;
+    paint();
     if (!shown_once){ shown_once = true; av.classList.add('on'); }
     if (mode === 'step') wake();
   });
@@ -12882,7 +12972,7 @@
     raf = 0;
     var dt = last ? Math.min(0.05, (ts - last) / 1000) : 1/60; last = ts;
 
-    if (mode === 'play') shown = v.currentTime;
+    if (mode === 'play'){ shown = v.currentTime; paint(); }
 
     if (pend && ts >= pendAt){
       pend = false;
@@ -12905,14 +12995,15 @@
       raf = requestAnimationFrame(tick); return;
     }
 
-    /* Ordinary moves run at 0.72x — slow enough to have weight. A long haul
-       gets a higher ceiling, because some gaze changes genuinely cost two
-       seconds of film: the take only looks hard right around f20-28, so
-       arriving there from the settled centre means playing the whole left
-       swing on the way. At 0.72x that reads as a stall; the ramp brings it in
-       around two seconds, which reads as him looking round the room. */
-    var top = TOP + (TOPFAR - TOP) * Math.max(0, Math.min(1, (ad - 0.6) / 1.2));
+    /* A long haul is allowed a higher ceiling, because some gaze changes
+       genuinely cost a second and a half of film: the take only looks hard
+       right around f20-28, so arriving there from the settled centre means
+       playing the whole left swing on the way. At walking pace that reads as
+       a stall; the ramp brings it in near a second, which reads as him
+       looking round the room. */
+    var top = TOP + (TOPFAR - TOP) * Math.max(0, Math.min(1, (ad - 0.5) / 1.0));
     var sp = Math.min(top, Math.max(FLOOR, ad / REACH));
+    if (mode === 'idle' || vel === 0) vel = dist > 0 ? KICK : -KICK;
     vel += ((dist > 0 ? sp : -sp) - vel) * (1 - Math.exp(-dt / ACC));
 
     if (canPlay && vel > 0 && dist > PLAYD && !(page && page.hidden)){
@@ -12961,7 +13052,7 @@
     ready = true;
     v.loop = false;
     try { v.pause(); } catch(e){}
-    target = shown = REST; seekFrame = -1; seek(REST);
+    target = shown = REST; seekFrame = -1; paint(); seek(REST);
     /* if the seek never lands (a decoder that will not answer), still show him */
     setTimeout(function(){ if (!shown_once){ shown_once = true; av.classList.add('on'); } }, 600);
   }
