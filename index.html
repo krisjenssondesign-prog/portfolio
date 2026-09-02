@@ -5187,7 +5187,13 @@
             background-color:transparent;      /* see .veil — the sampler */
             background-image:linear-gradient(var(--w-sur),var(--w-sur));
             display:flex;flex-direction:column;align-items:stretch;
-            padding:calc(96px + var(--safe-t)) 40px var(--safe-b);
+            /* THE HEAD STANDS WHERE THE MARK ALWAYS STANDS. 67 is the hero
+               wordmark's own cap top at 1440, measured, so opening the sheet
+               does not move the line the eye is already reading — it swaps
+               what it says. It was 118, which dropped it a row and a half
+               below the bar and read as a jump. Both are cap boxes, so the two
+               tops are one number and no leading has to be reasoned about. */
+            padding:calc(67px + var(--safe-t)) 40px var(--safe-b);
             opacity:0;pointer-events:none;
             /* visibility, not just opacity. A full-screen fixed sheet holding
                56px type is one compositing bug away from painting over the
@@ -5262,7 +5268,7 @@
     html.nav-open .nprow{animation:none} }
 
   /* 561:43823 — the list opens on 96 and runs the full 1360 */
-  .npfit{width:100%;flex:1 1 auto;min-height:0;margin-top:26px;
+  .npfit{width:100%;flex:1 1 auto;min-height:0;margin-top:40px;
          overflow-y:auto;overflow-x:clip;scrollbar-width:none}
   .npfit::-webkit-scrollbar{display:none}
   .nplist{position:relative;width:100%;padding-bottom:40px}
