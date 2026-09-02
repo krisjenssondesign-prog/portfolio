@@ -1792,19 +1792,40 @@
      He is a still image. The head cannot drift, because every frame was
      stabilised onto one head position before the asset was cut — only the
      eye patch below is ever swapped. */
-  .abch{position:absolute;left:-26.278%;top:-17.330%;
-        width:143.091%;height:143.091%;
+  .abch{position:absolute;left:-17.19%;top:-15.62%;
+        width:115.64%;height:115.64%;
         background:url(media/abchar.webp) center / contain no-repeat;
         pointer-events:none;z-index:1;
-        opacity:0;transition:opacity .28s ease}
+        opacity:0;transition:opacity .28s ease;
+        /* CUT INTO THE CIRCLE, bottom only. Two mask layers added together:
+           the disc itself, and everything above the disc's own centre line.
+           So the hoodie and shoulders are taken by the arc below the middle
+           and the cap runs free over the top — which is what 720:52823 draws,
+           and what the mock's bottom edge measures as (a circle fitted to it
+           lands on centre y 300, r 177 against the disc's 310 / 176). */
+        -webkit-mask-image:radial-gradient(circle at 58.103% 56.745%,
+              #000 calc(var(--abhl) * var(--ab-av) * .5 - .5px),
+              transparent calc(var(--abhl) * var(--ab-av) * .5)),
+              linear-gradient(#000,#000);
+        mask-image:radial-gradient(circle at 58.103% 56.745%,
+              #000 calc(var(--abhl) * var(--ab-av) * .5 - .5px),
+              transparent calc(var(--abhl) * var(--ab-av) * .5)),
+              linear-gradient(#000,#000);
+        -webkit-mask-size:100% 100%, 100% 56.745%;
+        mask-size:100% 100%, 100% 56.745%;
+        -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+        -webkit-mask-composite:source-over;mask-composite:add}
   .abch.on{opacity:1}
   /* 238 / 222 / 166 x 76 of the 640 frame — the eyes and nothing else. The
      sheet is 20 states stacked, and the border of each is feathered 6px so
      the join into the base cannot be read. */
-  .abeyes{position:absolute;left:37.1875%;top:34.6875%;
-        width:25.9375%;height:11.875%;
-        background:url(media/abeyes.webp) 0 0 / 100% 2000% no-repeat;
-        will-change:background-position}
+  /* 226 / 282 / 192 x 92 of the 640 frame. TWO layers, not one: the second
+     is cross-faded over the first by how close the cursor is to each state,
+     so the eyes travel continuously instead of stepping between stills. */
+  .abeyes{position:absolute;left:35.3125%;top:44.0625%;
+        width:30%;height:14.375%;
+        background:url(media/abeyes.webp) 0 0 / 100% 6700% no-repeat;
+        will-change:background-position,opacity}
   /* the full stop is a drawn circle, so it can carry the pulse */
   .abdot{flex:none;display:block;
          width:calc(var(--abhl) * var(--ab-dot));
@@ -7048,7 +7069,7 @@
       <div class="abr2" aria-hidden="true"><span class="abline abword"><span class="txt">S<span class="ke">E</span>TS</span></span><span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span></div>
       <div class="abbot">
         <span class="abline abword abwide"><span class="txt"><span class="kt">T</span>HE</span></span>
-        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span><span class="abch" id="abCh" aria-hidden="true"><i class="abeyes" id="abEyes"></i></span></span>
+        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span><span class="abch" id="abCh" aria-hidden="true"><i class="abeyes" id="abEyesA"></i><i class="abeyes" id="abEyesB"></i></span></span>
         <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span><span class="pe">E</span></span></span><i class="abdot" aria-hidden="true"></i></span>
       </div>
     </div>
@@ -12726,38 +12747,55 @@
 </script>
 <script>
 /* ── the gaze ─────────────────────────────────────────────────────────
-   The source is a 4s clip of one eye sweep. It was taken apart rather than
-   played: every frame stabilised onto a single head position, the white
-   ground keyed out to real alpha, and then only the EYE RECTANGLE cut out
-   of twenty of them. So the character on the page is one still image and
-   the only thing that ever changes is a 166x76 patch over his eyes. He
-   cannot move, drift, rotate or scale, because there is nothing in the
-   asset that could.
+   The clip is taken apart, not played. Every frame is aligned, the white
+   ground keyed to real alpha, and only the EYE RECTANGLE — 192x92 of the 640
+   frame — cut out of thirty-two of them. The character on the page is one
+   still image; the only thing that ever changes is a patch over his eyes, so
+   he cannot move, drift, rotate or scale.
 
-   WHAT THE CLIP ACTUALLY CONTAINS, measured rather than assumed: the pupils
-   travel 10.7px across and only 2.7px up and down, so the horizontal gaze
-   is real and the vertical is a quarter of it. The nine directions are not
-   evenly spaced either — the sweep runs left at 0.5-1.3s, right at
-   1.7-2.1s, low-right at 2.2-2.4s, and blinks at 1.3-1.6s and 2.5-2.9s,
-   which are dropped. The twenty states below are a farthest-point pick over
-   the measured cloud, each stored as where its pupils actually sit, so the
-   nearest state to a wanted direction is the one that gets shown.
+   WHAT THIS CLIP HOLDS, measured rather than assumed: the pupils travel
+   26.8px across and 5.4px down — two and a half times the first take on both
+   axes, but with a 0.74-wide hole where it blinks through the middle, which is
+   bridged with coarse optical-flow in-betweens so nothing has to be jumped. Two blinks, at 1.0-1.5s and 3.3-3.6s, are dropped: half-closed lids
+   are what made the first attempt read as clip art, not the pupils.
+
+   The head in this take drifts and scales by up to 24px, so a global warp
+   could not hold it — the model redraws him slightly every frame. Each patch
+   is instead aligned to the base's own eye region, measured on a ring with
+   the eyes masked out so the gaze cannot bias the fit. Residual: under 1px.
+
+   SMOOTHNESS comes from never showing one state alone. The two nearest are
+   stacked and cross-faded by their relative distance, so at the moment the
+   second becomes the nearest they are both at half — the travel is continuous
+   and there is no frame to step to.
 
    [nx, ny], -1..1: nx -1 looks screen-left, ny -1 looks up. */
 (function(){
-  var av = document.getElementById('abCh'), eyes = document.getElementById('abEyes');
-  if (!av || !eyes) return;
+  var av = document.getElementById('abCh');
+  var LA = document.getElementById('abEyesA'), LB = document.getElementById('abEyesB');
+  if (!av || !LA || !LB) return;
 
-  var G = [[0.2401,0.0052],[-0.9161,0.8534],[0.9077,-1],[0.6026,1],[1,0.071],
-           [-0.2395,0.6235],[-0.6481,0.2666],[0.6291,-0.5435],[0.2235,0.6713],
-           [0.8115,0.4319],[0.6239,-0.0665],[-0.5996,0.6221],[0.0372,0.2938],
-           [0.9413,-0.4733],[0.5635,0.232],[-0.9367,0.5663],[0.525,0.7315],
-           [0.9396,-0.1969],[0.3002,0.3196],[0.5305,-0.3011]];
-  var N = G.length, N0 = 0;                 /* index 0 is the forward state */
+  var G = [
+           [0.2568,0.6271],[0.2386,0.5958],[0.476,0.6882],[0.6619,0.4658],
+           [0.7778,0.6855],[0.8112,0.6461],[0.9064,0.7819],[0.907,0.6435],
+           [0.9005,0.7549],[0.9275,0.6577],[0.982,0.8431],[1,0.789],
+           [0.9372,0.7905],[0.9733,0.9384],[0.9267,0.7471],[0.9126,0.5173],
+           [0.9926,0.9352],[0.9308,0.6383],[0.9283,0.6744],[0.9443,0.6663],
+           [0.9172,0.6237],[0.9563,0.5535],[0.8904,0.5653],[0.7589,0.1079],
+           [-1,0.4476],[-0.8979,0.8413],[-0.9871,0.4842],[-0.941,0.8004],
+           [-0.896,0.715],[-0.8593,0.6427],[-0.8409,0.9832],[-0.8426,0.7291],
+           [-0.8616,0.8111],[-0.8397,0.8211],[-0.895,0.8233],[-0.8489,0.9411],
+           [-0.8746,0.8705],[-0.5496,0.7182],[-0.4813,-0.016],[0.3975,-1],
+           [-0.8566,0.8348],[-0.7571,0.5241],[-0.5642,0.2466],[0.6979,0.7038],
+           [0.8131,0.7782],[0.8647,0.8982],[0.8922,0.6559],[0.9078,1],
+           [0.9483,0.8491],[0.9637,0.9608],[0.948,0.8141],[0.953,0.7479],
+           [0.9357,0.473],[0.9303,0.6484],[0.89,0.6074],[0.9023,0.665],
+           [0.8939,0.7769],[0.9151,0.7893],[0.8784,0.7687],[0.8318,0.6489],
+           [0.8328,0.7463],[0.8235,0.4702],[0.2636,0.5685],[0.2624,0.4621],
+           [0.2753,0.5867],[0.2653,0.5818],[0.2812,0.5063]];
+  var N = G.length, N0 = 38;
   var NX = G[N0][0], NY = G[N0][1];
 
-  /* preload both halves before he appears, so the eyes are never a beat
-     behind the face */
   var left = 2;
   ['media/abchar.webp','media/abeyes.webp'].forEach(function(u){
     var im = new Image();
@@ -12765,79 +12803,70 @@
     im.src = u;
   });
 
-  var cur = -1;
-  function show(i){
-    if (i === cur) return;
-    cur = i;
-    eyes.style.backgroundPositionY = (i / (N - 1) * 100) + '%';
+  var STEP = 100 / (N - 1);
+  var ca = -1, cb = -1, cw = -1;
+  function paint(a, b, w){
+    if (a !== ca){ ca = a; LA.style.backgroundPositionY = (a * STEP) + '%'; }
+    if (b !== cb){ cb = b; LB.style.backgroundPositionY = (b * STEP) + '%'; }
+    if (w !== cw){ cw = w; LB.style.opacity = w; }
   }
-  /* The across-axis is weighted 3x in the match. Not a preference — the
-     clip's vertical pupil travel is 2.7px against 10.7px across, which at the
-     size he is drawn works out under a pixel, so the up/down component is
-     invisible while the left/right one is the whole effect. Matching them
-     evenly let a cursor straight overhead pull his eyes to the right, which
-     is worse than the vertical simply not arriving. */
-  var WX = 3;
-  function nearest(x, y){
-    var b = N0, bd = 1e9;
+
+  /* Across is weighted: the clip's vertical travel is a fifth of its
+     horizontal, so an evenly matched pick would let a cursor overhead drag
+     his eyes sideways to reach a state that is barely higher. */
+  var WX = 2;
+  function put(x, y){
+    var i1 = N0, d1 = 1e9, i2 = N0, d2 = 1e9;
     for (var i = 0; i < N; i++){
-      var dx = (G[i][0] - x) * WX, dy = G[i][1] - y, d = dx*dx + dy*dy;
-      if (d < bd){ bd = d; b = i; }
+      var dx = (G[i][0] - x) * WX, dy = G[i][1] - y, d = Math.sqrt(dx*dx + dy*dy);
+      if (d < d1){ d2 = d1; i2 = i1; d1 = d; i1 = i; }
+      else if (d < d2){ d2 = d; i2 = i; }
     }
-    return b;
+    /* at the hand-over the two are equidistant and both sit at a half, so the
+       swap happens with nothing to see */
+    var w = (d1 + d2) > 1e-6 ? d1 / (d1 + d2) : 0;
+    paint(i1, i2, Math.round(w * 100) / 100);
   }
-  show(N0);
+  put(NX, NY);
 
   var STILL = matchMedia('(prefers-reduced-motion: reduce)');
   var FINE  = matchMedia('(hover: hover) and (pointer: fine)');
 
-  /* the pupils' own middle, 321/259 of the 640 frame, is the origin the
-     angle is taken from — not the box, and not the disc */
-  var EX = 0.501562, EY = 0.404688;
-  var DEAD = 0.16;            /* inside this the eyes just face forward */
+  var EX = 0.4945, EY = 0.50625;   /* the pupils' own middle in the 640 frame */
+  var DEAD = 0.16;
   var page = document.getElementById('pgResume');
 
   var mx = 0, my = 0, have = false;
   var tx = NX, ty = NY, cx = NX, cy = NY, raf = 0, last = 0;
-
-  function want(){ if (!raf) { last = 0; raf = requestAnimationFrame(tick); } }
+  function want(){ if (!raf){ last = 0; raf = requestAnimationFrame(tick); } }
 
   function tick(ts){
     raf = 0;
     var dt = last ? Math.min(64, ts - last) : 16.7; last = ts;
-
     if (have && !(page && page.hidden)){
       var r = av.getBoundingClientRect();
       if (r.width){
         var ox = r.left + r.width * EX, oy = r.top + r.height * EY;
-        /* one radius for both axes, off the smaller side of the window, so
-           the reach feels the same however the window is shaped */
         var R = Math.max(260, Math.min(innerWidth, innerHeight) * 0.55);
         var ux = (mx - ox) / R, uy = (my - oy) / R;
         var len = Math.hypot(ux, uy);
         if (len < DEAD){ tx = NX; ty = NY; }
         else {
           if (len > 1){ ux /= len; uy /= len; }
-          /* 0 lands on the forward state and ±1 on the far edge of what the
-             clip actually holds, so nothing is asked of it that is not there */
           tx = NX + ux * (ux > 0 ? 1 - NX : 1 + NX);
           ty = NY + uy * (uy > 0 ? 1 - NY : 1 + NY);
         }
       }
     } else { tx = NX; ty = NY; }
-
-    /* framerate-independent ease — a short lag, not a lock */
     var k = 1 - Math.pow(1 - 0.16, dt / 16.7);
     cx += (tx - cx) * k; cy += (ty - cy) * k;
-    show(nearest(cx, cy));
-
-    if (Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002) raf = requestAnimationFrame(tick);
+    put(cx, cy);
+    if (Math.abs(tx - cx) > 0.0015 || Math.abs(ty - cy) > 0.0015) raf = requestAnimationFrame(tick);
   }
 
   function arm(){
     if (STILL.matches || !FINE.matches){
-      have = false; cx = tx = NX; cy = ty = NY; show(N0);
-      return;
+      have = false; cx = tx = NX; cy = ty = NY; put(NX, NY); return;
     }
     addEventListener('pointermove', function(e){
       if (e.pointerType && e.pointerType !== 'mouse') return;
