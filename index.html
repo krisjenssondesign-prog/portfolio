@@ -1763,8 +1763,9 @@
      one face, the photograph on the other, turning on the same axis. The
      source lives here once, as a custom property, so both faces can wear it
      without the file carrying the image twice. */
-  .abav{--abav:url(media/abav.webp);
-        flex:none;width:calc(var(--abhl) * var(--ab-av));
+  /* the old ringed-circle asset is gone — the disc is drawn and the character
+     is his own transparent layer, so nothing points at abav.webp any more */
+  .abav{flex:none;width:calc(var(--abhl) * var(--ab-av));
         height:calc(var(--abhl) * var(--ab-av));
         border-radius:999px;display:block;perspective:var(--flip-persp)}
   .abavcard{position:relative;display:block;width:100%;height:100%;
