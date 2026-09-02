@@ -5187,7 +5187,7 @@
             background-color:transparent;      /* see .veil — the sampler */
             background-image:linear-gradient(var(--w-sur),var(--w-sur));
             display:flex;flex-direction:column;align-items:stretch;
-            padding:calc(118px + var(--safe-t)) 40px var(--safe-b);
+            padding:calc(96px + var(--safe-t)) 40px var(--safe-b);
             opacity:0;pointer-events:none;
             /* visibility, not just opacity. A full-screen fixed sheet holding
                56px type is one compositing bug away from painting over the
@@ -5217,7 +5217,20 @@
           font-family:var(--font-ui);font-size:20px;font-weight:700;
           line-height:1.45;letter-spacing:-.02em;text-transform:uppercase;
           color:#F8F8F8;white-space:nowrap}
-  .npmark i{font-style:normal;font-weight:700;color:#71747B}
+  /* KRIS leads, the slash steps back, CASE STUDIES carries the line */
+  .npmark .npk,.npmark i{font-weight:700;color:var(--w-2)}
+  .npmark i{font-style:normal}
+  .npmark .npk{text-box:trim-both cap alphabetic;
+          text-box-trim:trim-both;text-box-edge:cap alphabetic;display:block}
+  /* the two links live on the head's own line rather than in a footer under
+     a list that is taller than the sheet — the head is the only row here
+     that is always on screen */
+  .npact{display:flex;align-items:center;gap:12px;
+         font-family:var(--font-ui);font-size:16px;font-weight:500;
+         letter-spacing:-.02em;text-transform:uppercase;white-space:nowrap}
+  .npact .npl{color:var(--w-2);transition:color .3s ease}
+  .npact .npl:hover{color:var(--w-1)}
+  .npact .npsl{font-style:normal;color:#515151}
   .npmark i,.npmark b{display:block;
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -5249,7 +5262,7 @@
     html.nav-open .nprow{animation:none} }
 
   /* 561:43823 — the list opens on 96 and runs the full 1360 */
-  .npfit{width:100%;flex:1 1 auto;min-height:0;margin-top:35px;
+  .npfit{width:100%;flex:1 1 auto;min-height:0;margin-top:26px;
          overflow-y:auto;overflow-x:clip;scrollbar-width:none}
   .npfit::-webkit-scrollbar{display:none}
   .nplist{position:relative;width:100%;padding-bottom:40px}
@@ -5786,9 +5799,12 @@
     .byline{position:absolute;left:var(--m);bottom:calc(
               var(--lines-top, 161px) + 64px);
             top:auto;
-            display:flex;flex-direction:column;align-items:flex-start;gap:3px;
+            display:flex;flex-direction:column;align-items:flex-start;gap:7px;
             width:auto;margin:0;text-transform:none;letter-spacing:0}
-    /* Redrawn: 22 SemiBold, not 28 Medium, on a 3 gap rather than 6. The two
+    /* Redrawn: 22 SemiBold, not 28 Medium. The frame's 3 is a gap between two
+       CAP BOXES; once both lines carry the trim those boxes close right up on
+       each other and the pair read as one block, so it is 7 here — the drawn
+       3 plus the 4 he asked for back. The two
        lines are cap boxes — 16 and 28 — so the block stands 47 tall against
        the 67 it was, which is what the frame measures. The handle takes the
        same 22 as the words and keeps its own 1.25 and 2% tracking: the 28 it
@@ -8006,7 +8022,13 @@
   <div class="navpanel" id="navPanel" role="dialog" aria-modal="true"
        aria-label="Case studies">
     <div class="nphead">
-      <p class="npmark"><i aria-hidden="true">/</i><b>Case studies</b></p>
+      <p class="npmark"><b class="npk">Kris</b><i aria-hidden="true">/</i><b>Case studies</b></p>
+      <div class="npact">
+        <a class="npl" href="https://www.linkedin.com/in/krisjensson/"
+           target="_blank" rel="noopener">LinkedIn</a>
+        <i class="npsl" aria-hidden="true">/</i>
+        <a class="npl" href="mailto:hello@krisjensson.design">Get in touch</a>
+      </div>
       <button class="npclose" type="button" aria-label="Close the menu"><span class="npcx" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5 5 15M5 5l10 10" stroke-width="1.43" stroke-linecap="round"/></svg></span></button>
     </div>
     <div class="npfit"><div class="nplist" id="npList">
