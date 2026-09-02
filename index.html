@@ -1804,14 +1804,23 @@
            its own centre line — so the hoodie and shoulders are taken by the
            arc below the middle and the cap runs free over the top. A circle
            fitted to the mock's bottom edge lands on centre y 300, r 177
-           against the disc's 310 / 176, which is what says it is a clip. */
+           against the disc's 310 / 176, which is what says it is a clip.
+
+           The clip runs 1px WIDE of the disc, not level with it. Level was
+           what put a hairline of the gradient under him along the bottom arc:
+           the disc paints solid to its radius and antialiases out, while the
+           clip was already fading from half a pixel inside it, so for a sliver
+           the disc was showing through a character that had gone translucent.
+           Carrying the clip past the disc hands that sliver to him instead,
+           and what spills beyond is hoodie — near-black, on a near-black
+           page, at the one part of the circle he already fills edge to edge. */
         -webkit-mask-image:radial-gradient(circle at 47.248% 58.893%,
-              #000 calc(var(--abhl) * var(--ab-av) * .5 - .5px),
-              transparent calc(var(--abhl) * var(--ab-av) * .5)),
+              #000 calc(var(--abhl) * var(--ab-av) * .5 + 1px),
+              transparent calc(var(--abhl) * var(--ab-av) * .5 + 1.75px)),
               linear-gradient(#000,#000);
         mask-image:radial-gradient(circle at 47.248% 58.893%,
-              #000 calc(var(--abhl) * var(--ab-av) * .5 - .5px),
-              transparent calc(var(--abhl) * var(--ab-av) * .5)),
+              #000 calc(var(--abhl) * var(--ab-av) * .5 + 1px),
+              transparent calc(var(--abhl) * var(--ab-av) * .5 + 1.75px)),
               linear-gradient(#000,#000);
         -webkit-mask-size:100% 100%, 100% 58.893%;
         mask-size:100% 100%, 100% 58.893%;
@@ -1832,7 +1841,17 @@
      the colour of the nearest pixel of him, so neither 4:2:0 chroma nor the
      downscale to 448 can pull the clip's white ground into the edge. The
      circle clip stays on the parent, one job per layer. */
-  .abvid{display:block;width:100%;height:100%}
+  /* The still is the rest frame, and it is what a phone gets: no cursor to
+     follow means nothing to drive the film with, so the clip is never even
+     asked for there — the sources are attached in script, only once something
+     with a real pointer turns up. Same for prefers-reduced-motion. It also
+     covers the moment before the video is decodable on a desktop, so there is
+     never an empty disc: the canvas takes over on its first painted frame. */
+  .abstill,.abvid{position:absolute;inset:0;display:block;
+        width:100%;height:100%}
+  .abvid{opacity:0}
+  .abch.vid .abvid{opacity:1}
+  .abch.vid .abstill{display:none}
   /* the source stays in the document — a display:none video stops feeding
      frames — but it is never the thing you look at */
   .abgsrc{position:absolute;left:0;top:0;width:1px;height:1px;
@@ -7080,7 +7099,7 @@
       <div class="abr2" aria-hidden="true"><span class="abline abword"><span class="txt">S<span class="ke">E</span>TS</span></span><span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span></div>
       <div class="abbot">
         <span class="abline abword abwide"><span class="txt"><span class="kt">T</span>HE</span></span>
-        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span><span class="abch" id="abCh" aria-hidden="true"><canvas class="abvid" id="abGazeC" width="448" height="448"></canvas><video class="abgsrc" id="abGaze" muted playsinline preload="auto" disablepictureinpicture disableremoteplayback><source src="media/abgaze.webm" type="video/webm"><source src="media/abgaze.mp4" type="video/mp4"></video></span></span>
+        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span><span class="abch" id="abCh" aria-hidden="true"><img class="abstill" id="abStill" src="media/abchar.webp" alt="" decoding="async"><canvas class="abvid" id="abGazeC" width="448" height="448"></canvas><video class="abgsrc" id="abGaze" muted playsinline preload="none" disablepictureinpicture disableremoteplayback data-webm="media/abgaze.webm" data-mp4="media/abgaze.mp4"></video></span></span>
         <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span><span class="pe">E</span></span></span><i class="abdot" aria-hidden="true"></i></span>
       </div>
     </div>
@@ -12796,8 +12815,11 @@
    prefers-reduced-motion. */
 (function(){
   var av = document.getElementById('abCh'), v = document.getElementById('abGaze'),
-      cv = document.getElementById('abGazeC');
+      cv = document.getElementById('abGazeC'), still = document.getElementById('abStill');
   if (!av || !v || !cv) return;
+  /* the still is up straight away, so the disc is never empty */
+  if (still && still.complete) av.classList.add('on');
+  else if (still) still.addEventListener('load', function(){ av.classList.add('on'); });
 
   var FPS = 24, N = 97, FRAME = 1/FPS, DUR = N/FPS;
 
@@ -12959,7 +12981,7 @@
   v.addEventListener('seeked', function(){
     seeking = false;
     paint();
-    if (!shown_once){ shown_once = true; av.classList.add('on'); }
+    if (!shown_once){ shown_once = true; av.classList.add('on'); av.classList.add('vid'); }
     if (mode === 'step') wake();
   });
 
@@ -13053,16 +13075,30 @@
     v.loop = false;
     try { v.pause(); } catch(e){}
     target = shown = REST; seekFrame = -1; paint(); seek(REST);
-    /* if the seek never lands (a decoder that will not answer), still show him */
-    setTimeout(function(){ if (!shown_once){ shown_once = true; av.classList.add('on'); } }, 600);
   }
   v.addEventListener('loadeddata', start);
-  if (v.readyState >= 2) start();
+
+  /* NOTHING IS FETCHED UNTIL SOMETHING CAN DRIVE IT. The sources live in
+     data- attributes, so a phone never spends a megabyte on a film it has no
+     cursor to scrub. */
+  var live = false;
+  function goLive(){
+    if (live) return; live = true;
+    var w = v.getAttribute('data-webm'), m = v.getAttribute('data-mp4');
+    if (w){ var a = document.createElement('source'); a.src = w; a.type = 'video/webm'; v.appendChild(a); }
+    if (m){ var b2 = document.createElement('source'); b2.src = m; b2.type = 'video/mp4'; v.appendChild(b2); }
+    v.preload = 'auto';
+    try { v.load(); } catch(e){}
+    if (v.readyState >= 2) start();
+  }
 
   document.addEventListener('visibilitychange', function(){ if (document.hidden) halt(); });
 
   function arm(){
-    if (STILL.matches || !FINE.matches){ have = false; request(0, 0, true); return; }
+    /* a coarse pointer or a reduced-motion setting gets the still and nothing
+       else — the video is never even requested */
+    if (STILL.matches || !FINE.matches){ have = false; if (live) request(0, 0, true); return; }
+    goLive();
     if (armed) return;
     armed = true;
     addEventListener('pointermove', function(e){
