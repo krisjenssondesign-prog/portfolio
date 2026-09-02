@@ -1792,8 +1792,12 @@
      He is a still image. The head cannot drift, because every frame was
      stabilised onto one head position before the asset was cut — only the
      eye patch below is ever swapped. */
-  .abch{position:absolute;left:-17.19%;top:-15.62%;
-        width:115.64%;height:115.64%;
+  /* Fitted on his PUPILS, not on silhouette area: matching the visible teal
+     by area sank him into the disc and the cap stopped breaking out over the
+     top. Pupil separation is 58.3 on the mock's 352 disc and 81.5 on the 640
+     frame, which sets the size, and their midpoint sets the position. */
+  .abch{position:absolute;left:-11.47%;top:-26.62%;
+        width:130.10%;height:130.10%;
         background:url(media/abchar.webp) center / contain no-repeat;
         pointer-events:none;z-index:1;
         opacity:0;transition:opacity .28s ease;
@@ -1803,27 +1807,30 @@
            and the cap runs free over the top — which is what 720:52823 draws,
            and what the mock's bottom edge measures as (a circle fitted to it
            lands on centre y 300, r 177 against the disc's 310 / 176). */
-        -webkit-mask-image:radial-gradient(circle at 58.103% 56.745%,
+        -webkit-mask-image:radial-gradient(circle at 47.248% 58.893%,
               #000 calc(var(--abhl) * var(--ab-av) * .5 - .5px),
               transparent calc(var(--abhl) * var(--ab-av) * .5)),
               linear-gradient(#000,#000);
-        mask-image:radial-gradient(circle at 58.103% 56.745%,
+        mask-image:radial-gradient(circle at 47.248% 58.893%,
               #000 calc(var(--abhl) * var(--ab-av) * .5 - .5px),
               transparent calc(var(--abhl) * var(--ab-av) * .5)),
               linear-gradient(#000,#000);
-        -webkit-mask-size:100% 100%, 100% 56.745%;
-        mask-size:100% 100%, 100% 56.745%;
+        -webkit-mask-size:100% 100%, 100% 58.893%;
+        mask-size:100% 100%, 100% 58.893%;
         -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
         -webkit-mask-composite:source-over;mask-composite:add}
   .abch.on{opacity:1}
   /* 238 / 222 / 166 x 76 of the 640 frame — the eyes and nothing else. The
      sheet is 20 states stacked, and the border of each is feathered 6px so
      the join into the base cannot be read. */
-  /* 226 / 282 / 192 x 92 of the 640 frame. TWO layers, not one: the second
+  /* 232 / 296 / 158 x 56 of the 640 frame, and inside it TWO SOFT OVALS, one
+     per eye — a rectangle swapped a slab of brow and cheek with it, which the
+     model redraws every frame, so it showed as a box with a doubled eyebrow.
+     TWO layers, not one: the second
      is cross-faded over the first by how close the cursor is to each state,
      so the eyes travel continuously instead of stepping between stills. */
-  .abeyes{position:absolute;left:35.3125%;top:44.0625%;
-        width:30%;height:14.375%;
+  .abeyes{position:absolute;left:36.25%;top:46.25%;
+        width:24.6875%;height:8.75%;
         background:url(media/abeyes.webp) 0 0 / 100% 6700% no-repeat;
         will-change:background-position,opacity}
   /* the full stop is a drawn circle, so it can carry the pulse */
@@ -12832,7 +12839,7 @@
   var STILL = matchMedia('(prefers-reduced-motion: reduce)');
   var FINE  = matchMedia('(hover: hover) and (pointer: fine)');
 
-  var EX = 0.4945, EY = 0.50625;   /* the pupils' own middle in the 640 frame */
+  var EX = 0.4797, EY = 0.4997;   /* the pupils' own middle in the 640 frame */
   var DEAD = 0.16;
   var page = document.getElementById('pgResume');
 
