@@ -5742,16 +5742,24 @@
               40.15px + (var(--hl-fit, var(--hl)) * var(--hl-scale, 1) * .727)
               + 34px);
             top:auto;
-            display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+            display:flex;flex-direction:column;align-items:flex-start;gap:3px;
             width:auto;margin:0;text-transform:none;letter-spacing:0}
+    /* Redrawn: 22 SemiBold, not 28 Medium, on a 3 gap rather than 6. The two
+       lines are cap boxes — 16 and 28 — so the block stands 47 tall against
+       the 67 it was, which is what the frame measures. The handle takes the
+       same 22 as the words and keeps its own 1.25 and 2% tracking: the 28 it
+       carried before was the words' size, and it stayed behind when they
+       came down. Secondary ink on it too, #71747B, the value the phone
+       already used — the desktop's #9F9F9F was a step lighter than the token
+       for no reason the frame gives. */
     .byline p{margin:0;font-family:var(--font-ui);
-            font-size:28px;font-weight:500;line-height:1.45;color:#1A1A1A;
+            font-size:22px;font-weight:600;line-height:1.45;color:#1A1A1A;
             white-space:nowrap;
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
     .byline .byl2{display:flex;align-items:baseline;gap:8px}
-    .byline .at{font-size:28px;line-height:1.25;letter-spacing:.02em;
-            color:#9F9F9F}
+    .byline .at{font-size:22px;line-height:1.25;letter-spacing:.02em;
+            color:#71747B}
 
     /* 3:60 — the hero carries its own bar. Three page links, a quarter-black
        divider on 32 either side, then contact and the mark. */
@@ -6017,7 +6025,7 @@
        and there is nowhere for it to go. */
     .byline p{margin:0;font-family:var(--font-ui);
             font-size:min(22px, calc((100vw - 36px) / 16.13));
-            font-weight:500;
+            font-weight:600;
             line-height:1.45;letter-spacing:0;color:#1A1A1A;white-space:nowrap;
             text-box:trim-both cap alphabetic;
             text-box-trim:trim-both;text-box-edge:cap alphabetic}
@@ -6520,7 +6528,7 @@
   </div>
   <div class="byline">
     <p class="byl1">Staff Experience Designer</p>
-    <p class="byl2"><span>Currently shipping impact</span><span class="at"><span class="atg">@</span>Venmo</span></p>
+    <p class="byl2"><span>Designing &amp; building</span><span class="at"><span class="atg">@</span>Venmo</span></p>
   </div>
 </section>
 
