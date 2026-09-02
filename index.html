@@ -1796,17 +1796,19 @@
      by area sank him into the disc and the cap stopped breaking out over the
      top. Pupil separation is 58.3 on the mock's 352 disc and 81.5 on the 640
      frame, which sets the size, and their midpoint sets the position. */
+  /* Fitted on his PUPILS, not on silhouette area: matching the visible teal
+     by area sank him into the disc and the cap stopped breaking out over the
+     top. Pupil separation is 58.3 on the mock's 352 disc and 81.5 on the 640
+     frame, which sets the size, and their midpoint sets the position. */
   .abch{position:absolute;left:-11.47%;top:-26.62%;
         width:130.10%;height:130.10%;
-        background:url(media/abchar.webp) center / contain no-repeat;
         pointer-events:none;z-index:1;
         opacity:0;transition:opacity .28s ease;
-        /* CUT INTO THE CIRCLE, bottom only. Two mask layers added together:
-           the disc itself, and everything above the disc's own centre line.
-           So the hoodie and shoulders are taken by the arc below the middle
-           and the cap runs free over the top — which is what 720:52823 draws,
-           and what the mock's bottom edge measures as (a circle fitted to it
-           lands on centre y 300, r 177 against the disc's 310 / 176). */
+        /* CUT INTO THE CIRCLE, bottom only. The disc, plus everything above
+           its own centre line — so the hoodie and shoulders are taken by the
+           arc below the middle and the cap runs free over the top. A circle
+           fitted to the mock's bottom edge lands on centre y 300, r 177
+           against the disc's 310 / 176, which is what says it is a clip. */
         -webkit-mask-image:radial-gradient(circle at 47.248% 58.893%,
               #000 calc(var(--abhl) * var(--ab-av) * .5 - .5px),
               transparent calc(var(--abhl) * var(--ab-av) * .5)),
@@ -1820,19 +1822,16 @@
         -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
         -webkit-mask-composite:source-over;mask-composite:add}
   .abch.on{opacity:1}
-  /* 238 / 222 / 166 x 76 of the 640 frame — the eyes and nothing else. The
-     sheet is 20 states stacked, and the border of each is feathered 6px so
-     the join into the base cannot be read. */
-  /* 232 / 296 / 158 x 56 of the 640 frame, and inside it TWO SOFT OVALS, one
-     per eye — a rectangle swapped a slab of brow and cheek with it, which the
-     model redraws every frame, so it showed as a box with a doubled eyebrow.
-     TWO layers, not one: the second
-     is cross-faded over the first by how close the cursor is to each state,
-     so the eyes travel continuously instead of stepping between stills. */
-  .abeyes{position:absolute;left:36.25%;top:46.25%;
-        width:24.6875%;height:8.75%;
-        background:url(media/abeyes.webp) 0 0 / 100% 6700% no-repeat;
-        will-change:background-position,opacity}
+  /* ONE video, held paused. Its own mask is the character's silhouette, taken
+     as the intersection of every frame's matte so the clip's white ground can
+     never sit outside it; the frames underneath are composited on the page's
+     own dark, so a leaked pixel leaks black rather than white. The circle clip
+     above is a separate layer on the parent, which keeps each mask to one job. */
+  .abvid{display:block;width:100%;height:100%;object-fit:contain;
+        -webkit-mask-image:url(media/abgaze-mask.png);
+        mask-image:url(media/abgaze-mask.png);
+        -webkit-mask-size:100% 100%;mask-size:100% 100%;
+        -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
   /* the full stop is a drawn circle, so it can carry the pulse */
   .abdot{flex:none;display:block;
          width:calc(var(--abhl) * var(--ab-dot));
@@ -7076,7 +7075,7 @@
       <div class="abr2" aria-hidden="true"><span class="abline abword"><span class="txt">S<span class="ke">E</span>TS</span></span><span class="abline abword"><span class="txt"><span class="kt">T</span>HE</span></span></div>
       <div class="abbot">
         <span class="abline abword abwide"><span class="txt"><span class="kt">T</span>HE</span></span>
-        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span><span class="abch" id="abCh" aria-hidden="true"><i class="abeyes" id="abEyesA"></i><i class="abeyes" id="abEyesB"></i></span></span>
+        <span class="abav" role="img" aria-label="Kris Jensson"><span class="abavcard"><span class="abavface abavf is-photo"></span><span class="abavface abavb is-blank"></span></span><span class="abch" id="abCh" aria-hidden="true"><video class="abvid" id="abGaze" muted playsinline preload="auto" disablepictureinpicture disableremoteplayback><source src="media/abgaze.webm" type="video/webm"><source src="media/abgaze.mp4" type="video/mp4"></video></span></span>
         <span class="abpul"><span class="abline abword"><span class="txt"><span class="kp">P</span>U<span class="kl">L</span><span class="ks">S</span><span class="pe">E</span></span></span><i class="abdot" aria-hidden="true"></i></span>
       </div>
     </div>
@@ -12754,126 +12753,128 @@
 </script>
 <script>
 /* ── the gaze ─────────────────────────────────────────────────────────
-   The clip is taken apart, not played. Every frame is aligned, the white
-   ground keyed to real alpha, and only the EYE RECTANGLE — 192x92 of the 640
-   frame — cut out of thirty-two of them. The character on the page is one
-   still image; the only thing that ever changes is a patch over his eyes, so
-   he cannot move, drift, rotate or scale.
+   ONE video, held paused, and the mouse moves its playhead. Nothing else on
+   the page moves: not the element, not the head, not a sprite. The only thing
+   under control is which moment of the clip is on screen.
 
-   WHAT THIS CLIP HOLDS, measured rather than assumed: the pupils travel
-   26.8px across and 5.4px down — two and a half times the first take on both
-   axes, but with a 0.74-wide hole where it blinks through the middle, which is
-   bridged with coarse optical-flow in-betweens so nothing has to be jumped. Two blinks, at 1.0-1.5s and 3.3-3.6s, are dropped: half-closed lids
-   are what made the first attempt read as clip art, not the pupils.
+   THE TRACK IS ORDERED BY GAZE, NOT BY THE CLIP'S CLOCK. The take runs centre
+   -> right -> blink -> left, so its own timeline cannot map onto a cursor —
+   dragging left would send his eyes right first, then blink. The frames are
+   re-encoded in order of where the pupils actually sit, blinks dropped, so the
+   timeline IS the gaze axis: t=0 is the furthest left, t=2.75 the furthest
+   right, and it is monotone in between. That also removes the wrap problem —
+   there are no two ends to travel between the long way round.
 
-   The head in this take drifts and scales by up to 24px, so a global warp
-   could not hold it — the model redraws him slightly every frame. Each patch
-   is instead aligned to the base's own eye region, measured on a ring with
-   the eyes masked out so the gaze cannot bias the fit. Residual: under 1px.
+   Every frame is a keyframe (encoded -g 1), which is what makes seeking exact
+   and instant instead of decoding forward from the last I-frame. Two encodes:
+   VP9 for Chrome and Firefox, H.264 behind it for Safari.
 
-   SMOOTHNESS comes from never showing one state alone. The two nearest are
-   stacked and cross-faded by their relative distance, so at the moment the
-   second becomes the nearest they are both at half — the travel is continuous
-   and there is no frame to step to.
+   Measured on the source: the pupils travel 26.8px across and 5.4px down, so
+   the horizontal is the axis worth mapping — the vertical works out under two
+   pixels at the size he is drawn and rides along with it.
 
-   [nx, ny], -1..1: nx -1 looks screen-left, ny -1 looks up. */
+        LEFT   t 0.000      CENTRE  t 0.750      RIGHT  t 2.750
+   The nine directions are not evenly spaced across that, so the cursor is
+   mapped through a lookup taken from the real per-frame pupil positions
+   rather than a straight line — his eyes then move in step with the mouse
+   instead of racing and stalling. */
 (function(){
-  var av = document.getElementById('abCh');
-  var LA = document.getElementById('abEyesA'), LB = document.getElementById('abEyesB');
-  if (!av || !LA || !LB) return;
+  var av = document.getElementById('abCh'), v = document.getElementById('abGaze');
+  if (!av || !v) return;
 
-  var G = [
-           [0.2568,0.6271],[0.2386,0.5958],[0.476,0.6882],[0.6619,0.4658],
-           [0.7778,0.6855],[0.8112,0.6461],[0.9064,0.7819],[0.907,0.6435],
-           [0.9005,0.7549],[0.9275,0.6577],[0.982,0.8431],[1,0.789],
-           [0.9372,0.7905],[0.9733,0.9384],[0.9267,0.7471],[0.9126,0.5173],
-           [0.9926,0.9352],[0.9308,0.6383],[0.9283,0.6744],[0.9443,0.6663],
-           [0.9172,0.6237],[0.9563,0.5535],[0.8904,0.5653],[0.7589,0.1079],
-           [-1,0.4476],[-0.8979,0.8413],[-0.9871,0.4842],[-0.941,0.8004],
-           [-0.896,0.715],[-0.8593,0.6427],[-0.8409,0.9832],[-0.8426,0.7291],
-           [-0.8616,0.8111],[-0.8397,0.8211],[-0.895,0.8233],[-0.8489,0.9411],
-           [-0.8746,0.8705],[-0.5496,0.7182],[-0.4813,-0.016],[0.3975,-1],
-           [-0.8566,0.8348],[-0.7571,0.5241],[-0.5642,0.2466],[0.6979,0.7038],
-           [0.8131,0.7782],[0.8647,0.8982],[0.8922,0.6559],[0.9078,1],
-           [0.9483,0.8491],[0.9637,0.9608],[0.948,0.8141],[0.953,0.7479],
-           [0.9357,0.473],[0.9303,0.6484],[0.89,0.6074],[0.9023,0.665],
-           [0.8939,0.7769],[0.9151,0.7893],[0.8784,0.7687],[0.8318,0.6489],
-           [0.8328,0.7463],[0.8235,0.4702],[0.2636,0.5685],[0.2624,0.4621],
-           [0.2753,0.5867],[0.2653,0.5818],[0.2812,0.5063]];
-  var N = G.length, N0 = 38;
-  var NX = G[N0][0], NY = G[N0][1];
-
-  var left = 2;
-  ['media/abchar.webp','media/abeyes.webp'].forEach(function(u){
-    var im = new Image();
-    im.onload = im.onerror = function(){ if (!--left) av.classList.add('on'); };
-    im.src = u;
-  });
-
-  var STEP = 100 / (N - 1);
-  var ca = -1, cb = -1, cw = -1;
-  function paint(a, b, w){
-    if (a !== ca){ ca = a; LA.style.backgroundPositionY = (a * STEP) + '%'; }
-    if (b !== cb){ cb = b; LB.style.backgroundPositionY = (b * STEP) + '%'; }
-    if (w !== cw){ cw = w; LB.style.opacity = w; }
+  var FPS = 24, DUR = 2.7917, FRAME = 1/FPS;
+  var CENTRE = 0.75;
+  /* Cursor -1..1 across, through a lookup taken from the real per-frame pupil
+     positions rather than a straight line, so his eyes move IN STEP with the
+     mouse instead of racing where the clip is dense and stalling where it is
+     thin. 33 samples is finer than the eye can read at this size. */
+  var LUT = [0,0.101,0.4414,0.578,0.5978,0.6145,0.6753,0.7097,0.7142,0.7186,
+             0.7231,0.7276,0.7321,0.7366,0.741,0.7455,0.75,1.0018,1.0188,1.0359,
+             1.0584,1.0834,1.0941,1.1048,1.1154,1.1307,1.178,1.2153,1.2897,
+             1.4903,1.8178,2.495,2.75];
+  function timeFor(u){
+    var x = (u + 1) / 2 * (LUT.length - 1);
+    var i = Math.max(0, Math.min(LUT.length - 2, Math.floor(x)));
+    return LUT[i] + (LUT[i+1] - LUT[i]) * (x - i);
   }
-
-  /* Across is weighted: the clip's vertical travel is a fifth of its
-     horizontal, so an evenly matched pick would let a cursor overhead drag
-     his eyes sideways to reach a state that is barely higher. */
-  var WX = 2;
-  function put(x, y){
-    var i1 = N0, d1 = 1e9, i2 = N0, d2 = 1e9;
-    for (var i = 0; i < N; i++){
-      var dx = (G[i][0] - x) * WX, dy = G[i][1] - y, d = Math.sqrt(dx*dx + dy*dy);
-      if (d < d1){ d2 = d1; i2 = i1; d1 = d; i1 = i; }
-      else if (d < d2){ d2 = d; i2 = i; }
-    }
-    /* at the hand-over the two are equidistant and both sit at a half, so the
-       swap happens with nothing to see */
-    var w = (d1 + d2) > 1e-6 ? d1 / (d1 + d2) : 0;
-    paint(i1, i2, Math.round(w * 100) / 100);
-  }
-  put(NX, NY);
 
   var STILL = matchMedia('(prefers-reduced-motion: reduce)');
   var FINE  = matchMedia('(hover: hover) and (pointer: fine)');
-
-  var EX = 0.4797, EY = 0.4997;   /* the pupils' own middle in the 640 frame */
+  var EX = 0.4797, EY = 0.4997;      /* the pupils' own middle in the frame */
   var DEAD = 0.16;
   var page = document.getElementById('pgResume');
 
-  var mx = 0, my = 0, have = false;
-  var tx = NX, ty = NY, cx = NX, cy = NY, raf = 0, last = 0;
+  var mx = 0, my = 0, have = false, ready = false;
+  var targetTime = CENTRE, shownTime = CENTRE, lastSeek = -1;
+  var raf = 0, last = 0, seeking = false, wantFrame = -1;
+
+  v.addEventListener('seeking', function(){ seeking = true; });
+  /* a seek landing is what lets the next one go, so the loop has to be woken
+     by it — otherwise the last position asked for while one was in flight is
+     simply dropped and the playhead stops short */
+  v.addEventListener('seeked',  function(){ seeking = false; want(); });
+
+  function seek(t){
+    /* it must never actually run. A paused video that slips into playback
+       walks the playhead on its own and the eyes read as a loop. */
+    if (!v.paused) { try { v.pause(); } catch(e){} }
+    /* one frame is 41.7ms — never ask for a seek finer than the source can
+       answer, and never queue one while the last is still landing */
+    wantFrame = Math.max(0, Math.min(Math.round(FPS*DUR) - 1, Math.round(t * FPS)));
+    if (wantFrame === lastSeek || seeking) return;
+    lastSeek = wantFrame;
+    v.currentTime = (wantFrame + 0.5) / FPS;   /* mid-frame, so rounding cannot alias */
+  }
+
   function want(){ if (!raf){ last = 0; raf = requestAnimationFrame(tick); } }
 
   function tick(ts){
     raf = 0;
     var dt = last ? Math.min(64, ts - last) : 16.7; last = ts;
-    if (have && !(page && page.hidden)){
+
+    if (have && ready && !(page && page.hidden)){
       var r = av.getBoundingClientRect();
       if (r.width){
         var ox = r.left + r.width * EX, oy = r.top + r.height * EY;
         var R = Math.max(260, Math.min(innerWidth, innerHeight) * 0.55);
         var ux = (mx - ox) / R, uy = (my - oy) / R;
         var len = Math.hypot(ux, uy);
-        if (len < DEAD){ tx = NX; ty = NY; }
+        if (len < DEAD) targetTime = CENTRE;
         else {
           if (len > 1){ ux /= len; uy /= len; }
-          tx = NX + ux * (ux > 0 ? 1 - NX : 1 + NX);
-          ty = NY + uy * (uy > 0 ? 1 - NY : 1 + NY);
+          targetTime = timeFor(ux);
         }
       }
-    } else { tx = NX; ty = NY; }
+    } else targetTime = CENTRE;
+
+    /* the trail: framerate-independent, so it feels the same at 60 and 120 */
     var k = 1 - Math.pow(1 - 0.16, dt / 16.7);
-    cx += (tx - cx) * k; cy += (ty - cy) * k;
-    put(cx, cy);
-    if (Math.abs(tx - cx) > 0.0015 || Math.abs(ty - cy) > 0.0015) raf = requestAnimationFrame(tick);
+    shownTime += (targetTime - shownTime) * k;
+    if (ready) seek(shownTime);
+
+    /* keep going while the eased time is still travelling OR while the frame
+       on screen is not yet the one asked for */
+    if (Math.abs(targetTime - shownTime) > FRAME * 0.25 || wantFrame !== lastSeek || seeking)
+      raf = requestAnimationFrame(tick);
   }
+
+  function start(){
+    ready = true;
+    try { v.pause(); } catch(e){}
+    lastSeek = -1; seek(CENTRE);
+    av.classList.add('on');
+  }
+  /* held paused from the moment it can paint. Seeking a loaded video is what
+     makes it show a frame — no play() is needed, and calling one is what let
+     it run away. */
+  v.addEventListener('loadeddata', function(){ try { v.pause(); } catch(e){} start(); });
+  v.addEventListener('play', function(){ try { v.pause(); } catch(e){} });
+  if (v.readyState >= 2) v.dispatchEvent(new Event('loadeddata'));
 
   function arm(){
     if (STILL.matches || !FINE.matches){
-      have = false; cx = tx = NX; cy = ty = NY; put(NX, NY); return;
+      have = false; targetTime = shownTime = CENTRE; if (ready) seek(CENTRE);
+      return;
     }
     addEventListener('pointermove', function(e){
       if (e.pointerType && e.pointerType !== 'mouse') return;
