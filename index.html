@@ -1250,94 +1250,169 @@
   #pgJbl .cirow > .cistat:nth-of-type(3) .cicap{color:#BFBFBF}
   #pgJbl .cirule{--rule-c:#1C1C1C}
 
-  /* ── 464:15803 · Next up / Volvo ──────────────────────────────────────
-     80 top, 80 between the block and the footer, 155 side guides on the
-     block and 40 on the footer — the two do not share a gutter in the
-     drawing, so they do not share one here. */
-  /* ── 464:15803 · Next up / Volvo ──────────────────────────────────── */
-  .nu{background:var(--paper);color:var(--ink);
-      padding:64px 0 0;display:flex;flex-direction:column;gap:64px}
-  .nublock{display:flex;flex-direction:column;gap:32px;
-           padding:0 calc(155 / 1440 * 100%)}
+  /* ── 755:62411 · Next up ─────────────────────────────────────────────
+     Rebuilt from a teaser into a PREVIEW. It used to be a 322 card beside a
+     64 name — a thumbnail of somewhere else. It is now the destination's own
+     hero, drawn at the size it will actually be: the same 104 / 40 pair on
+     the same 1130 column, over the same 16:9 plate.
+
+     611 tall on a 635 plate, which means the plate CANNOT fit — and that is
+     the idea. It is cut off by the footer, so the page you are going to
+     visibly carries on under the bottom of the one you are on.
+
+     Not one size here is invented. Every one of them is the hero's, which is
+     what lets the click MORPH instead of cut: see __nuMorph at the foot of
+     the file. If any of these numbers is changed, that transition is what
+     breaks. */
+  .nu{--cs-side:calc(155 / 1440 * 100%);
+      --cs-col:min(1130px, calc(100% - var(--cs-side) * 2));
+      position:relative;background:var(--paper);color:var(--ink);
+      padding:64px 0 0;display:flex;flex-direction:column}
+  .nublock{width:var(--cs-col);margin:0 auto;
+           display:flex;flex-direction:column}
+
+  /* 755:62412 — 16 SemiBold caps behind a 14 slash, 8 apart. The slash is
+     Text Light 2, which is the one grey that is legal on both surfaces. */
   .nut{margin:0;display:flex;align-items:center;gap:8px;
        font-family:var(--font-ui);font-size:16px;font-weight:600;
        line-height:1.45;letter-spacing:0;text-transform:uppercase;
        white-space:nowrap;color:var(--ink)}
-  .nut s{font-size:14px;text-decoration:none;color:#9F9F9F}
+  .nut s{font-size:14px;text-decoration:none;color:#9CA1A4}
   .nut em{font-style:normal}
-  /* items-end: the plate and the text column are set on their BOTTOMS in
-     464:15806, which is what puts the button on the plate's own baseline */
-  .nurow{display:flex;align-items:flex-end;gap:48px;width:100%;
-         background:none;border:0;padding:0;margin:0;text-align:left;
-         font:inherit;color:inherit;cursor:pointer}
-  /* 464:15807 — 322 x 236, and 12 like every other container */
-  .numedia{flex:none;width:322px;max-width:44%;
-           aspect-ratio:322 / 236;border-radius:12px;overflow:hidden;
-           background:#000;position:relative}
-  /* 1% over, so the resampled edge never lands inside the frame */
-  .numedia video,.numedia img{position:absolute;inset:0;
-           width:100%;height:100%;display:block;object-fit:cover;
-           transform:scale(1.01);
-           transition:transform .6s cubic-bezier(.22,1,.3,1)}
-  /* 464:19031 — 413 wide, 40 between the block and the button, and 12 of
-     air under it so the button's own box sits off the plate's bottom edge */
-  .nutext{flex:none;width:413px;max-width:56%;min-width:0;
-          display:flex;flex-direction:column;justify-content:center;
-          gap:40px;padding-bottom:12px}
-  .nuhead{display:flex;flex-direction:column;gap:16px;width:100%;min-width:0}
-  /* 464:19032 — 64 Heavy at -1.28, which is -.02em */
-  .nuname{margin:0;font-family:var(--font-display);font-size:64px;
-          font-weight:900;line-height:normal;letter-spacing:-.02em;
-          white-space:nowrap;color:var(--ink);
+
+  .nurow{display:block;margin-top:40px;text-decoration:none;
+         color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .nurow:focus-visible{outline:none}
+  .nurow:focus-visible .nuname{text-decoration:underline;
+         text-underline-offset:.12em;text-decoration-thickness:.05em}
+
+  /* items-END, and the arrow's frame hangs 8 lower than the type. Drawn, not
+     a nudge: 755:62418 carries an 8 bottom pad inside a row that sets both
+     boxes on the same line, so the arrow's shaft lands on the claim's second
+     line rather than on its baseline. */
+  .nuline{display:flex;align-items:flex-end;gap:40px}
+  .nutext{display:flex;align-items:flex-end;gap:40px;
+          padding-bottom:8px;min-width:0}
+
+  /* 755:62419 — 104 Heavy on -2%, cap-trimmed, so the box IS the cap box.
+     That is what the morph anchors on: cap top-left to cap top-left. */
+  .nuname{flex:none;margin:0;
+          font-family:var(--font-display);font-size:104px;font-weight:900;
+          line-height:normal;letter-spacing:-.02em;white-space:nowrap;
+          color:var(--ink);
           text-box:trim-both cap alphabetic;
           text-box-trim:trim-both;text-box-edge:cap alphabetic}
-  /* 471:19069 — 24 Medium on 1.1, Secondary dark on light, 297 measure.
-     Not trimmed in the frame, and it wraps on its own rather than on a
-     break, so the measure is what sets the two lines. */
-  .nusub{margin:0;width:min(297px,100%);
-         font-family:var(--font-display);font-size:24px;font-weight:500;
-         line-height:1.1;letter-spacing:0;color:#515151}
+  /* 755:62420 — the destination's own claim at the destination's own 40
+     Medium. The break is drawn, so the box is max-content rather than the
+     drawn 442: a hard width would cost a whole line the moment the face
+     measures a pixel wider than it did in Figma. */
+  .nusub{flex:none;margin:0;width:max-content;max-width:100%;
+         font-family:var(--font-display);font-size:40px;font-weight:500;
+         line-height:1.1;letter-spacing:0;color:var(--ink);
+         text-box:trim-both cap alphabetic;
+         text-box-trim:trim-both;text-box-edge:cap alphabetic}
 
-  /* ── 472:19266 / 472:19263 · the action button ─────────────────────
-     Dark, 40 tall, 24 either side, and on hover it keeps its fill, takes
-     the 4/16 shadow and OPENS: the right padding drops to 16 and a 19-wide
-     slot with the arrow in it grows out of nothing, 130 -> 147. The label
-     never moves, which is why the slot animates and not the box. */
-  .nucta{display:inline-flex;align-items:center;align-self:flex-start;
-         height:40px;padding:0 24px;border-radius:999px;
-         background:var(--ink);
-         font-family:var(--font-ui);font-size:14px;font-weight:600;
-         line-height:1;letter-spacing:0;text-transform:uppercase;
-         color:var(--w-1);white-space:nowrap;
-         box-shadow:0 4px 16px rgba(26,26,26,0);
-         transition:padding-right .42s cubic-bezier(.22,1,.3,1),
-                    box-shadow .42s ease}
-  .nuctai{flex:none;display:block;width:0;height:20px;overflow:hidden;
-          margin-left:0;opacity:0;
-          transition:width .42s cubic-bezier(.22,1,.3,1),
-                     margin-left .42s cubic-bezier(.22,1,.3,1),
-                     opacity .28s ease}
-  .nuctai svg{display:block;width:15px;height:10px;margin:5px 2px;
-              color:var(--w-1)}
-  .nurow:hover .nucta,.nurow:focus-visible .nucta{
-         padding-right:16px;box-shadow:0 4px 16px rgba(26,26,26,.04)}
-  .nurow:hover .nuctai,.nurow:focus-visible .nuctai{
-         width:19px;margin-left:6px;opacity:1}
-  @media (prefers-reduced-motion:reduce){
-    .nucta,.nuctai{transition:none}
+  /* 756:62532 — 48 square on a 4 stroke. Two nested boxes so the two motions
+     can compose: the OUTER one carries the perpetual nudge and is never
+     touched by anything else, the INNER one carries the hover. Swapping one
+     animation for another on hover would snap the arrow back to zero the
+     moment the pointer arrived. */
+  .nuarrow{flex:none;display:block;width:48px;height:48px;color:var(--ink);
+           animation:nuNudge 3.2s cubic-bezier(.33,1,.68,1) infinite}
+  .nuarrowi{display:block;width:100%;height:100%;
+            transition:transform .42s cubic-bezier(.22,1,.3,1)}
+  .nuarrow svg{display:block;width:100%;height:100%;overflow:visible}
+  .nurow:hover .nuarrowi,.nurow:focus-visible .nuarrowi{transform:translateX(10px)}
+  /* "keep going" — a push, a small settle, then a rest twice as long as the
+     move. A sine wave reads as a machine; a beat reads as somebody nudging
+     you. Half the cycle is the gesture and half of it is silence. */
+  @keyframes nuNudge{
+    0%  {transform:translateX(0)}
+    12% {transform:translateX(9px)}
+    26% {transform:translateX(1.5px)}
+    36% {transform:translateX(4px)}
+    48% {transform:translateX(0)}
+    100%{transform:translateX(0)}
   }
 
-  /* the page-end footer is the testimonial footer, standing in flow */
-  /* 464:15812 — 40 under the row now, not 60 */
-  .nu .tfoot{position:static;padding:0 40px 40px}
+  /* 755:62415 / 755:62416 — the plate is 635 on this column and the block
+     gives it 249. aspect-ratio on the WINDOW rather than a pixel height, so
+     the cut stays in the same place on the plate at every width. */
+  /* display:block — it is a <span> inside the link, and margin-top on an
+     inline box is silently dropped */
+  .nustage{display:block;position:relative;margin-top:32px}
+  .nuwin{display:block;width:100%;aspect-ratio:1130 / 249;
+         overflow:hidden;border-radius:12px 12px 0 0}
+  .nuplate{display:block;width:100%;aspect-ratio:16 / 9;
+           border-radius:12px;overflow:hidden;background:var(--w-sur)}
+  .nuplate video,.nuplate img{width:100%;height:100%;display:block;
+           object-fit:cover;transform:scale(1.01);
+           transition:transform .8s cubic-bezier(.22,1,.3,1)}
+  .nurow:hover .nuplate video,.nurow:hover .nuplate img,
+  .nurow:focus-visible .nuplate video,.nurow:focus-visible .nuplate img{
+           transform:scale(1.04)}
+
+  /* 755:62422 — the seam. 1206 x 40 of Surface Dark at half, blurred 50 and
+     centred ON the footer's top edge: the lower half is under the footer and
+     the upper half is the shadow the plate casts as it goes beneath it.
+     Anchored to the window's bottom rather than to a pixel offset from the
+     section, so it cannot drift when the footer wraps. */
+  .nuskrim{position:absolute;left:50%;bottom:0;
+           width:calc(1206 / 1130 * 100%);height:40px;
+           transform:translate(-50%,50%);
+           background:var(--w-sur);opacity:.5;filter:blur(50px);
+           border-radius:999px;pointer-events:none}
+
+  /* 756:62479 — the Footer component with its Divider switched OFF, which
+     hands the 40 back to the top: 40 / 40 row / 40 is the same 120 it is
+     everywhere else. position:relative so it paints over the skrim — an
+     absolutely positioned sibling outranks a static one whatever the order.*/
+  .nu .tfoot{position:relative;z-index:1;padding:40px;gap:0}
+  .nu .tfrule{display:none}
+
   @media (max-width:900px){
-    .nurow{flex-direction:column;align-items:flex-start}
-    .numedia{width:100%;max-width:none}
-    .nutext{width:100%;padding-top:0}
-    .nuname{font-size:clamp(56px,11vw,104px)}
+    .nuline{flex-direction:column;align-items:flex-start;gap:24px}
+    .nutext{flex-direction:column;align-items:flex-start;gap:16px;
+            padding-bottom:0}
+    .nuname{font-size:clamp(56px,14vw,104px)}
+    .nusub{font-size:clamp(24px,5.6vw,40px);width:auto}
+    .nuarrow{width:36px;height:36px}
+    .nustage{margin-top:28px}
+    .nuskrim{width:100%;height:24px;filter:blur(28px)}
+  }
+  /* On a phone the column is 309 and 39% of a 16:9 plate on it is a 68px
+     sliver — the drawn PROPORTION stops meaning anything once the plate is
+     that small. More of it is shown instead, which keeps it a picture. */
+  @media (max-width:640px){
+    .nuwin{aspect-ratio:1130 / 470}
+    .nu .tfoot{padding:32px 24px}
     .nu .tfrow{flex-direction:column;align-items:flex-start;gap:24px}
     .nu .tflinks{flex-wrap:wrap;gap:16px 24px}
   }
+  @media (prefers-reduced-motion:reduce){
+    .nuarrow{animation:none}
+    .nuarrowi,.nuplate video,.nuplate img{transition:none}
+  }
+
+  /* ── arriving BY the morph ───────────────────────────────────────────
+     The three things that travel must not also be landing: landIn would run
+     its own opacity and lift underneath a transform that is already carrying
+     them, and the two would fight. Everything else on the page lands as it
+     always does, just late enough to arrive as the flight finishes — and on
+     a shorter run, because playLanding hands over to .landed at 1350ms and
+     an animation still going at that point gets cut off where it stands. */
+  .page.nu-in .cs .cshl,
+  .page.nu-in .cs .cshclaim,
+  .page.nu-in .cs .csplate{animation:none !important;opacity:1 !important;
+        filter:none;transform:none}
+  .page.nu-in.landing .cs .cstop,
+  .page.nu-in.landing .cs .csrule,
+  .page.nu-in.landing .cs .cslede,
+  .page.nu-in.landing .cs .csread{animation-duration:.9s}
+  .page.nu-in.landing .cs .cstop {animation-delay:.34s}
+  .page.nu-in.landing .cs .csrule{animation-delay:.38s}
+  .page.nu-in.landing .cs .cslede{animation-delay:.41s}
+  .page.nu-in.landing .cs .csread{animation-delay:.44s}
 
   /* 513:24050 - the Footer component. 120 tall: a hairline, 40, the 40-tall
      row, 40 of bottom padding. One definition, used by the testimonial and by
@@ -7737,29 +7812,28 @@
       </figure>
   </section>
 
-  <!-- 464:15803 — Next up. The plate is Volvo's own card clip; the row is a
-       button so the whole thing routes, which is the only thing a "next up"
-       block can reasonably do. -->
+  <!-- 755:62411 — Next up. Not a card of somewhere else: the destination's
+       own hero, at the destination's own size, cut off by the footer so the
+       page you are going to reads as carrying on underneath this one. The
+       whole block is the link, and the click morphs into that hero rather
+       than cutting to it — __nuMorph. -->
   <section  data-surface="light" class="nu" aria-label="Next up">
     <div class="nublock">
-      <!-- 474:67485 — an eyebrow now, not the 40 display line -->
       <p class="nut"><s>/</s><em>Next up</em></p>
-      <button class="nurow" type="button" data-page="volvo"
-              aria-label="Read the Volvo case study">
-        <span class="numedia">
-          <video muted loop playsinline preload="auto" aria-hidden="true"
-                 poster="media/volvo-card.webp">
-            <source src="media/volvo-card.mp4" type="video/mp4">
-          </video>
-        </span>
-        <span class="nutext">
-          <span class="nuhead">
-            <span class="nuname">Volvo</span>
-            <span class="nusub">A truck launch that rewrote the industry playbook.</span>
+      <a class="nurow" href="#ets" data-page="ets"
+         aria-label="Read the ETS case study">
+        <span class="nuline">
+          <span class="nutext">
+            <span class="nuname">ETS</span>
+            <span class="nusub">Shaping the future of<br>education solutions</span>
           </span>
-          <span class="nucta">Read more<span class="nuctai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+          <span class="nuarrow" aria-hidden="true"><span class="nuarrowi"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6 26H42M42 26L29 13M42 26L29 39" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
         </span>
-      </button>
+        <span class="nustage">
+          <span class="nuwin"><span class="nuplate"><img src="media/ets-card.webp" alt="" decoding="async"></span></span>
+          <span class="nuskrim" aria-hidden="true"></span>
+        </span>
+      </a>
     </div>
     <footer class="tfoot" data-tfoot></footer>
   </section>
@@ -7974,7 +8048,14 @@
       <p class="cshclaim cstitle">Shaping the future of<br>education solutions</p>
     </div>
 
-    <div class="csstage"><div class="csplate"></div></div>
+    <!-- PLACEHOLDER. ETS has no hero film of its own yet, and Next up is a
+         picture of this plate — so it holds the same still, and the two are
+         one continuous image across the morph. The card CLIP cannot stand in
+         for it: it is a 14-second montage cut for a 322-wide card, and half
+         of it is UI at thumbnail scale. Swap both for the film when it lands.-->
+    <div class="csstage"><div class="csplate">
+      <img src="media/ets-card.webp" alt="" decoding="async">
+    </div></div>
 
     <div class="csbody">
       <div class="cslede">
@@ -9292,6 +9373,137 @@
     });
   })();
 
+
+  /* ── Next up → the hero it is a picture of — __nuMorph ───────────────
+     The block is drawn as the destination's own hero: same 1130 column, same
+     104 / 40 pair, same 16:9 plate. So the click does not have to CUT to
+     that page — the three things that exist in both places can travel.
+
+     FLIP, on the real elements rather than on clones. The source rects are
+     read while the outgoing page is still standing; the router then swaps the
+     pages and resets the scroll, which is exactly why viewport coordinates
+     are still the right frame of reference on the other side: the incoming
+     page starts at scroll 0, which is where the outgoing page's viewport was.
+
+     Three moves, and only one of them is a scale.
+
+       the plate   PURE TRANSLATE. Both are 16:9 on the same column, so they
+                   are the same size — all that changes is where it is and how
+                   much of it you are allowed to see, and the second of those
+                   is a clip, not a scale. Squashing a 249-tall window up to
+                   635 would stretch the picture inside it; unclipping does
+                   not touch a pixel of it.
+       the claim   PURE TRANSLATE. 40 Medium in both places, same text, same
+                   drawn break, so the box is identical.
+       the name    104 -> 96, anchored on its left cap-baseline corner, which
+                   is the corner the eye is actually holding on to.
+
+     The ground is a CUT, and deliberately so. Light to dark with the ink
+     going the other way cannot be crossfaded: halfway through you have
+     mid-grey ink on a mid-grey ground, which is nothing at all. A cut has no
+     such moment, and three shapes carrying across it are what make it read as
+     one place rather than two.
+
+     Everything else on the arriving page is held back a third of a second by
+     .nu-in, so the frame the cut lands on is only the three travellers. */
+  window.__nuMorph = (function(){
+    const noMo=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DUR=820, EASE='cubic-bezier(.22,1,.30,1)';
+    const R=el=>el.getBoundingClientRect();
+
+    function run(row,key){
+      if(typeof window.__goTo!=='function') return false;
+      const sName=row.querySelector('.nuname'),
+            sSub =row.querySelector('.nusub'),
+            sPl  =row.querySelector('.nuplate'),
+            sWin =row.querySelector('.nuwin');
+      if(!sName||!sSub||!sPl||!sWin) return false;
+      const a={name:R(sName),sub:R(sSub),plate:R(sPl),win:R(sWin)};
+      if(!a.plate.height||!a.name.height) return false;
+
+      window.__goTo(key,true);
+
+      const pg=document.querySelector('.page.on');
+      const cs=pg&&pg.querySelector('.cs');
+      if(!cs) return true;                    /* it routed; it just cannot fly */
+      const dName=cs.querySelector('.cshl'),
+            dSub =cs.querySelector('.cshclaim'),
+            dPl  =cs.querySelector('.csplate');
+      if(!dName||!dSub||!dPl) return true;
+
+      /* BEFORE the rects are taken. playLanding runs on the next frame, but
+         the base rule already has these three at opacity 0 and .nu-in is what
+         puts them back — a hidden element still measures, but there is no
+         reason to leave a frame where they are not painted. */
+      pg.classList.add('nu-in');
+      const b={name:R(dName),sub:R(dSub),plate:R(dPl)};
+      if(!b.plate.height||!b.name.height){ pg.classList.remove('nu-in'); return true; }
+
+      /* the plate is one picture in two elements. If the arriving one starts
+         at zero while the one you were looking at was forty seconds in, the
+         morph is geometrically perfect and reads as a cut anyway — so the
+         destination is seeked to wherever the preview had got to. */
+      const sv=sPl.querySelector('video'), dv=dPl.querySelector('video');
+      if(sv&&dv&&sv.duration&&isFinite(sv.duration)){
+        const at=sv.currentTime % (dv.duration||sv.duration);
+        const seek=()=>{ try{ dv.currentTime=at; }catch(e){} dv.play().catch(()=>{}); };
+        if(dv.readyState>=1) seek();
+        else dv.addEventListener('loadedmetadata',seek,{once:true});
+      }
+
+      const scale=a.name.height/b.name.height;
+      /* how much of the plate the window was keeping from you, as a fraction
+         of the plate — which is the inset the clip starts on */
+      const hid=Math.max(0, Math.min(.98, 1 - a.win.height/a.plate.height));
+      const anims=[];
+
+      dName.style.transformOrigin='left bottom';
+      anims.push(dName.animate([
+        {transform:'translate('+(a.name.left-b.name.left).toFixed(2)+'px,'
+                  +(a.name.bottom-b.name.bottom).toFixed(2)+'px) scale('+scale.toFixed(4)+')'},
+        {transform:'none'}
+      ],{duration:DUR,easing:EASE,fill:'both'}));
+
+      dSub.style.transformOrigin='left bottom';
+      anims.push(dSub.animate([
+        {transform:'translate('+(a.sub.left-b.sub.left).toFixed(2)+'px,'
+                  +(a.sub.bottom-b.sub.bottom).toFixed(2)+'px)'},
+        {transform:'none'}
+      ],{duration:DUR,easing:EASE,fill:'both'}));
+
+      anims.push(dPl.animate([
+        {transform:'translate('+(a.plate.left-b.plate.left).toFixed(2)+'px,'
+                  +(a.plate.top-b.plate.top).toFixed(2)+'px)',
+         clipPath:'inset(0 0 '+(hid*100).toFixed(3)+'% 0 round 12px)'},
+        {transform:'none', clipPath:'inset(0 0 0 0 round 12px)'}
+      ],{duration:DUR,easing:EASE,fill:'both'}));
+
+      /* cancel rather than leave the fill standing: .csplate takes a tilt
+         from the scroll handler further down the page, and a filled WAAPI
+         transform outranks every stylesheet there is. */
+      const clear=()=>{
+        anims.forEach(x=>{ try{ x.cancel(); }catch(e){} });
+        dName.style.transformOrigin=''; dSub.style.transformOrigin='';
+      };
+      let left=anims.length;
+      anims.forEach(x=>x.finished.then(()=>{ if(!--left) clear(); },()=>{}));
+      setTimeout(clear, DUR+120);
+      /* only once .landing has handed over, or re-admitting landIn mid-flight
+         would restart it on elements that have already arrived */
+      setTimeout(()=>pg.classList.remove('nu-in'), 1450);
+      return true;
+    }
+
+    document.querySelectorAll('.nurow[data-page]').forEach(row=>{
+      row.addEventListener('click',e=>{
+        const key=row.dataset.page;
+        if(!key||typeof window.__goTo!=='function') return;   /* let the href do it */
+        e.preventDefault();
+        if(noMo || !run(row,key)) window.__goTo(key,true);
+      });
+    });
+    return run;
+  })();
 
   /* ── the reveal, as one thing ────────────────────────────────────────
      The work headline, the About story and the Resume panel each grew their
@@ -11917,7 +12129,12 @@
        from the top, exactly when it appears. */
     const nuSec=document.querySelector('.nu');
     if(nuSec){
-      const plate=nuSec.querySelector('.numedia video');
+      const plate=nuSec.querySelector('.nuplate video');
+      /* the plate overflows its window by design, so how much of it is on
+         screen has to be asked of the WINDOW — the plate's own rect says
+         a third of it is below the fold when all of it that exists to be
+         seen is in view. */
+      const nuWin=nuSec.querySelector('.nuwin');
       const sheet=nuSec.previousElementSibling;
       if(plate){
         let armed=true, starting=false;
@@ -11942,7 +12159,7 @@
         };
 
         const nuCheck=()=>{
-          const mr=plate.getBoundingClientRect();
+          const mr=(nuWin||plate).getBoundingClientRect();
           if(!mr.height) return;
           const vis=Math.max(0, Math.min(innerHeight, mr.bottom) - Math.max(0, mr.top)) / mr.height;
           /* The sheet test only means anything while the block is ACTUALLY
