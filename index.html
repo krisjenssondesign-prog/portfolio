@@ -1167,12 +1167,7 @@
   .jtmq{margin:0;width:100%;text-align:center;
         font-family:var(--font-ui);font-size:24px;font-weight:500;
         line-height:1.25;letter-spacing:0;color:#9F9F9F}
-  @media (max-width:720px){
-    .jtm{padding-top:140px}
-    .jtmname{font-size:clamp(28px,7vw,40px)}
-    .jtmrole,.jtmq{font-size:clamp(18px,4.4vw,24px)}
-    .jtmrole{flex-wrap:wrap;white-space:normal}
-  }
+  /* the phone quote is drawn too — 757:67253 */
 
   /* ── 474:67482 · the strategy film, full bleed ────────────────────────
      1445 on a 1440 frame — 5 over each side — and 785 tall, no radius. The
@@ -1208,12 +1203,10 @@
          background:rgba(0,0,0,.05)}
   .pwsnt img,.pwsnt video{width:100%;height:100%;display:block;object-fit:cover}
   /* the label on this one is the 22 Medium pair, black and black-at-half */
-  @media (max-width:900px){
-    .pwsg{flex-direction:column;gap:19.978px}
-    .pwsg > .pwsgc{aspect-ratio:555.179 / 596;flex:none}
-    .pwsn{aspect-ratio:auto;flex-wrap:wrap;gap:19.978px}
-    .pwsnc{flex:1 1 44% !important;aspect-ratio:268.038 / 595.208}
-  }
+  /* The old phone fallback for these two — stack the collage, wrap the board
+     into pairs — is gone. It was a way of not breaking before there was a
+     drawing; there is one now, and it lives with the rest of the 393 layout
+     at the foot of this sheet. */
 
   /* 474:65884 — the left column is label / list / button on a 40 rhythm; the
      "Overview" heading is not in the final frame. */
@@ -1387,15 +1380,8 @@
     .nustage{margin-top:28px}
     .nuskrim{width:100%;height:24px;filter:blur(28px)}
   }
-  /* On a phone the column is 309 and 39% of a 16:9 plate on it is a 68px
-     sliver — the drawn PROPORTION stops meaning anything once the plate is
-     that small. More of it is shown instead, which keeps it a picture. */
-  @media (max-width:640px){
-    .nuwin{aspect-ratio:1130 / 470}
-    .nu .tfoot{padding:32px 24px}
-    .nu .tfrow{flex-direction:column;align-items:flex-start;gap:24px}
-    .nu .tflinks{flex-wrap:wrap;gap:16px 24px}
-  }
+  /* Next up on a phone is drawn — 757:67285 — and lives with the rest of
+     the 393 layout at the foot of this sheet. */
   @media (prefers-reduced-motion:reduce){
     .nuarrow{animation:none}
     .nuarrowi,.nuplate video,.nuplate img{transition:none}
@@ -4772,6 +4758,10 @@
      above the column: Saans Regular in White 2, same size as the items. */
   /* 444:2756 — the label is cap-trimmed to 14 and sits 40 clear of the list,
      so it carries 28 on top of the column's own 12. */
+  /* the words are wrapped in one <li> so the phone has a box to scroll.
+     display:contents hands them straight back to the column here, so the
+     desktop list is laid out exactly as it was when they were five items. */
+  .csdisc .csdrow{display:contents}
   .csdisc .csdlab{font-size:20px;font-weight:600;line-height:1.45;color:var(--c-1);
                   margin-bottom:28px;
                   text-box:trim-both cap alphabetic;
@@ -6693,6 +6683,290 @@
     :root{--m:20px}
   }
 
+  /* ══ 757:64204 · THE CASE STUDY ON A PHONE ═══════════════════════════
+     The 393 frame, in full.
+
+     Until now every case study below 1080 was the desktop layout squeezed:
+     a 96 mark beside a 40 claim on a 393 canvas, a two-column body that
+     never stacked, an impact row of three cells 130px wide, and 531px of
+     document inside a 393px window. None of that was designed; it was what
+     was left when the guides ran out. This is the drawing instead.
+
+     One breakpoint. 900 is where the body stops having room to be two
+     columns at all, so it is where the phone layout starts — a tablet gets
+     the phone's stack rather than the desktop's overlap.
+
+     Two guides, and they are not the same guide: 20 for anything made of
+     words, 12 for anything that is a picture. The plate, the collage, the
+     snapshot board and the film all run 8px wider than the copy above them,
+     which is drawn and is what keeps the pictures feeling full-bleed while
+     the reading column stays a reading column. */
+  @media (max-width:900px){
+    .cs{--cs-side:calc(20 / 393 * 100%);
+        --cs-col:calc(100% - var(--cs-side) * 2);
+        --cs-fig:calc(100% - 24px);         /* the 12 guide, for pictures */
+        padding-bottom:24px}
+
+    /* ── 757:64212 · the bar ──────────────────────────────────────────
+       20 either side, 24 down, 48 tall. The mark is KRIS alone and the two
+       written links are already gone below 1080; what is left is the
+       wordmark against a pair of 48 pills, and on this ground the pills are
+       Containers Dark with the glyph in Text Light 1 — the light pills are
+       the light surface's. */
+    .cs .cstop{margin:24px auto 0;width:100%;padding-inline:20px;height:48px}
+    .cs .cstop .brand{font-size:24px}
+    .cs .cstop .rzlinks{gap:8px}
+    .cs .navric{height:48px;gap:8px}
+    .cs .nvic{width:48px;height:48px;
+              background:var(--w-cont);color:var(--w-1)}
+    .cs .csrule{display:none}
+
+    /* ── 757:64207 · the hero ─────────────────────────────────────────
+       The mark and the claim STACK. Sitting a 64 mark and a 22 claim on one
+       baseline is a desktop idea that needs 1130 of room; here they are two
+       lines, 20 apart, both on the 20 guide.
+
+       58 under the bar: the bar's box ends on 72 and the mark's CAP starts
+       on 130, and both of those are boxes the drawing states rather than
+       line-heights to be guessed at. */
+    .cs .cshead{flex-direction:column;align-items:flex-start;gap:20px;
+                margin-top:58px;width:var(--cs-col)}
+    .cs .cshl{font-size:64px;letter-spacing:-.02em}
+    .cs .cshclaim{width:100%;max-width:none;font-size:22px}
+
+    /* 757:64211 — 369 x 207 on the 12 guide, and the radius drops 12 -> 8.
+       A 12 radius on a 369 plate is proportionally half again what it is on
+       1130; the drawing takes it back. */
+    .cs .csstage{margin:32px auto 0;width:var(--cs-fig)}
+    .cs .csplate{border-radius:8px}
+
+    /* ── 757:64222 · what we did ──────────────────────────────────────
+       The label sits on the 20 guide. The row of disciplines does NOT: it
+       is 455 wide inside a 353 column and the frame clips it, which is a
+       picture of something you can push. So on a device it is something you
+       can push — the strip is full-bleed and scrolls, and the words are cut
+       at the edge rather than wrapped, which is the whole affordance. */
+    .cs .csbody{flex-direction:column;margin:48px auto 0;
+                width:var(--cs-col);gap:48px}
+    .cs .cslede{flex:none;width:100%;position:static;gap:20px}
+    .cs .csdisc{width:100%;gap:20px}
+    .cs .csdisc .csdlab{font-size:18px;margin-bottom:0}
+    .cs .csdisc .csdrow{display:flex;align-items:center;gap:8px;
+        width:100vw;margin-left:calc(50% - 50vw);padding-inline:20px;
+        font-size:16px;line-height:1.25;
+        overflow-x:auto;overscroll-behavior-x:contain;
+        scrollbar-width:none;-ms-overflow-style:none}
+    .cs .csdisc .csdrow::-webkit-scrollbar{display:none}
+    .cs .csdisc .csdrow > span{flex:none;white-space:nowrap}
+    .cs .csdisc .csdrow > span + span::before{content:'/';margin-right:8px;
+        color:var(--w-2)}
+    /* not drawn on the phone — the live site is a desktop errand, and the
+       frame leaves it out rather than shrinking it */
+    .cs .cslive{display:none}
+
+    /* ── 757:64219-21 · the read ──────────────────────────────────────*/
+    .cs .csread{gap:48px}
+    .cs .csblock{gap:12px}
+    .cs .csblock h3{font-size:18px}
+    .cs .csblock p{font-size:16px;line-height:1.2;color:var(--w-2)}
+
+    /* ── 757:64236 · impact ───────────────────────────────────────────
+       Three cells side by side on a 393 canvas is 117px each — the figure
+       does not fit, let alone the caption under it. They stack, and the
+       vertical hairlines between them become horizontal ones across them.*/
+    /* both impact rows — the intro's and the one under the quote — take the
+       box; only the intro's takes the 64 that separates it from the read. */
+    .csimp{width:100%;padding:40px;gap:64px;box-sizing:border-box}
+    .cs .csimp{margin:64px auto 0}
+    .csimp .cstitle{font-size:32px}
+    .csimp .cirow{flex-direction:column;align-items:stretch;gap:32px}
+    .csimp .cistat{flex:none;padding:0;gap:16px}
+    .csimp .cifig{gap:4px}
+    .csimp .cipl{width:24px;font-size:40px;line-height:1.15;letter-spacing:-.04em}
+    .csimp .cival{font-size:64px;line-height:1.1;letter-spacing:-.02em}
+    .csimp .cipct{font-size:32px;line-height:1.15;letter-spacing:-.04em}
+    .csimp .cicap{font-size:14px;line-height:1.2}
+    /* the rule was a 1px column stretched to the row's height; here it is a
+       1px row stretched to its width, and ::before has to be re-drawn for
+       it — a border cannot be turned on its side. */
+    .csimp .cirow > .cirule{flex:none;align-self:auto;
+        width:100%;height:var(--stroke)}
+    .csimp .cirow > .cirule::before{top:0;bottom:auto;left:0;right:0;
+        width:auto;height:1px;
+        transform:scaleY(var(--stroke-k));transform-origin:center top}
+
+    /* ── 757:64259 · the process band ─────────────────────────────────
+       The desktop runs this as a sticky left column against a scrolling
+       right one. On a phone there is no left and right — every block is
+       eyebrow, title, copy, picture, straight down, and the only thing that
+       carries over is the type scale: 14 eyebrow, 32 title, 16 copy, with
+       20 under the eyebrow and 16 under the title. That is one component in
+       the file and it is one rule here. */
+    .pw{--cs-side:calc(20 / 393 * 100%);
+        --cs-col:calc(100% - var(--cs-side) * 2);
+        --cs-fig:calc(100% - 24px);
+        padding:64px 0 0}
+
+    .pw .pweb,.pw .pweb-a,.pw .pweb-b{gap:6px;width:var(--cs-col);
+        font-size:14px;font-weight:600;line-height:1.45;
+        text-transform:uppercase;color:var(--ink)}
+    .pw .pweb s{font-size:14px}
+    .pw .pweb b,.pw .pweb s{color:#71747B}
+    .pw .pwt,.pw .pwt-c{position:static;flex:none;width:100%;font-size:32px}
+    .pw .pwcopy p,.pw .pwlead{font-size:16px;line-height:1.2;color:#71747B}
+
+    /* the row is a column: eyebrow / 20 / title / 16 / copy */
+    .pw .pwrow{flex-direction:column;align-items:stretch;
+               margin:0 auto;width:var(--cs-col);gap:16px}
+    .pw .pwl{position:static;flex:none;width:100%;gap:20px}
+    .pw .pwl .pweb{width:100%}
+    .pw .pwcopy{gap:12px}
+
+    /* 3 Image Collage — the desktop's own proportions, which are already the
+       drawing's: 1132 x 596 is 1.9, and 369 x 194.28 is 1.9. Nothing to
+       restack, only a smaller gap. */
+    .pw .pwsg{margin:24px auto 0;width:var(--cs-fig);
+              flex-direction:row;gap:calc(4 / 369 * 100%)}
+    .pw .pwsg > .pwsgc{flex:1 1 0;aspect-ratio:555.179 / 596}
+    .pw .pwsgr{gap:calc(4 / 182.5 * 100%)}
+    .pw .pwsgc{border-radius:8px}
+
+    .pw .pwmid{margin:104px auto 0;width:var(--cs-col);gap:20px}
+    .pw .pwct{gap:16px}
+    .pw .pwlead{width:100%}
+
+    /* 757:64268 — the board loses its FOURTH column. Three of the four are
+       the drawing's, tile for tile and ratio for ratio; the fourth has
+       nowhere to go on 369 and the frame drops it rather than shrinking all
+       of them. The board's own aspect follows from the three that are left. */
+    .pw .pwmob{margin:104px auto 0;width:var(--cs-fig)}
+    .pw .pwmob .pweb{width:100%;padding-left:8px}
+    .pw .pwsn{margin-top:20px;width:100%;
+              gap:calc(4 / 369 * 100%);aspect-ratio:369 / 257.35}
+    .pw .pwsn .pwsnc{gap:4px}
+    .pw .pwsn .pwsnc:nth-child(4){display:none}
+    .pw .pwsnt{border-radius:6px}
+
+    /* 757:64288 — the film sits on the 12 guide while the copy above it sits
+       on 20, and it lives INSIDE the copy column, so it is pulled the 8 back
+       out either side rather than moved. */
+    .pw .pwmot{margin:104px auto 0;width:var(--cs-fig)}
+    .pw .pwmot .pwrow{width:100%;padding-inline:8px}
+    .pw .pwcym{margin-top:12px;width:calc(100% + 16px);margin-left:-8px;
+               border-radius:8px}
+    .pw .pwbites{margin-top:4px;gap:calc(4 / 369 * 100%)}
+    .pw .pwbite{border-radius:8px}
+
+    /* 757:64300 — 6 across at 61.5, which is 369 exactly: no column gap at
+       all, and the rows carry the 3.47 the drawing leaves between them. */
+    .pw .pwico{margin:104px auto 0;width:var(--cs-fig)}
+    .pw .pwico .pweb{width:100%;padding-left:8px}
+    .pw .pwgrid{margin-top:20px;width:100%;
+                grid-template-columns:repeat(6,1fr);
+                column-gap:0;row-gap:3.47px}
+
+    /* ── 757:64558 · final design ─────────────────────────────────────
+       All three expressions are OPEN. The desktop keeps a sticky index of
+       names against a column of panels and lights one at a time; there is no
+       room for two columns here, and a phone has no hover to light them
+       with. display:contents dissolves both wrappers so the names and the
+       panels become siblings in one column, and `order` threads each name
+       straight into its own panel. No markup moved. */
+    .fd{--cs-side:calc(20 / 393 * 100%);
+        --cs-col:calc(100% - var(--cs-side) * 2);
+        --cs-fig:calc(100% - 24px);
+        padding:64px 0 24px}
+    .fd .fdhead{width:var(--cs-col);gap:20px}
+    .fd .fdeb{gap:6px;font-size:14px}
+    .fd .fdeb b,.fd .fdeb s{color:var(--w-2)}
+    .fd .fdct{width:100%;gap:16px}
+    .fd .fdt{width:100%;font-size:32px}
+    .fd .fdlead{font-size:16px;line-height:1.2}
+
+    .fd .fdrow{flex-direction:column;align-items:stretch;
+               margin:80px auto 0;width:var(--cs-fig);gap:0}
+    .fd .fdindex,.fd .fdpanels{display:contents}
+    .fd .fdrule,.fd .fdiar{display:none}
+    /* The three names come in with the block rather than on their own
+       reveal. Their reveal is hosted on .fdindex — and .fdindex has no box
+       any more, so there is no rect to measure a progress against and the
+       range can never be entered. Rather than re-host a desktop animation
+       from a phone stylesheet, the names simply stand: they are three words,
+       and the panels under them still breathe. */
+    .fd .fdi{width:100%;padding:0 8px;color:var(--c-1);cursor:default;
+             opacity:1;filter:none;transform:none}
+    .fd .fdic{gap:8px}
+    .fd .fdi h3{font-size:18px;line-height:1.45}
+    .fd .fdi p{font-size:16px;line-height:1.2;color:var(--w-2)}
+    .fd .fdi[data-i="0"]{order:1}
+    .fd .fdpanels > .fdpanel:nth-child(1){order:2}
+    .fd .fdi[data-i="1"]{order:3}
+    .fd .fdpanels > .fdpanel:nth-child(2){order:4}
+    .fd .fdi[data-i="2"]{order:5}
+    .fd .fdpanels > .fdpanel:nth-child(3){order:6}
+    .fd .fdi[data-i="1"],.fd .fdi[data-i="2"]{margin-top:80px}
+    .fd .fdpanel{gap:16px;margin-top:24px}
+    .fd .fdtwo{gap:calc(8.43 / 369 * 100%)}
+    /* the radii are the drawing's, scaled with the mock: 39.07 on a 258 phone
+       is 27.3 on a 180 one, and 20 on a 557 screen is 13 on a 369 */
+    .fd .fdph{border-radius:27.3px}
+    .fd .fdsc{border-radius:13px}
+    /* full bleed here means the window, not 100.347% of a 1130 column */
+    .fd .fdfilm{margin:104px 0 0;width:100%}
+
+    /* ── 757:67253 · the quote ────────────────────────────────────────*/
+    .fd .jtm{padding:104px 0 0;gap:64px}
+    .fd .jtmquote{gap:20px}
+    .fd .jtmav{width:96px;height:96px}
+    .fd .jtmcol{width:var(--cs-col);gap:16px}
+    .fd .jtmhead{gap:8px}
+    .fd .jtmname{width:100%;font-size:32px;letter-spacing:-.02em}
+    .fd .jtmrole{gap:12px;font-size:20px;flex-wrap:wrap;white-space:normal}
+    .fd .jtmq{font-size:20px;line-height:1.25}
+    .fd .jtmimp{margin:0 auto}
+
+    /* ── 757:67285 · next up ──────────────────────────────────────────
+       The arrow moves. On the desktop it sits at the END of the line, past
+       the claim; here it sits beside the NAME with the claim under both,
+       which is two rows rather than one — so the line becomes a two-column
+       grid and .nutext hands its two children straight to it. */
+    .nu{--cs-side:calc(20 / 393 * 100%);
+        --cs-col:calc(100% - var(--cs-side) * 2);
+        --cs-fig:calc(100% + 16px);
+        padding-top:64px}
+    .nu .nut{gap:6px;font-size:14px}
+    .nu .nut s{font-size:14px;color:#71747B}
+    .nu .nurow{margin-top:40px}
+    .nu .nuline{display:grid;grid-template-columns:auto auto;
+                justify-content:start;align-items:start;
+                column-gap:20px;row-gap:20px}
+    .nu .nutext{display:contents}
+    .nu .nuname{grid-column:1;grid-row:1;font-size:64px}
+    .nu .nuarrow{grid-column:2;grid-row:1;width:48px;height:48px}
+    .nu .nusub{grid-column:1 / -1;grid-row:2;font-size:22px;width:100%}
+    /* the stage is a picture, so it runs the 8 back out of the copy column */
+    .nu .nustage{margin-top:24px;width:var(--cs-fig);margin-left:-8px}
+    .nu .nuwin{aspect-ratio:369 / 113;border-radius:8px 8px 0 0}
+    .nu .nuplate{border-radius:8px}
+    /* the seam is the plate's own width here, not wider than it, and it is
+       darker and tighter: 25 on a blur of 25 at 80%, against the desktop's
+       40 on 50 at 50% */
+    .nu .nuskrim{width:100%;height:25px;filter:blur(25px);opacity:.8}
+
+    /* ── 756:62479 / mobile · the footer ──────────────────────────────
+       One row becomes four: the mark, the city, the address, then the credit
+       against the two pills. 16 either side and 16 under, not 40 — the
+       pills are what the thumb is going for and they want the edge. */
+    .nu .tfoot{padding:40px 16px 16px;gap:0}
+    .nu .tfrow{flex-direction:column;align-items:stretch;gap:16px;height:auto}
+    .nu .tflinks{flex-direction:column;align-items:flex-start;gap:28px}
+    .nu .tflinks .tfsl{display:none}
+    .nu .tfpair{flex-direction:column;align-items:flex-start;gap:16px}
+    .nu .tfmark{font-size:24px;letter-spacing:-.02em}
+    .nu .tfright{width:100%;justify-content:space-between;gap:16px}
+    .nu .tficons{gap:4px}
+  }
+
 </style>
 </head>
 <body>
@@ -7544,11 +7818,10 @@
       <div class="cslede">
         <ul class="csdisc">
           <li class="csdlab">What we did</li>
-          <li>Strategy</li>
-          <li>Visual identity</li>
-          <li>Iconography</li>
-          <li>UI/UX</li>
-          <li>Content</li>
+          <!-- one row, not five items. display:contents hands the words
+               straight back to the column on the desktop, and on a phone
+               it is the box that scrolls. -->
+          <li class="csdrow"><span>Strategy</span><span>Visual identity</span><span>Iconography</span><span>UI/UX</span><span>Content</span></li>
         </ul>
         <a class="cslive" href="https://www.jbl.com" target="_blank" rel="noopener">Visit live site<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </div>
@@ -7886,11 +8159,10 @@
         <h2 class="csclaim cstitle">Overview</h2>
         <ul class="csdisc">
           <li class="csdlab">What we did</li>
-          <li>Strategy</li>
-          <li>Visual identity</li>
-          <li>Design System</li>
-          <li>UI/UX</li>
-          <li>Content</li>
+          <!-- one row, not five items. display:contents hands the words
+               straight back to the column on the desktop, and on a phone
+               it is the box that scrolls. -->
+          <li class="csdrow"><span>Strategy</span><span>Visual identity</span><span>Design System</span><span>UI/UX</span><span>Content</span></li>
         </ul>
         <a class="cslive" href="https://www.volvotrucks.us" target="_blank" rel="noopener">Visit live site<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </div>
@@ -7977,11 +8249,10 @@
         <h2 class="csclaim cstitle">Overview</h2>
         <ul class="csdisc">
           <li class="csdlab">What we did</li>
-          <li>Strategy</li>
-          <li>Visual identity</li>
-          <li>Iconography</li>
-          <li>UI/UX</li>
-          <li>Content</li>
+          <!-- one row, not five items. display:contents hands the words
+               straight back to the column on the desktop, and on a phone
+               it is the box that scrolls. -->
+          <li class="csdrow"><span>Strategy</span><span>Visual identity</span><span>Iconography</span><span>UI/UX</span><span>Content</span></li>
         </ul>
         <a class="cslive" href="https://www.nfl.com" target="_blank" rel="noopener">Visit live site<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </div>
@@ -8070,11 +8341,10 @@
         <h2 class="csclaim cstitle">Overview</h2>
         <ul class="csdisc">
           <li class="csdlab">What we did</li>
-          <li>Strategy</li>
-          <li>Visual identity</li>
-          <li>Iconography</li>
-          <li>UI/UX</li>
-          <li>Content</li>
+          <!-- one row, not five items. display:contents hands the words
+               straight back to the column on the desktop, and on a phone
+               it is the box that scrolls. -->
+          <li class="csdrow"><span>Strategy</span><span>Visual identity</span><span>Iconography</span><span>UI/UX</span><span>Content</span></li>
         </ul>
         <a class="cslive" href="https://www.ets.org" target="_blank" rel="noopener">Visit live site<span class="csliveai" aria-hidden="true"><svg viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M.8 5h13.4m0 0L10.2 1M14.2 5l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </div>
