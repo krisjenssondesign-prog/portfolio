@@ -139,7 +139,6 @@
        icon is barely a pixel of roof lift. 1.11 doubles it, and the chimney
        travels further so it clears the roof line rather than peeking. */
     --chim-travel:5.60px; --chim-stretch:1.11;
-    --lift:3.831px; --flame:2.064; --jig:.11px; --jigr:.55deg;
     /* ── liquid glass ──────────────────────────────────────────────
        Four things make it read as a lit pane rather than a filled shape, and
        the outer two are the ones that were missing: a tint, a blurred and
@@ -4350,52 +4349,102 @@
         transition:transform .62s var(--pop)}
   .seg:hover .ic.chim .hbody{transform:scaleY(var(--chim-stretch))}
   .seg:hover .ic.chim .chim{transform:translateY(0)}
-
-  .ic .rlift{transform:translateY(0);transition:transform .60s var(--pop)}
-  .ic .rflame{transform-box:fill-box;transform-origin:50% 100%;
-        transform:scaleY(1);transition:transform .60s var(--pop)}
-  .seg:hover .ic.lift .rlift{transform:translateY(calc(var(--lift) * -1))}
-  .seg:hover .ic.lift .rflame{transform:scaleY(var(--flame))}
-  .ic.lift .rig{transform-box:view-box;transform-origin:50% 100%}
-  .seg:hover .ic.lift .rig{animation:rumble .62s cubic-bezier(.33,0,.67,1) both}
-  @keyframes rumble{
-    0%{ transform:translateX(calc(var(--jig) * 0.000)) rotate(calc(var(--jigr) * 0.000)) }
-    5%{ transform:translateX(calc(var(--jig) * 1.000)) rotate(calc(var(--jigr) * 1.000)) }
-    9%{ transform:translateX(calc(var(--jig) * 0.232)) rotate(calc(var(--jigr) * 0.232)) }
-    14%{ transform:translateX(calc(var(--jig) * -0.610)) rotate(calc(var(--jigr) * -0.610)) }
-    18%{ transform:translateX(calc(var(--jig) * -0.294)) rotate(calc(var(--jigr) * -0.294)) }
-    23%{ transform:translateX(calc(var(--jig) * 0.333)) rotate(calc(var(--jigr) * 0.333)) }
-    27%{ transform:translateX(calc(var(--jig) * 0.269)) rotate(calc(var(--jigr) * 0.269)) }
-    32%{ transform:translateX(calc(var(--jig) * -0.154)) rotate(calc(var(--jigr) * -0.154)) }
-    36%{ transform:translateX(calc(var(--jig) * -0.208)) rotate(calc(var(--jigr) * -0.208)) }
-    41%{ transform:translateX(calc(var(--jig) * 0.051)) rotate(calc(var(--jigr) * 0.051)) }
-    45%{ transform:translateX(calc(var(--jig) * 0.142)) rotate(calc(var(--jigr) * 0.142)) }
-    50%{ transform:translateX(calc(var(--jig) * 0.000)) rotate(calc(var(--jigr) * 0.000)) }
-    55%{ transform:translateX(calc(var(--jig) * -0.087)) rotate(calc(var(--jigr) * -0.087)) }
-    59%{ transform:translateX(calc(var(--jig) * -0.019)) rotate(calc(var(--jigr) * -0.019)) }
-    64%{ transform:translateX(calc(var(--jig) * 0.047)) rotate(calc(var(--jigr) * 0.047)) }
-    68%{ transform:translateX(calc(var(--jig) * 0.021)) rotate(calc(var(--jigr) * 0.021)) }
-    73%{ transform:translateX(calc(var(--jig) * -0.021)) rotate(calc(var(--jigr) * -0.021)) }
-    77%{ transform:translateX(calc(var(--jig) * -0.015)) rotate(calc(var(--jigr) * -0.015)) }
-    82%{ transform:translateX(calc(var(--jig) * 0.008)) rotate(calc(var(--jigr) * 0.008)) }
-    86%{ transform:translateX(calc(var(--jig) * 0.008)) rotate(calc(var(--jigr) * 0.008)) }
-    91%{ transform:translateX(calc(var(--jig) * -0.001)) rotate(calc(var(--jigr) * -0.001)) }
-    95%{ transform:translateX(calc(var(--jig) * -0.002)) rotate(calc(var(--jigr) * -0.002)) }
-    100%{ transform:translateX(calc(var(--jig) * -0.000)) rotate(calc(var(--jigr) * -0.000)) }
+  /* HELD. On the page you are on, the chimney stays up — the house is lived
+     in. The roof squash belongs to the gesture, not to the state, so it is
+     the one part that releases. */
+  .seg[aria-selected="true"] .ic.chim .chim{transform:translateY(0)}
+  .seg.icon-in .ic.chim .chim{animation:chimIn .66s var(--pop) both}
+  .seg.icon-in .ic.chim .hbody{animation:bodyIn .60s var(--pop) both}
+  @keyframes chimIn{
+    0%{transform:translateY(var(--chim-travel))}
+    46%{transform:translateY(-1.5px)}
+    100%{transform:translateY(0)}
+  }
+  @keyframes bodyIn{
+    0%{transform:scaleY(1)} 38%{transform:scaleY(var(--chim-stretch))}
+    100%{transform:scaleY(1)}
   }
 
-  /* Not on the stop you are already standing on — the flip is an invitation
-     to go somewhere, and on your own page it is fidgeting. */
-  .ic.flickcap svg{transform-origin:50% 50%}
-  .seg[aria-selected="false"]:hover .ic.flickcap svg{animation:capFlick 1.15s both}
-  @keyframes capFlick{
-    0%  {transform:none;animation-timing-function:cubic-bezier(.40,0,.25,1)}
-    24% {transform:rotate(-14deg);animation-timing-function:cubic-bezier(.50,0,.90,.35)}
-    46% {transform:rotate(170deg);animation-timing-function:cubic-bezier(.12,.70,.30,1)}
-    67% {transform:rotate(368deg);animation-timing-function:cubic-bezier(.33,1,.68,1)}
-    81% {transform:rotate(354deg);animation-timing-function:cubic-bezier(.33,1,.68,1)}
-    92% {transform:rotate(361.5deg);animation-timing-function:cubic-bezier(.33,1,.68,1)}
-    100%{transform:rotate(360deg)}
+  /* ── STORY: the book opens and something comes out of it ──────────────
+     The rocket read as journey and growth; on a design portfolio the story
+     is a book. It rests all but closed, foreshortens as one object rather
+     than splitting down the spine — 18deg a side reads as tearing, not
+     opening — and the sparkle rises out of the gutter. The sparkle is his
+     own CTA star at 0.66, so the set borrows from itself. */
+  .ic.book .bk{transform-box:view-box;transform-origin:11px 19.8px;
+        transition:transform .46s var(--pop)}
+  .ic.book .spark{transform-box:view-box;transform-origin:11px 9.4px;
+        transform:translateY(3.4px) rotate(-30deg) scale(0);opacity:0;
+        transition:transform .5s var(--pop) .12s, opacity .26s ease .12s}
+  .seg:hover .ic.book .bk{transform:translateY(1.2px) scale(1.06,.93)}
+  .seg:hover .ic.book .spark{transform:none;opacity:1}
+  /* HELD */
+  .seg[aria-selected="true"] .ic.book .bk{transform:translateY(1.2px) scale(1.06,.93)}
+  .seg[aria-selected="true"] .ic.book .spark{transform:none;opacity:1}
+  .seg.icon-in .ic.book .bk{animation:bookIn .5s var(--pop) both}
+  .seg.icon-in .ic.book .spark{animation:sparkIn .56s var(--pop) .1s both}
+  @keyframes bookIn{
+    0%{transform:none} 100%{transform:translateY(1.2px) scale(1.06,.93)}
+  }
+  @keyframes sparkIn{
+    0%{transform:translateY(3.4px) rotate(-30deg) scale(0);opacity:0}
+    45%{opacity:1}
+    100%{transform:none;opacity:1}
+  }
+
+  /* ── CRAFT: the cap ends up backwards ─────────────────────────────────
+     The 360 runs anticlockwise now. Same curve to the value — same wind-up,
+     the same 170deg pass, the same 8deg overshoot, the same three-beat
+     settle, the same 1.15s — every rotation simply takes a minus sign. The
+     brim is the heavy end and it sits low and right, so it is what the eye
+     follows: clockwise its first move is down and behind the crown, where
+     there is least to see. Anticlockwise it lifts across the open face of
+     the icon and the spin reads from the first frame.
+
+     On arrival the mirror rides INSIDE that same spin — scaleX runs 1 to -1
+     across the fast arc, so the cap goes edge-on at the top of the turn and
+     comes out of it worn backwards. Nothing is bolted on the end.
+
+     Leaving is deliberately quiet: the stop you are walking away from turns
+     forwards on a half-second transition while the stop you picked performs.
+     Two icons spinning at once is noise. */
+  .ic.flickcap svg{transform-origin:50% 50%;
+        transition:transform .5s cubic-bezier(.45,0,.2,1)}
+  .seg[aria-selected="true"] .ic.flickcap svg{transform:scaleX(-1)}   /* HELD */
+  /* :not(.icon-in) keeps the hover turn out of the arrival's way — both are
+     animations, so the cascade would otherwise settle it on specificity and
+     a click made while hovering would snap the cap backwards before it span */
+  .seg[aria-selected="false"]:hover:not(.icon-in) .ic.flickcap svg{animation:capSpin 1.15s both}
+  .seg[aria-selected="true"]:hover:not(.icon-in)  .ic.flickcap svg{animation:capSpinBack 1.15s both}
+  .seg.icon-in .ic.flickcap svg{animation:capToBack 1.15s both}
+  @keyframes capSpin{
+    0%  {transform:rotate(0deg);animation-timing-function:cubic-bezier(.40,0,.25,1)}
+    24% {transform:rotate(14deg);animation-timing-function:cubic-bezier(.50,0,.90,.35)}
+    46% {transform:rotate(-170deg);animation-timing-function:cubic-bezier(.12,.70,.30,1)}
+    67% {transform:rotate(-368deg);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    81% {transform:rotate(-354deg);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    92% {transform:rotate(-361.5deg);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    100%{transform:rotate(-360deg)}
+  }
+  /* the same turn taken while already backwards, so hovering your own stop
+     replays the gesture and lands back on the held pose rather than on rest */
+  @keyframes capSpinBack{
+    0%  {transform:rotate(0deg) scaleX(-1);animation-timing-function:cubic-bezier(.40,0,.25,1)}
+    24% {transform:rotate(14deg) scaleX(-1);animation-timing-function:cubic-bezier(.50,0,.90,.35)}
+    46% {transform:rotate(-170deg) scaleX(-1);animation-timing-function:cubic-bezier(.12,.70,.30,1)}
+    67% {transform:rotate(-368deg) scaleX(-1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    81% {transform:rotate(-354deg) scaleX(-1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    92% {transform:rotate(-361.5deg) scaleX(-1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    100%{transform:rotate(-360deg) scaleX(-1)}
+  }
+  @keyframes capToBack{
+    0%  {transform:rotate(0deg) scaleX(1);animation-timing-function:cubic-bezier(.40,0,.25,1)}
+    24% {transform:rotate(14deg) scaleX(1);animation-timing-function:cubic-bezier(.50,0,.90,.35)}
+    46% {transform:rotate(-170deg) scaleX(.55);animation-timing-function:cubic-bezier(.12,.70,.30,1)}
+    67% {transform:rotate(-368deg) scaleX(-1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    81% {transform:rotate(-354deg) scaleX(-1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    92% {transform:rotate(-361.5deg) scaleX(-1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+    100%{transform:rotate(-360deg) scaleX(-1)}
   }
   @media (prefers-reduced-motion:reduce){
     .ic *,.nrdot{animation:none !important;transition:none !important} }
@@ -6307,9 +6356,16 @@
     .navroll:hover .nbr{color:var(--c-3)}
     .card-cta:hover{background:none;box-shadow:inset 0 0 0 1px var(--c-3)}
     .seg:hover .ic.chim .hbody,.seg:hover .ic.chim .chim,
-    .seg:hover .ic.lift .rlift,.seg:hover .ic.lift .rflame{transform:none}
-    .seg:hover .ic.lift .rig{animation:none}
-    .seg[aria-selected="false"]:hover .ic.flickcap svg{animation:none}
+    .seg:hover .ic.book .bk,.seg:hover .ic.book .spark{transform:none}
+    .seg:hover .ic.book .spark{opacity:0}
+    .seg[aria-selected="false"]:hover:not(.icon-in) .ic.flickcap svg,
+    .seg[aria-selected="true"]:hover:not(.icon-in) .ic.flickcap svg{animation:none}
+    /* the HELD pose is a state, not a gesture — a phone still has to show
+       which stop it is standing on, so it is restated after the reset */
+    .seg[aria-selected="true"] .ic.chim .chim{transform:translateY(0)}
+    .seg[aria-selected="true"] .ic.book .bk{transform:translateY(1.2px) scale(1.06,.93)}
+    .seg[aria-selected="true"] .ic.book .spark{transform:none;opacity:1}
+    .seg[aria-selected="true"] .ic.flickcap svg{transform:scaleX(-1)}
   }
 
   /* ══ the bar's SKIN on the phone — 616:50270 ═══════════════════════
@@ -7988,7 +8044,7 @@
         <span class="seglw"><span class="segl">Home</span></span>
       </button>
       <button class="seg" role="tab" data-page="about" aria-selected="false">
-        <span class="segi ic lift" aria-hidden="true"><svg viewBox="0 0 20 22" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g class="rig"><path class="rflame" d="M7.12817 18.01C7.12817 17.8208 7.22158 17.633 7.40603 17.5911C7.70029 17.5243 8.06781 17.5805 8.46481 17.7072C8.89253 17.8352 9.32025 17.9205 9.82817 17.9205C10.3361 17.9205 10.7638 17.8352 11.1915 17.7072C11.5885 17.5805 11.9561 17.5243 12.2503 17.5911C12.4348 17.633 12.5282 17.8208 12.5282 18.01V19.5843C12.5282 19.7976 12.3143 19.9256 12.047 19.9256C11.7797 19.9256 11.5658 19.7976 11.3519 19.5843L10.3896 20.9068C10.2826 21.0774 10.0688 21.1627 9.82817 21.1627C9.58758 21.1627 9.37372 21.0774 9.26679 20.9068L8.30441 19.5843C8.09055 19.7976 7.87669 19.9256 7.60936 19.9256C7.34204 19.9256 7.12817 19.7976 7.12817 19.5843V18.01Z" fill="currentColor"/><g class="rlift"><path class="rhull" d="M9.05713 0.293213C9.464 -0.0975322 10.0986 -0.0977157 10.5054 0.293213C12.2658 1.98517 14.1022 4.76436 14.5845 8.02759V9.80688C15.6276 10.5396 16.5068 11.3255 16.8911 12.1106C17.1654 12.6862 17.1653 13.4711 16.9458 14.3606C16.7262 15.3549 16.4519 16.3494 16.1226 17.1868C16.0128 17.5007 15.7381 17.6583 15.354 17.6584C15.0246 17.6584 14.7496 17.5011 14.4751 17.2395L12.5757 15.6243C12.4991 15.5592 12.3869 15.5586 12.3062 15.6184C11.6119 16.1326 10.7325 16.4543 9.78076 16.4543C8.82901 16.4543 7.94957 16.1326 7.25537 15.6184C7.17458 15.5586 7.06247 15.5592 6.98584 15.6243L5.08643 17.2395C4.81207 17.501 4.53767 17.6583 4.2085 17.6584C3.82417 17.6584 3.54877 17.5008 3.43896 17.1868C3.1096 16.3494 2.83531 15.3549 2.61572 14.3606C2.3962 13.4711 2.39612 12.6862 2.67041 12.1106C3.05474 11.3255 3.93388 10.5396 4.97705 9.80688V8.02759C5.4593 4.76425 7.29665 1.98516 9.05713 0.293213ZM9.77979 5.33911C8.98974 5.33916 8.34912 5.98091 8.34912 6.77173C8.34922 7.56247 8.9898 8.20332 9.77979 8.20337C10.5698 8.20337 11.2103 7.5625 11.2104 6.77173C11.2104 5.98087 10.5699 5.33911 9.77979 5.33911Z" fill="currentColor"/></g></g></svg></span>
+        <span class="segi ic book" aria-hidden="true"><svg viewBox="0 0 22 22" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g class="bk"><path d="M10.56 4.83C8.77 3.12 6.11 2.2 3.1 2.2C2.1 2.2 1.43 2.99 1.43 4.04V15.34C1.43 16.38 2.1 17.18 3.1 17.18C6.11 17.18 9 18.09 11 19.8Z" fill="currentColor"/><path d="M11.44 4.83C13.23 3.12 15.89 2.2 18.9 2.2C19.9 2.2 20.57 2.99 20.57 4.04V15.34C20.57 16.38 19.9 17.18 18.9 17.18C15.89 17.18 13 18.09 11 19.8Z" fill="currentColor"/></g><g class="spark"><g transform="translate(5.72 -5.28) scale(0.66)"><path d="M8 1.75C8 5.2 10.8 8 14.25 8C10.8 8 8 10.8 8 14.25C8 10.8 5.2 8 1.75 8C5.2 8 8 5.2 8 1.75Z" fill="currentColor"/></g></g></svg></span>
         <span class="seglw"><span class="segl">Story</span></span>
       </button>
       <button class="seg" role="tab" data-page="resume" aria-selected="false">
@@ -8239,8 +8295,21 @@
     }
     if(!iraf){ ilast=performance.now(); iraf=requestAnimationFrame(indStep); }
   }
+  /* Arriving somewhere should look like arriving. The stop you land on
+     replays its whole gesture from rest — even if your pointer was already
+     sitting on it and the hover had long since finished — and only then does
+     the held pose take over. One class does it; it clears itself when the
+     last of the icon's parts stops animating. */
+  function playIn(sel){
+    if(!sel) return;
+    sel.classList.remove('icon-in');
+    void sel.offsetWidth;                     /* restart from frame one */
+    sel.classList.add('icon-in');
+  }
   function markSel(sel){
+    const moved = sel && sel.getAttribute('aria-selected')!=='true';
     segs.forEach(x=>x.setAttribute('aria-selected', x===sel));
+    if(moved) playIn(sel);
     /* null lets the chip go. It keeps its last position rather than sliding
        home first, so coming back to a stop it slides from where it was. */
     nav.classList.toggle('none-sel', !sel);
@@ -8265,10 +8334,17 @@
     (function chase(){ place(true);
       if(performance.now()-t0 < (ms||520)) requestAnimationFrame(chase); })();
   };
-  segs.forEach(s=>s.addEventListener('click',()=>{
-    window.__navTap && window.__navTap();
-    markSel(s);
-  }));
+  segs.forEach(s=>{
+    s.addEventListener('click',()=>{
+      window.__navTap && window.__navTap();
+      /* tapping the stop you are already on still replays it — the tap has
+         to answer for itself even when the page does not change */
+      if(s.getAttribute('aria-selected')==='true') playIn(s); else markSel(s);
+    });
+    s.addEventListener('animationend',e=>{
+      if(e.target.closest('.segi')) s.classList.remove('icon-in');
+    });
+  });
   /* 3:60 — the hero's own links are the same three stops written as words.
      They fire the stop rather than routing themselves, so there is one path
      into the router and the bottom bar's selection stays in step. */
@@ -8402,9 +8478,11 @@
                  jbl:'JBL', volvo:'Volvo', nfl:'NFL', ets:'ETS'};
     /* Only the three stops have a mark. A case study's name carries itself,
        and its own logo is already sitting in the bank behind this label. */
+    /* the back button borrows the icon of the page you came from. The map
+       had Story and Craft the wrong way round against the bar itself. */
     const MARKS={work:"<svg viewBox=\"0.085 -1.7 22 22\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\"><g class=\"hbody\"><rect class=\"chim\" x=\"4.148\" y=\"1.104\" width=\"2.512\" height=\"11.6\" rx=\"0.15\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"0.586667\" stroke-linejoin=\"round\"/><path d=\"M12.0074 0.965128C11.6773 0.708404 11.5123 0.580042 11.33 0.5307C11.1693 0.487163 10.9998 0.487163 10.839 0.5307C10.6567 0.580042 10.4917 0.708404 10.1616 0.965128L3.78957 5.92117C3.36362 6.25246 3.15065 6.41811 2.99722 6.62555C2.86131 6.80931 2.76006 7.01632 2.69846 7.23642C2.62891 7.48489 2.62891 7.75469 2.62891 8.29431V15.0916C2.62891 16.144 2.62891 16.6701 2.83371 17.0721C3.01386 17.4256 3.30131 17.7131 3.65487 17.8932C4.05682 18.098 4.58299 18.098 5.63534 18.098H7.51437C7.77745 18.098 7.909 18.098 8.00948 18.0468C8.09787 18.0018 8.16974 17.9299 8.21478 17.8416C8.26598 17.7411 8.26598 17.6095 8.26598 17.3464V11.1457C8.26598 10.6195 8.26598 10.3564 8.36838 10.1554C8.45845 9.97864 8.60218 9.83492 8.77896 9.74484C8.97993 9.64244 9.24302 9.64244 9.76919 9.64244H12.3998C12.926 9.64244 13.1891 9.64244 13.3901 9.74484C13.5668 9.83492 13.7106 9.97864 13.8006 10.1554C13.903 10.3564 13.903 10.6195 13.903 11.1457V17.3464C13.903 17.6095 13.903 17.7411 13.9542 17.8416C13.9993 17.9299 14.0711 18.0018 14.1595 18.0468C14.26 18.098 14.3916 18.098 14.6547 18.098H16.5337C17.586 18.098 18.1122 18.098 18.5142 17.8932C18.8677 17.7131 19.1552 17.4256 19.3353 17.0721C19.5401 16.6701 19.5401 16.144 19.5401 15.0916V8.29431C19.5401 7.75469 19.5401 7.48489 19.4706 7.23642C19.409 7.01632 19.3077 6.80931 19.1718 6.62555C19.0184 6.41811 18.8054 6.25246 18.3795 5.92117L12.0074 0.965128Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"0.586667\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></g></svg>",
-                 about:"<svg aria-hidden=\"true\" viewBox=\"3.344 3.309 25.713 25.713\" aria-hidden=\"true\"><path d=\"M20.6944 18.8213C22.0924 18.6996 23.9482 18.9019 26.4737 19.9102C26.7147 20.1842 26.9462 20.4617 27.1544 20.7363C27.55 21.2583 27.9123 21.8245 28.086 22.3555C28.1735 22.623 28.2333 22.941 28.1788 23.2666C28.1192 23.6212 27.9299 23.9391 27.6114 24.1582L27.5889 24.1738L27.5635 24.1885C27.3544 24.3106 27.138 24.3408 26.9815 24.3467C26.8215 24.3526 26.6619 24.3341 26.5235 24.3125C26.2614 24.2715 25.9189 24.1892 25.626 24.127C24.9875 23.9912 24.2669 23.8782 23.4971 24.001C21.885 24.2584 21.117 24.8287 20.209 25.3828C19.7447 25.6661 19.2279 25.9529 18.5704 26.1338C17.9096 26.3154 17.1479 26.3808 16.1866 26.2842C14.6003 26.1792 13.0329 25.1891 11.7842 24.0781C11.1501 23.5139 10.5675 22.8871 10.0684 22.2676C12.6346 22.1707 14.7395 20.9875 16.9727 20.001C17.9418 19.5728 19.0156 18.9676 20.6944 18.8213Z\" fill=\"currentColor\"/><path d=\"M13.9454 6C14.2625 6.00012 14.526 6.22589 14.586 6.52539C16.9111 6.52401 18.77 7.0598 20.2344 7.94531C21.7612 8.86867 22.8145 10.1464 23.5206 11.4961C24.7052 13.7608 24.9352 16.2829 24.7706 17.8613C23.1183 17.42 21.7425 17.3222 20.5743 17.4238C18.6066 17.5951 17.2804 18.3322 16.4053 18.7188C13.7053 19.9115 11.6772 21.0803 9.05962 20.8428L9.05865 20.8418C8.79436 20.8138 8.49568 20.7708 8.18072 20.7129C7.90202 20.6562 7.61517 20.5859 7.32037 20.4961L7.31255 20.5186C7.23312 20.4969 7.15344 20.4741 7.07427 20.4502C6.22484 20.1933 5.21285 19.7491 4.66998 18.96C4.44833 18.6371 4.33156 18.1913 4.26861 17.7607C4.20164 17.3026 4.18116 16.7574 4.21587 16.1641C4.28533 14.9778 4.57971 13.5409 5.22076 12.1406C6.4346 9.48988 8.89407 6.9908 13.2969 6.58301C13.3327 6.25526 13.6081 6 13.9454 6Z\" fill=\"currentColor\"/><path d=\"M11.6895 11.5654C11.5099 11.2519 11.1096 11.1428 10.796 11.3223C9.83797 11.871 9.22781 12.9846 8.9024 14.1201C8.57078 15.2775 8.49169 16.6016 8.71587 17.7402C8.78594 18.0945 9.13 18.3255 9.48443 18.2559C9.8388 18.1859 10.0696 17.8417 10.0001 17.4873C9.81984 16.572 9.88097 15.4585 10.1612 14.4805C10.4477 13.481 10.9214 12.7599 11.4463 12.459C11.7599 12.2794 11.8687 11.8791 11.6895 11.5654Z\" fill=\"currentColor\"/></svg>",
-                 resume:"<svg viewBox=\"0 0 20 22\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\"><g class=\"rig\"><path class=\"rflame\" d=\"M7.12817 18.01C7.12817 17.8208 7.22158 17.633 7.40603 17.5911C7.70029 17.5243 8.06781 17.5805 8.46481 17.7072C8.89253 17.8352 9.32025 17.9205 9.82817 17.9205C10.3361 17.9205 10.7638 17.8352 11.1915 17.7072C11.5885 17.5805 11.9561 17.5243 12.2503 17.5911C12.4348 17.633 12.5282 17.8208 12.5282 18.01V19.5843C12.5282 19.7976 12.3143 19.9256 12.047 19.9256C11.7797 19.9256 11.5658 19.7976 11.3519 19.5843L10.3896 20.9068C10.2826 21.0774 10.0688 21.1627 9.82817 21.1627C9.58758 21.1627 9.37372 21.0774 9.26679 20.9068L8.30441 19.5843C8.09055 19.7976 7.87669 19.9256 7.60936 19.9256C7.34204 19.9256 7.12817 19.7976 7.12817 19.5843V18.01Z\" fill=\"currentColor\"/><g class=\"rlift\"><path class=\"rhull\" d=\"M9.05713 0.293213C9.464 -0.0975322 10.0986 -0.0977157 10.5054 0.293213C12.2658 1.98517 14.1022 4.76436 14.5845 8.02759V9.80688C15.6276 10.5396 16.5068 11.3255 16.8911 12.1106C17.1654 12.6862 17.1653 13.4711 16.9458 14.3606C16.7262 15.3549 16.4519 16.3494 16.1226 17.1868C16.0128 17.5007 15.7381 17.6583 15.354 17.6584C15.0246 17.6584 14.7496 17.5011 14.4751 17.2395L12.5757 15.6243C12.4991 15.5592 12.3869 15.5586 12.3062 15.6184C11.6119 16.1326 10.7325 16.4543 9.78076 16.4543C8.82901 16.4543 7.94957 16.1326 7.25537 15.6184C7.17458 15.5586 7.06247 15.5592 6.98584 15.6243L5.08643 17.2395C4.81207 17.501 4.53767 17.6583 4.2085 17.6584C3.82417 17.6584 3.54877 17.5008 3.43896 17.1868C3.1096 16.3494 2.83531 15.3549 2.61572 14.3606C2.3962 13.4711 2.39612 12.6862 2.67041 12.1106C3.05474 11.3255 3.93388 10.5396 4.97705 9.80688V8.02759C5.4593 4.76425 7.29665 1.98516 9.05713 0.293213ZM9.77979 5.33911C8.98974 5.33916 8.34912 5.98091 8.34912 6.77173C8.34922 7.56247 8.9898 8.20332 9.77979 8.20337C10.5698 8.20337 11.2103 7.5625 11.2104 6.77173C11.2104 5.98087 10.5699 5.33911 9.77979 5.33911Z\" fill=\"currentColor\"/></g></g></svg>"};
+                 about:"<svg viewBox=\"0 0 22 22\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\"><g class=\"bk\"><path d=\"M10.56 4.83C8.77 3.12 6.11 2.2 3.1 2.2C2.1 2.2 1.43 2.99 1.43 4.04V15.34C1.43 16.38 2.1 17.18 3.1 17.18C6.11 17.18 9 18.09 11 19.8Z\" fill=\"currentColor\"/><path d=\"M11.44 4.83C13.23 3.12 15.89 2.2 18.9 2.2C19.9 2.2 20.57 2.99 20.57 4.04V15.34C20.57 16.38 19.9 17.18 18.9 17.18C15.89 17.18 13 18.09 11 19.8Z\" fill=\"currentColor\"/></g><g class=\"spark\"><g transform=\"translate(5.72 -5.28) scale(0.66)\"><path d=\"M8 1.75C8 5.2 10.8 8 14.25 8C10.8 8 8 10.8 8 14.25C8 10.8 5.2 8 1.75 8C5.2 8 8 5.2 8 1.75Z\" fill=\"currentColor\"/></g></g></svg>",
+                 resume:"<svg aria-hidden=\"true\" viewBox=\"3.344 3.309 25.713 25.713\" aria-hidden=\"true\"><path d=\"M20.6944 18.8213C22.0924 18.6996 23.9482 18.9019 26.4737 19.9102C26.7147 20.1842 26.9462 20.4617 27.1544 20.7363C27.55 21.2583 27.9123 21.8245 28.086 22.3555C28.1735 22.623 28.2333 22.941 28.1788 23.2666C28.1192 23.6212 27.9299 23.9391 27.6114 24.1582L27.5889 24.1738L27.5635 24.1885C27.3544 24.3106 27.138 24.3408 26.9815 24.3467C26.8215 24.3526 26.6619 24.3341 26.5235 24.3125C26.2614 24.2715 25.9189 24.1892 25.626 24.127C24.9875 23.9912 24.2669 23.8782 23.4971 24.001C21.885 24.2584 21.117 24.8287 20.209 25.3828C19.7447 25.6661 19.2279 25.9529 18.5704 26.1338C17.9096 26.3154 17.1479 26.3808 16.1866 26.2842C14.6003 26.1792 13.0329 25.1891 11.7842 24.0781C11.1501 23.5139 10.5675 22.8871 10.0684 22.2676C12.6346 22.1707 14.7395 20.9875 16.9727 20.001C17.9418 19.5728 19.0156 18.9676 20.6944 18.8213Z\" fill=\"currentColor\"/><path d=\"M13.9454 6C14.2625 6.00012 14.526 6.22589 14.586 6.52539C16.9111 6.52401 18.77 7.0598 20.2344 7.94531C21.7612 8.86867 22.8145 10.1464 23.5206 11.4961C24.7052 13.7608 24.9352 16.2829 24.7706 17.8613C23.1183 17.42 21.7425 17.3222 20.5743 17.4238C18.6066 17.5951 17.2804 18.3322 16.4053 18.7188C13.7053 19.9115 11.6772 21.0803 9.05962 20.8428L9.05865 20.8418C8.79436 20.8138 8.49568 20.7708 8.18072 20.7129C7.90202 20.6562 7.61517 20.5859 7.32037 20.4961L7.31255 20.5186C7.23312 20.4969 7.15344 20.4741 7.07427 20.4502C6.22484 20.1933 5.21285 19.7491 4.66998 18.96C4.44833 18.6371 4.33156 18.1913 4.26861 17.7607C4.20164 17.3026 4.18116 16.7574 4.21587 16.1641C4.28533 14.9778 4.57971 13.5409 5.22076 12.1406C6.4346 9.48988 8.89407 6.9908 13.2969 6.58301C13.3327 6.25526 13.6081 6 13.9454 6Z\" fill=\"currentColor\"/><path d=\"M11.6895 11.5654C11.5099 11.2519 11.1096 11.1428 10.796 11.3223C9.83797 11.871 9.22781 12.9846 8.9024 14.1201C8.57078 15.2775 8.49169 16.6016 8.71587 17.7402C8.78594 18.0945 9.13 18.3255 9.48443 18.2559C9.8388 18.1859 10.0696 17.8417 10.0001 17.4873C9.81984 16.572 9.88097 15.4585 10.1612 14.4805C10.4477 13.481 10.9214 12.7599 11.4463 12.459C11.7599 12.2794 11.8687 11.8791 11.6895 11.5654Z\" fill=\"currentColor\"/></svg>"};
     const bico=document.getElementById('navBackIcon');
     window.__navBack=function(page){
       if(back) back.textContent=NAMES[page]||'Home';
