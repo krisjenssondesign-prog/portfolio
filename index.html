@@ -1366,8 +1366,15 @@
   /* 756:62479 — the Footer component with its Divider switched OFF, which
      hands the 40 back to the top: 40 / 40 row / 40 is the same 120 it is
      everywhere else. position:relative so it paints over the skrim — an
-     absolutely positioned sibling outranks a static one whatever the order.*/
-  .nu .tfoot{position:relative;z-index:1;padding:40px;gap:0}
+     absolutely positioned sibling outranks a static one whatever the order.
+
+     And it paints its OWN ground. That is not decoration: the Footer frame
+     is an opaque #F6F6F6 in the file, and painting it is what CUTS THE SKRIM
+     IN HALF. Left transparent, the whole 50-blur bleeds straight through the
+     footer and across the bottom of the section, and what should be a shadow
+     under one edge reads instead as a grey stroke ruled across the page. */
+  .nu .tfoot{position:relative;z-index:1;padding:40px;gap:0;
+             background:var(--paper)}
   .nu .tfrule{display:none}
 
   @media (max-width:900px){
