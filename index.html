@@ -7837,7 +7837,7 @@
           <span class="nuarrow" aria-hidden="true"><span class="nuarrowi"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6 26H42M42 26L29 13M42 26L29 39" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
         </span>
         <span class="nustage">
-          <span class="nuwin"><span class="nuplate"><img src="media/ets-card.webp" alt="" decoding="async"></span></span>
+          <span class="nuwin"><span class="nuplate"><video muted loop playsinline preload="metadata" aria-hidden="true" poster="media/ets-hero.webp"><source type="video/webm" src="media/ets-hero.webm"><source type="video/mp4" src="media/ets-hero.mp4"></video></span></span>
           <span class="nuskrim" aria-hidden="true"></span>
         </span>
       </a>
@@ -8055,13 +8055,14 @@
       <p class="cshclaim cstitle">Shaping the future of<br>education solutions</p>
     </div>
 
-    <!-- PLACEHOLDER. ETS has no hero film of its own yet, and Next up is a
-         picture of this plate — so it holds the same still, and the two are
-         one continuous image across the morph. The card CLIP cannot stand in
-         for it: it is a 14-second montage cut for a 322-wide card, and half
-         of it is UI at thumbnail scale. Swap both for the film when it lands.-->
+    <!-- ETS/1. Hero/Project Page_ETS, 1920x1080 down to 1600x900. Next up is
+         a picture of THIS plate, so both carry the same file: one download,
+         and the morph hands one film from the preview to the hero rather than
+         cutting between two encodes of it. Native 16:9, so it fills the 16:9
+         plate with nothing cropped — JBL's own file is 1600x838 and loses 7%
+         off its sides to object-fit. Same shape on screen either way. -->
     <div class="csstage"><div class="csplate">
-      <img src="media/ets-card.webp" alt="" decoding="async">
+      <video id="etsHero" autoplay muted playsinline preload="auto" aria-label="ETS" poster="media/ets-hero.webp"><source type="video/webm" src="media/ets-hero.webm"><source type="video/mp4" src="media/ets-hero.mp4"></video>
     </div></div>
 
     <div class="csbody">
@@ -12154,6 +12155,14 @@
         const rewind=cb=>{
           if(plate.readyState<2){
             plate.addEventListener('loadeddata',()=>rewind(cb),{once:true});
+            /* The preview shares the hero's own film — 1.9MB that would be
+               downloaded on every visit to this page for a block at the very
+               bottom of it — so it ships preload="metadata" and the frames
+               are never coming on their own. play() is the only thing that
+               fetches them, and it starts at 0, which is where this wanted to
+               be anyway. Without this the block reveals on a poster that
+               never moves. */
+            plate.play().catch(()=>{});
             return;
           }
           if(plate.currentTime===0){ cb(); return; }
